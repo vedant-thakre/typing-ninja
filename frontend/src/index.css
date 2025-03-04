@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Capriola&family=Lilita+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #2c2c2c;
+}
+
+ul {
+    list-style-position: outside;
+    /* Position the bullet outside the list item box */
+    padding-left: 1em;
+    /* Add space between the bullet and the text */
+}
+
+li {
+    padding-left: 0.5em;
+    /* Indent the text to align with the first line */
+}
+
+/* Custom scrollbar styles */
+.scrollbar-custom::-webkit-scrollbar {
+    width: 5px !important;
+    /* Adjust width for vertical scrollbar */
+    height: 12px;
+    /* Adjust height for horizontal scrollbar */
+}
+.scrollbar-custom::-webkit-scrollbar:hover {
+    width: 5px !important;
+    /* Adjust width for vertical scrollbar */
+    height: 12px;
+    /* Adjust height for horizontal scrollbar */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: #2c2c2c;
+    /* Scrollbar thumb color */
+    border-radius: 6px;
+    /* Roundness of the scrollbar thumb */
+    border: 3px solid transparent;
+    /* Space around thumb */
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+    background: #2c2c2c;
+    /* Scrollbar track color */
+    border-radius: 6px;
+    /* Roundness of the scrollbar track */
+    margin: 4px;
+    /* Margin around the scrollbar track */
+}
+
+/* Dark mode scrollbar styles */
+.dark .scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: #555;
+    /* Darker thumb color for dark mode */
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-track {
+    background: #333;
+    /* Darker track color for dark mode */
+}
+
+/* Firefox scrollbar styles */
+.scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: #555555 #2c2c2c;
+}
+
+.dark .scrollbar-custom {
+    scrollbar-color: #555555 #2c2c2c;
+}
