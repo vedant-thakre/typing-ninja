@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
 
-const socket = io("http://localhost:4000");
+// const socket = io("http://localhost:4000");
 
 function Type() {
   const [text, setText] = useState(
@@ -83,19 +83,19 @@ function Type() {
 
     // ✅ Emit progress update with user identifier
     const progress = (typedChars / text.length) * 100;
-    socket.emit("progress", { userName: userName || socket.id, progress });
+    // socket.emit("progress", { userName: userName || socket.id, progress });
 
     if (typedValue === text) {
       setTimerRunning(false);
     }
   };
 
-  useEffect(() => {
-    socket.on("text", (data) => setText(data));
-    socket.on("updateProgress", (data) => {
-      setProgress(data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.on("text", (data) => setText(data));
+  //   socket.on("updateProgress", (data) => {
+  //     setProgress(data);
+  //   });
+  // }, []);
 
   const getStyledText = () => {
     const words = text.split(" ");

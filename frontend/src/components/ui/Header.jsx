@@ -4,13 +4,12 @@ import { RxChatBubble } from "react-icons/rx";
 import { RxRocket } from "react-icons/rx";
 import { FiSun } from "react-icons/fi";
 import { RxMoon } from "react-icons/rx";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { LuMenu } from "react-icons/lu";
 import AnimatedButton from "../AnimatedButton";
 import { handleTabTitle } from "../../utils/helper";
 
 const Header = () => {
-  const location = useLocation();
   const [search, setSearch] = useState("");
   const [showResponsiveNavbaar, setShowResponsiveNavbaar] = useState(false);
   const [darkMode, setDarkMode] = useState(true);

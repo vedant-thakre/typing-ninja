@@ -7,6 +7,7 @@ import { GoDotFill } from "react-icons/go";
 import Snippet from "../components/ui/Play/Snippet";
 import UserTypings from "../components/ui/Play/UserTypings";
 import usePlay from "../hooks/usePlay";
+import SnippetBox from "../components/ui/Play/SnippetBox";
 
 const Play = () => {
   const navigate = useNavigate();
@@ -20,9 +21,11 @@ const Play = () => {
     totalTyped,
     difficulty,
   } = usePlay();
+
   window.onkeydown = function (e) {
     return !(e.keyCode == 32 && e.target == document.body);
-  };   
+  };
+  
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex gap-x-6 py-5 px-7 mt-[140px]">
@@ -44,66 +47,10 @@ const Play = () => {
             />
           </div>
         </div>
-        <div className="flex flex-col flex-[6] gap-5">
-          {/* Overview */}
-          <div className="bg-secondary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
-            <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-                Snippet
-              </h5>
-            </div>
-            <div className="flex w-full flex-col gap-4 pb-2 pt-1 px-4">
-              <div className="flex w-full py-4 px-5 border-2 border-bprimary rounded-2xl">
-                <div className="flex h-[250px] items-center relative text-white tracking-wider font-normal font-route text-2xl flex-col">
-                  <Snippet words={words} />
-                  <UserTypings
-                    className="absolute left-0 text-2xl"
-                    words={words}
-                    userInput={typed}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex gap-3 items-center">
-                  <h4 className="text-white font-route text-[24px] items-center font-bold">
-                    The Time Machine
-                  </h4>
-                  <span
-                    className={`text-white px-2 py-[1px] mt-[-4px] h-max ${
-                      difficulty === "Hard"
-                        ? "bg-danger"
-                        : difficulty === "Easy"
-                        ? "bg-success"
-                        : "bg-orange"
-                    } rounded-md tracking-wide font-bold text-[12px]`}
-                  >
-                    {difficulty}
-                  </span>
-                </div>
-                <p className="font-route text-textsecond flex gap-2 mt-[-10px] items-center text-[19px]">
-                  <GoDotFill size={13} /> Added 4 years ago
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Matches */}
-          <div className="bg-secondary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
-            <div className="w-full flex flex-col px-4 py-4  gap-2">
-              <div
-                className="flex flex-col gap-2
-                          py-4 w-full px-16 border-2 scrollbar-custom border-bprimary rounded-2xl"
-              >
-                <input
-                  placeholder="Type here when the game begins..."
-                  type="text"
-                  className="bg-transparent placeholder:text-bold outline-none text-white font-route placeholder:text-[#545454] placeholder:font-route placeholder:text-[30px] text-center text-[25px] border-b-2"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* SnippetBox */}
+        <SnippetBox difficulty={difficulty} />
         <div className="flex flex-col flex-[3.5] gap-5">
-          {/* Posts */}
+          {/* Snippet Highscore */}
           <div className="bg-secondary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
               <h5 className="text-white tracking-wider py-2 px-5 bg-primary rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">

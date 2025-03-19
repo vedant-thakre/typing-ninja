@@ -18,7 +18,7 @@ const usePlay = () => {
   const [errors, setErrors] = useState(0);
 
   const isStarting = state === "start" && cursor > 0;
-  const areWordsFinished = cursor === words.length;
+  const areWordsFinished = cursor === words?.length;
 
   const restart = useCallback(() => {
     debug("restarting...");

@@ -1,9 +1,9 @@
-import React from 'react'
-import Header from '../components/ui/Header'
-import Footer from '../components/ui/Footer'
-import { Outlet } from 'react-router-dom';
+import React from "react";
+import Header from "../ui/Header";
+import Footer from "../ui/Footer";
+import { Outlet } from "react-router-dom";
 
-const Layout = () => {
+const DefaultLayout = () => {
   return (
     <div
       className="flex flex-col min-h-screen"
@@ -19,6 +19,6 @@ const Layout = () => {
       <Footer />
     </div>
   );
-}
+};
 
-export default Layout
+export default DefaultLayout;
