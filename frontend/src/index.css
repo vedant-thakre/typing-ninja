@@ -25,6 +25,7 @@ li {
     width: 5px !important;
     /* Adjust width for vertical scrollbar */
     height: 12px;
+    /* color: #18c423; */
     /* Adjust height for horizontal scrollbar */
 }
 .scrollbar-custom::-webkit-scrollbar:hover {

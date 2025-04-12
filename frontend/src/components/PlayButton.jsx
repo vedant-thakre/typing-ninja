@@ -12,7 +12,8 @@ const PlayButton = ({ title, className, subTitle, onClick, PlayButton }) => {
       whileTap={{ scale: 0.99 }}
       onClick={onClick}
       className={clsx(
-        "bg-primary flex cursor-pointer h-full flex-col gap-2 border-2  text-white rounded-2xl px-6 pt-4 shadow-lg",
+        !className.includes("bg-") && "bg-primary",
+        "flex cursor-pointer h-full flex-col gap-2 border-4 text-white rounded-2xl px-6 pt-4 shadow-lg",
         className
       )}
     >

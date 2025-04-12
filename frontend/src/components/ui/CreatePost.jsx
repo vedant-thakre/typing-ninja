@@ -28,7 +28,7 @@ const CreatePost = () => {
           <div className="flex gap-3 justify-start pt-4">
             <AnimatedButton
               title={"CREATE POST"}
-              className="bg-primary px-20 font-bold rounded-lg py-[2px] font-route text-lg border-4"
+              className="px-20 font-bold rounded-lg py-[2px] border-bdshadow font-route text-lg border-4"
             />
             <NavLink to="/discuss" onClick={() => handleTabTitle("Discuss")}>
               <AnimatedButton

@@ -4,20 +4,34 @@ import { RxChatBubble } from "react-icons/rx";
 import { RxRocket } from "react-icons/rx";
 import { FiSun } from "react-icons/fi";
 import { RxMoon } from "react-icons/rx";
-import { NavLink } from "react-router-dom";
+import { BsCart3 } from "react-icons/bs";
+import { NavLink, useNavigate } from "react-router-dom";
 import { LuMenu } from "react-icons/lu";
 import AnimatedButton from "../AnimatedButton";
 import { handleTabTitle } from "../../utils/helper";
+import { logoutUser } from "../../store/slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [showResponsiveNavbaar, setShowResponsiveNavbaar] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const isAuth = true;
+  const loading = useSelector((state) => state.user.loading);
+  const status = useSelector((state) => state.user.status);
+  const user = useSelector((state) => state.user.userData);
+  const authStatus = status && !loading;
 
   // Ref for the profile menu
   const menuRef = useRef(null);
+
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/login");
+  };
 
   // Handle clicks outside the settings menu
   useEffect(() => {
@@ -40,7 +54,7 @@ const Header = () => {
 
   return (
     <div className="bg-[#4e6edd] py-2 flex items-center w-full mx-auto px-4 sm:px-4 lg:px-8">
-      <div className="md:w-[80rem] 2xl:w-[85rem] mx-auto flex justify-between">
+      <div className="md:w-[80rem] w-full 2xl:w-[85rem] mx-auto flex justify-between">
         <div className="flex gap-4 lg:gap-6 xl:gap-10 items-center">
           <NavLink onClick={() => handleTabTitle("Home")} to="/">
             <h2 className="text-3xl xl:text-4xl cursor-pointer text-bold text-white tracking-wider font-small font-logo">
@@ -74,7 +88,7 @@ const Header = () => {
               to="/highscores"
               onClick={() => handleTabTitle("Highscores")}
             >
-              <div className="flex items-center justify-center gap-1.5 xl:gap-3">
+              <div className="flex items-center justify-center gap-1 xl:gap-3">
                 <RxRocket
                   size={27}
                   className="mb-1 text-white font-medium cursor-pointer"
@@ -84,11 +98,24 @@ const Header = () => {
                 </h5>
               </div>
             </NavLink>
+            {authStatus && (
+              <NavLink to="/store" onClick={() => handleTabTitle("Store")}>
+                <div className="flex items-center justify-center gap-1 xl:gap-3">
+                  <BsCart3
+                    size={24}
+                    className="mb-1 text-white font-medium cursor-pointer"
+                  />
+                  <h5 className="text-white text-[19px] font-bold tracking-wider font-route cursor-pointer hover:underline">
+                    STORE
+                  </h5>
+                </div>
+              </NavLink>
+            )}
           </div>
         </div>
         <div
           className={`hidden lg:flex gap-7 lg:gap-10 ${
-            isAuth ? "xl:gap-10" : "xl:gap-16"
+            authStatus ? "xl:gap-6" : "xl:gap-16"
           } items-center`}
         >
           <input
@@ -100,7 +127,7 @@ const Header = () => {
           />
           <div
             className={`flex gap-2 lg:gap-5 ${
-              isAuth ? "xl:gap-5" : "xl:gap-9"
+              authStatus ? "xl:gap-5" : "xl:gap-9"
             } items-center`}
           >
             <div>
@@ -118,10 +145,12 @@ const Header = () => {
                 />
               )}
             </div>
-            {isAuth ? (
+            {authStatus ? (
               <div className="flex relative items-center cursor-pointer">
                 <div className="bg-[#4865cd] pl-6 pr-10 py-1 rounded-lg flex flex-col items-center">
-                  <p className="text-white font-main text-sm">vedant</p>
+                  <p className="text-white font-main text-sm">
+                    {user?.username}
+                  </p>
                   <h5 className="text-white font-main text-[14px]">
                     Daily Goal:{" "}
                     <span className="font-route ml-1 font-bold text-[18px]">
@@ -140,8 +169,10 @@ const Header = () => {
                   >
                     <div className="flex flex-col gap-3 items-center">
                       <NavLink
-                        to="/profile"
-                        onClick={() => handleTabTitle("Profile")}
+                        to={`/profile/${user?.username}`}
+                        onClick={() =>
+                          handleTabTitle(`Profile - ${user?.username}`)
+                        }
                         className="px-3 cursor-pointer font-route text-[20px] py-1 text-white w-full rounded-lg border-2 border-bprimary"
                       >
                         <p>Profile</p>
@@ -155,8 +186,9 @@ const Header = () => {
                       </NavLink>
                       <AnimatedButton
                         title={"LOG OUT"}
+                        onClick={handleLogout}
                         className={
-                          "mt-1 font-route text-[20px] font-bold rounded-lg bg-[#4e6edd] border-4 w-[200px]"
+                          "mt-1 font-route text-[20px] font-bold rounded-lg bg-[#4e6edd] border-bdshadow border-4 w-[200px]"
                         }
                       />
                       <div className=""></div>
@@ -167,7 +199,7 @@ const Header = () => {
             ) : (
               <>
                 <NavLink to="/login" onClick={() => handleTabTitle("Login")}>
-                  <h5 className="text-white text-[19px] cursor-pointer font-bold tracking-wider font-route">
+                  <h5 className="text-white text-[19px] my-4 cursor-pointer font-bold tracking-wider font-route">
                     LOGIN
                   </h5>
                 </NavLink>
@@ -180,7 +212,7 @@ const Header = () => {
             )}
           </div>
         </div>
-        <div className="lg:hidden mr-2">
+        <div className="lg:hidden">
           <LuMenu
             onClick={() => setShowResponsiveNavbaar(!showResponsiveNavbaar)}
             size={30}

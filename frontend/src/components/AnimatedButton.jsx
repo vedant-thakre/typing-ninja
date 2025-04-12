@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
-const AnimatedButton = ({ title, className, onClick, icon, animated=true }) => {
+const AnimatedButton = ({ title, className, onClick, icon, animated=true, ...props }) => {
   return (
     <>
       {animated ? (
@@ -12,8 +12,12 @@ const AnimatedButton = ({ title, className, onClick, icon, animated=true }) => {
           }}
           whileTap={{ scale: 0.98 }}
           onClick={onClick}
+          {...props}
           className={clsx(
-            "bg-primary border-bdshadow text-white shadow-lg",
+            !className.includes("bg-") && "bg-primary",
+            !className.includes("border-") && "border-bdshadow",
+            !className.includes("shadow") && "shadow-lg",
+            "text-white",
             className
           )}
         >
@@ -23,9 +27,13 @@ const AnimatedButton = ({ title, className, onClick, icon, animated=true }) => {
         <button
           onClick={onClick}
           className={clsx(
-            "bg-primary border-bdshadow text-white shadow-lg",
+            !className.includes("bg-") && "bg-primary",
+            !className.includes("border-") && "border-bdshadow",
+            !className.includes("shadow") && "shadow-lg",
+            "text-white",
             className
           )}
+          {...props}
         >
           {icon ? icon : title}
         </button>

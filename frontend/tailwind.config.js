@@ -22,7 +22,7 @@ export default {
         danger: "#d43b41",
         success: "#218340",
         orange: "#e37800",
-        pinky: "#bd4d78",
+        ponky: "#bd4d78",
         // borders
         bprimary: "#555555",
         bsuccess: "#195f2f",

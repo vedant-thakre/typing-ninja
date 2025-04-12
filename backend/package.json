@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "dev": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && nodemon src/index.js'",
+  "start": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && node src/index.js'"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.14.2",
     "mongoose": "^8.12.1",
-    "socket.io": "^4.8.1"
+    "nodemailer": "^6.10.0",
+    "socket.io": "^4.8.1",
+    "unique-username-generator": "^1.4.0"
   }
 }

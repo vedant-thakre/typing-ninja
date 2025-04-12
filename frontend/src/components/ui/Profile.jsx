@@ -1,11 +1,42 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AnimatedButton from "../AnimatedButton";
 import { matchHistoryList, recordList, userData } from "../../utils/data";
-import { getRelativeTime } from "../../utils/helper";
-import { NavLink, useNavigate } from "react-router-dom";
+import { getRelativeTime, handleTabTitle } from "../../utils/helper";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getSearchedUser } from "../../store/slices/userSlice";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { username } = useParams();
+  const hasFetchedRef = useRef(false);
+  const user = useSelector((state) => state.user.userData);
+  const [searchedUser, setSearchedUser] = useState(null);
+  const myUserName = localStorage.getItem("username");
+  const isMyProfile = myUserName === username;
+
+  useEffect(() => {
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+    if (!isMyProfile) {
+      async function fetchUser() {
+        const response = await dispatch(getSearchedUser(username));
+        if (response?.payload?.status === 200) {
+          setSearchedUser(response?.payload?.data);
+          handleTabTitle(`${username}`);
+        } else {
+          toast.error("User not found");
+          handleTabTitle(`Profile - Not Found`);
+        }
+      }
+      fetchUser();
+    }
+    else{
+      handleTabTitle(`Profile - ${myUserName}`);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex gap-x-6 py-5 px-7 mt-[140px]">
@@ -20,11 +51,14 @@ const Profile = () => {
             <div className="flex items-center flex-col gap-6">
               <div className="flex w-full flex-col items-center gap-2">
                 <div className="w-[120px] h-[120px] rounded-full border-2 border-bprimary"></div>
-                <p className="font-route text-[24px] text-white">
-                  {userData?.username}
+                <p className="font-route min-h-[36px] text-[24px] text-white">
+                  {isMyProfile ? user?.username : searchedUser?.username}
                 </p>
                 <p className="font-route text-[21px] mt-[-17px] text-textsecond">
-                  Joined at {getRelativeTime(userData?.insertedAt)}
+                  Joined{" "}
+                  {getRelativeTime(
+                    isMyProfile ? user?.createdAt : searchedUser?.createdAt
+                  )}
                 </p>
                 {!userData?.bio ? (
                   <div className="flex w-full flex-col gap-1">
@@ -33,13 +67,19 @@ const Profile = () => {
                     </p>
                     <div className="flex items-center py-8 justify-center">
                       <p className="font-route px-4 text-center leading-[23px] text-[21px] text-white">
-                        We don't know much about this person yet.
+                        {isMyProfile
+                          ? user?.bio
+                            ? user?.bio
+                            : " We don't know much about you yet."
+                          : searchedUser?.bio
+                          ? searchedUser?.bio
+                          : " We don't know much about this person yet."}
                       </p>
                     </div>
                     <AnimatedButton
                       title={"EDIT PROFILE"}
                       className={
-                        "border-2 py-1 rounded-lg font-route text-[20px]"
+                        "border-4 border-bdshadow py-1 rounded-lg font-route text-[20px]"
                       }
                       onClick={() => {
                         navigate("/settings");
@@ -248,7 +288,8 @@ const Profile = () => {
             {!userData?.length ? (
               <div className="flex flex-col min-h-[400px] gap-2 px-5">
                 <p className="text-white font-route text-[23px]">
-                  {userData?.username} has not created any posts.
+                  {isMyProfile ? "You have" : `${searchedUser?.username} has`}{" "}
+                  not created any posts.
                 </p>
               </div>
             ) : (

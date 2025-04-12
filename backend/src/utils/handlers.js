@@ -1,9 +1,10 @@
 
-export const asyncHandler = (fn) => (req, res, next) => {
+export const asyncHandler = (fn) => async (req, res, next) => {
     try {
-        fn(req, res, next);
+        await fn(req, res, next);
     } catch (error) {
-        res.status(error.statusCode || 500).json({ 
+        console.error("An error occurred:", error);
+        res.status(error.status || 500).json({ 
             success: false,
             message: error.message || 'Internal Server Error',
          });
@@ -18,7 +19,7 @@ export class ErrorHandler extends Error {
     stack = ""
   ) {
     super(message);
-    this.statusCode = statusCode;
+    this.status = statusCode;
     this.data = null;
     this.message = message;
     this.success = false;
@@ -35,7 +36,7 @@ export class ErrorHandler extends Error {
 export class Response {
   constructor(statusCode, data, message = "Success") {
     this.success = statusCode < 400;
-    this.statusCode = statusCode;
+    this.status = statusCode;
     this.message = message;
     this.data = data;
   }

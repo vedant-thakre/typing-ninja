@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      default: null,
     },
     age: {
       type: Number,
@@ -74,6 +75,21 @@ const userSchema = new mongoose.Schema(
     totalWins: {
       type: Number,
       default: null,
+    },
+    refreshToken: {
+      type: String,
+    },
+    otp: {
+      type: Number,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    dailyGoal: {
+      type: Number,
+      default: 5,
     },
   },
   {
