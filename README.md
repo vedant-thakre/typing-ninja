@@ -30,8 +30,8 @@ A full-stack real-time **online typing game** built with React, Node.js, and Soc
 | **Frontend** | React.js, Tailwind CSS, Redux, Framer Motion           |
 | **Backend**  | Node.js, Express.js, MongoDB                           |
 | **Realtime** | Socket.IO                                              |
-| **Storage**  | Firebase Cloud Storage / AWS S3                        |
-| **Auth**     | Firebase Authentication (Email, Google, GitHub)       |
+| **Storage**  | Firebase Cloud Storage / Cloudinary                    |
+| **Auth**     | Email, Google       |
 
 ---
 
