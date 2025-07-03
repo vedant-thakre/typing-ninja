@@ -6,13 +6,14 @@
   "type": "module",
   "scripts": {
     "dev": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && nodemon src/index.js'",
-  "start": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && node src/index.js'"
+    "start": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && node src/index.js'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.0",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -22,8 +23,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.14.2",
     "mongoose": "^8.12.1",
+    "multer": "^1.4.5-lts.2",
     "nodemailer": "^6.10.0",
     "socket.io": "^4.8.1",
-    "unique-username-generator": "^1.4.0"
+    "unique-names-generator": "^4.7.1",
+    "unique-username-generator": "^1.4.0",
+    "uuid": "^11.1.0"
   }
 }

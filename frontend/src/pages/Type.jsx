@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 // const socket = io("http://localhost:4000");
 
@@ -15,6 +16,7 @@ function Type() {
   const [cursorPosition, setCursorPosition] = useState(12); // Initial cursor position
   const cursorRef = useRef(null);
   const textContainerRef = useRef(null); // Ref for the text container
+  const user = useSelector((state) => state.user.userData);
 
   const [mistakes, setMistakes] = useState(0);
   const [totalTyped, setTotalTyped] = useState(0);
@@ -89,6 +91,12 @@ function Type() {
       setTimerRunning(false);
     }
   };
+
+  // useEffect(() => {
+  //      if (user?._id) {
+  //        socket.emit("joinuser", { userId: user?._id });
+  //      }
+  // }, [user]);
 
   // useEffect(() => {
   //   socket.on("text", (data) => setText(data));

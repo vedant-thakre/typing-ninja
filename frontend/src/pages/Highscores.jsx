@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import AnimatedButton from '../components/AnimatedButton';
+import AnimatedButton from '../components/ui/Other/AnimatedButton';
 import { FaLessThan, FaGreaterThan } from "react-icons/fa";
 import { highscoreList } from '../utils/data';
+import Pagination from '../components/ui/Other/Pagination';
 
 
 const Highscores = () => {
@@ -17,52 +18,25 @@ const Highscores = () => {
             title="TOP SPEED"
             onClick={() => setTabValue("TOP SPEED")}
             className={
-              "font-route shadow-hard font-bold text-xl rounded-2xl py-10 px-24"
+              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
             }
           />
           <AnimatedButton
             title="TOP MATCHES"
             onClick={() => setTabValue("TOP MATCHES")}
             className={
-              "font-route shadow-hard font-bold text-xl rounded-2xl py-10 px-24"
+              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
             }
           />
         </div>
-        <div className="bg-secondary mb-[50px] w-full flex flex-col items-center gap-3 rounded-2xl shadow-hard">
+        <div className="bg-bgprimary mb-[50px] w-full flex flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
             <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
               {(tabValue === "TOP SPEED" ? "Top Speed" : "Top Matches") +
                 ` - ${difficultyValue.toLowerCase()} quotes`}
             </h5>
-            <div className="flex justify-center gap-2 py-2">
-              <AnimatedButton
-                title={"1"}
-                animated={false}
-                className={"px-3 py-[2px] rounded-lg border-2"}
-              />
-              <AnimatedButton
-                icon={<FaLessThan />}
-                onClick={() => {
-                  if (pageNo > 1) setpageNo(pageNo - 1);
-                }}
-                animated={false}
-                className={"px-2 py-[2px] rounded-lg border-2"}
-              />
 
-              <AnimatedButton
-                title={pageNo}
-                animated={false}
-                className={
-                  "w-[26px]  py-[2px] bg-transparent shadow-none rounded-lg"
-                }
-              />
-              <AnimatedButton
-                icon={<FaGreaterThan />}
-                onClick={() => setpageNo(pageNo + 1)}
-                animated={false}
-                className={"px-2 py-[2px] rounded-lg border-2"}
-              />
-            </div>
+            <Pagination pageNo={pageNo} setpageNo={setpageNo} />
             <div className="grid grid-cols-4 pt-6 w-full">
               {difficuties.map((item, index) => {
                 return (
@@ -96,7 +70,7 @@ const Highscores = () => {
                     Top WPM
                   </p>
                 </div>
-                <hr className='border-b-[2px] border-bprimary mx-8' />
+                <hr className="border-b-[2px] border-bprimary mx-8" />
               </>
             ) : (
               <div className="grid grid-cols-12 px-6 pt-4 w-full">
@@ -126,16 +100,16 @@ const Highscores = () => {
                             : "border-b-2 border-bprimary"
                         }`}
                       >
-                        <p className="col-span-1 font-route text-[20px] text-white">
+                        <p className="col-span-1 font-route text-[20px] text-textcolor">
                           {index + 1}
                         </p>
-                        <p className="col-span-7 font-route text-[20px] text-white">
+                        <p className="col-span-7 font-route text-[20px] text-textcolor">
                           {item?.user?.username}
                         </p>
-                        <p className="col-span-2 font-route text-[20px] text-white">
+                        <p className="col-span-2 font-route text-[20px] text-textcolor">
                           {item?.user?.id}
                         </p>
-                        <p className="col-span-2 font-route text-[20px] pl-6 text-white text-start">
+                        <p className="col-span-2 font-route text-[20px] pl-6 text-textcolor text-start">
                           {item?.wpm}
                         </p>
                       </div>
@@ -145,35 +119,7 @@ const Highscores = () => {
                   </>
                 );
               })}
-              <div className="flex justify-center gap-2 py-2">
-                <AnimatedButton
-                  title={"1"}
-                  animated={false}
-                  className={"px-3 py-[2px] rounded-lg border-2"}
-                />
-                <AnimatedButton
-                  icon={<FaLessThan />}
-                  onClick={() => {
-                    if (pageNo > 1) setpageNo(pageNo - 1);
-                  }}
-                  animated={false}
-                  className={"px-2 py-[2px] rounded-lg border-2"}
-                />
-
-                <AnimatedButton
-                  title={pageNo}
-                  animated={false}
-                  className={
-                    "w-[26px]  py-[2px] bg-transparent shadow-none rounded-lg"
-                  }
-                />
-                <AnimatedButton
-                  icon={<FaGreaterThan />}
-                  onClick={() => setpageNo(pageNo + 1)}
-                  animated={false}
-                  className={"px-2 py-[2px] rounded-lg border-2"}
-                />
-              </div>
+              <Pagination pageNo={pageNo} setpageNo={setpageNo} />
             </div>
           </div>
         </div>

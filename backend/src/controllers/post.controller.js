@@ -20,8 +20,8 @@ export const createPost = asyncHandler(async (req, res, next) => {
   }
 
   return res
-    .status(201)
-    .json(new Response(201, post, "Post created successfully"));
+    .status(200)
+    .json(new Response(200, post, "Post created successfully"));
 });
 
 export const getPost = asyncHandler(async (req, res) => {
@@ -34,20 +34,20 @@ export const getPost = asyncHandler(async (req, res) => {
   const post = await Post.findById(id)
     .populate({
       path: "author",
-      select: "username name email profilePic",  
+      select: "username email avatar",
     })
     .populate({
       path: "comments",
       populate: [
         {
           path: "author",
-          select: "username name email profilePic",
+          select: "username email avatar",
         },
         {
           path: "replies",
           populate: {
             path: "author",
-            select: "username name email profilePic",
+            select: "username email avatar",
           },
         },
       ],
@@ -67,115 +67,99 @@ export const getAllPosts = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 10;
   const sortOrder = req.query.sort === "old" ? 1 : -1; // Default: newest
 
-  const posts = await Post.aggregate([
-    // Sort by createdAt (newest/oldest)
-    { $sort: { createdAt: sortOrder } },
-
-    // Pagination
-    { $skip: (page - 1) * limit },
-    { $limit: limit },
-
-    // Lookup post author
+  const postsAggregation = await Post.aggregate([
     {
-      $lookup: {
-        from: "users",
-        let: { authorId: "$author" },
-        pipeline: [
-          { $match: { $expr: { $eq: ["$_id", "$$authorId"] } } },
+      $facet: {
+        paginatedResults: [
+          { $sort: { createdAt: sortOrder } },
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
           {
-            $project: {
-              _id: 1,
-              name: 1,
-              email: 1,
-              username: 1,
-              profilePic: 1,
-            },
-          },
-        ],
-        as: "author",
-      },
-    },
-    { $unwind: "$author" },
-
-    // Lookup comments to get count and latest comment date
-    {
-      $lookup: {
-        from: "comments",
-        let: { postId: "$_id" },
-        pipeline: [
-          { $match: { $expr: { $eq: ["$post", "$$postId"] } } },
-          {
-            $project: {
-              createdAt: 1,
-              replies: 1,
-            },
-          },
-        ],
-        as: "allComments",
-      },
-    },
-
-    // Add commentCount and latestCommentDate
-    {
-      $addFields: {
-        commentCount: {
-          $sum: [
-            { $size: "$allComments" },
-            {
-              $sum: {
-                $map: {
-                  input: "$allComments",
-                  as: "c",
-                  in: { $size: { $ifNull: ["$$c.replies", []] } },
-                },
-              },
-            },
-          ],
-        },
-        latestCommentDate: {
-          $max: {
-            $concatArrays: [
-              {
-                $map: {
-                  input: "$allComments",
-                  as: "c",
-                  in: "$$c.createdAt",
-                },
-              },
-              {
-                $reduce: {
-                  input: "$allComments",
-                  initialValue: [],
-                  in: {
-                    $concatArrays: [
-                      "$$value",
-                      {
-                        $map: {
-                          input: {
-                            $ifNull: ["$$this.replies", []],
-                          },
-                          as: "r",
-                          in: "$$r.createdAt",
-                        },
-                      },
-                    ],
+            $lookup: {
+              from: "users",
+              let: { authorId: "$author" },
+              pipeline: [
+                { $match: { $expr: { $eq: ["$_id", "$$authorId"] } } },
+                {
+                  $project: {
+                    _id: 1,
+                    email: 1,
+                    username: 1,
+                    avatar: 1,
                   },
                 },
-              },
-            ],
+              ],
+              as: "author",
+            },
           },
-        },
-      },
-    },
-
-    // Optionally remove the raw comments array
-    {
-      $project: {
-        allComments: 0,
-        comments: 0,
+          { $unwind: "$author" },
+          {
+            $lookup: {
+              from: "comments",
+              let: { postId: "$_id" },
+              pipeline: [
+                { $match: { $expr: { $eq: ["$post", "$$postId"] } } },
+                {
+                  $project: {
+                    createdAt: 1,
+                    replies: 1,
+                  },
+                },
+              ],
+              as: "allComments",
+            },
+          },
+          {
+            $addFields: {
+              latestCommentDate: {
+                $max: {
+                  $concatArrays: [
+                    {
+                      $map: {
+                        input: "$allComments",
+                        as: "c",
+                        in: "$$c.createdAt",
+                      },
+                    },
+                    {
+                      $reduce: {
+                        input: "$allComments",
+                        initialValue: [],
+                        in: {
+                          $concatArrays: [
+                            "$$value",
+                            {
+                              $map: {
+                                input: {
+                                  $ifNull: ["$$this.replies", []],
+                                },
+                                as: "r",
+                                in: "$$r.createdAt",
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          {
+            $project: {
+              allComments: 0,
+              comments: 0,
+            },
+          },
+        ],
+        totalCount: [{ $count: "count" }],
       },
     },
   ]);
+
+  const posts = postsAggregation[0].paginatedResults;
+  const totalPosts = postsAggregation[0].totalCount[0]?.count || 0;
 
   if (!posts) {
     throw new ErrorHandler(404, "No posts found");
@@ -183,8 +167,11 @@ export const getAllPosts = asyncHandler(async (req, res, next) => {
 
   return res
     .status(200)
-    .json(new Response(200, posts, "Posts fetched successfully"));
+    .json(
+      new Response(200, { posts, totalPosts }, "Posts fetched successfully")
+    );
 });
+
 
 
 

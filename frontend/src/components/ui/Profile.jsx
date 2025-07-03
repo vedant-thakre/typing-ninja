@@ -1,29 +1,42 @@
 import React, { useEffect, useRef, useState } from "react";
-import AnimatedButton from "../AnimatedButton";
+import AnimatedButton from "../ui/Other/AnimatedButton";
 import { matchHistoryList, recordList, userData } from "../../utils/data";
 import { getRelativeTime, handleTabTitle } from "../../utils/helper";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getSearchedUser } from "../../store/slices/userSlice";
+import {
+  checkFriend,
+  getSearchedUser,
+  sendRequest,
+} from "../../store/slices/userSlice";
+import { BiImageAdd } from "react-icons/bi";
+import { RotatingLines } from "react-loader-spinner";
+import ProfileModal from "./Other/ProfileModal";
+import ProfileBox from "./Profile/ProfileBox";
+import Overview from "./Profile/Overview";
+import Matches from "./Profile/Matches";
+import Posts from "./Profile/Posts";
+import Records from "./Profile/Records";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { username } = useParams();
-  const hasFetchedRef = useRef(false);
   const user = useSelector((state) => state.user.userData);
   const [searchedUser, setSearchedUser] = useState(null);
+  const [openProfileModal, setOpenProfileModal] = useState(false);
   const myUserName = localStorage.getItem("username");
   const isMyProfile = myUserName === username;
 
   useEffect(() => {
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
     if (!isMyProfile) {
       async function fetchUser() {
         const response = await dispatch(getSearchedUser(username));
         if (response?.payload?.status === 200) {
           setSearchedUser(response?.payload?.data);
+          if(user){
+            dispatch(checkFriend(response?.payload?.data?._id));
+          }
           handleTabTitle(`${username}`);
         } else {
           toast.error("User not found");
@@ -31,328 +44,37 @@ const Profile = () => {
         }
       }
       fetchUser();
-    }
-    else{
+    } else {
       handleTabTitle(`Profile - ${myUserName}`);
     }
-  }, []);
+  }, [username]);
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <div className="flex gap-x-6 py-5 px-7 mt-[140px]">
-        <div className="bg-secondary flex-[3.5] h-min flex-col items-center gap-3 rounded-2xl shadow-hard">
-          <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-              Profile
-            </h5>
-          </div>
-          {/* Profile */}
-          <div className="flex flex-col m-4 gap-2 py-4 px-5 border-2 border-bprimary rounded-2xl">
-            <div className="flex items-center flex-col gap-6">
-              <div className="flex w-full flex-col items-center gap-2">
-                <div className="w-[120px] h-[120px] rounded-full border-2 border-bprimary"></div>
-                <p className="font-route min-h-[36px] text-[24px] text-white">
-                  {isMyProfile ? user?.username : searchedUser?.username}
-                </p>
-                <p className="font-route text-[21px] mt-[-17px] text-textsecond">
-                  Joined{" "}
-                  {getRelativeTime(
-                    isMyProfile ? user?.createdAt : searchedUser?.createdAt
-                  )}
-                </p>
-                {!userData?.bio ? (
-                  <div className="flex w-full flex-col gap-1">
-                    <p className="font-main w-full text-[15px] text-white border-b-2 border-bprimary">
-                      ABOUT
-                    </p>
-                    <div className="flex items-center py-8 justify-center">
-                      <p className="font-route px-4 text-center leading-[23px] text-[21px] text-white">
-                        {isMyProfile
-                          ? user?.bio
-                            ? user?.bio
-                            : " We don't know much about you yet."
-                          : searchedUser?.bio
-                          ? searchedUser?.bio
-                          : " We don't know much about this person yet."}
-                      </p>
-                    </div>
-                    <AnimatedButton
-                      title={"EDIT PROFILE"}
-                      className={
-                        "border-4 border-bdshadow py-1 rounded-lg font-route text-[20px]"
-                      }
-                      onClick={() => {
-                        navigate("/settings");
-                        getRelativeTime("Settings");
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div></div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col lg:flex-row max-w-[90rem] gap-x-6 gap-y-4 md:gap-y-0  py-5 px-4 md:px-5 lg:px-7 mt-[-5px] md:mt-2 lg:mt-[140px]">
+        <ProfileBox
+          isMyProfile={isMyProfile}
+          searchedUser={searchedUser}
+          setOpenProfileModal={setOpenProfileModal}
+        />
         <div className="flex flex-col flex-[5] gap-5">
           {/* Overview */}
-          <div className="bg-secondary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
-            <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-                Overview
-              </h5>
-            </div>
-            <div className="flex flex-col w-full p-4 gap-4">
-              <div className="flex w-full gap-4">
-                <div className="flex-1 flex-col  gap-2 py-4 px-5 border-2 border-bprimary rounded-2xl">
-                  <p className="font-route w-full uppercase text-[20px] font-bold text-white border-b-2 border-bprimary">
-                    Averages (Recent 25)
-                  </p>
-                  <div className="flex flex-col pt-3">
-                    <div className="flex flex-col">
-                      <p className="font-route text-textsecond font-bold text-[20px]">
-                        WPM
-                      </p>
-                      <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                        {userData?.recentAverageWpm}
-                      </p>
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="font-route text-textsecond font-bold text-[20px]">
-                        Accuracy
-                      </p>
-                      <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                        {userData?.recentAverageAccuracy}
-                      </p>
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="font-route text-textsecond font-bold text-[20px]">
-                        Errors Per Game
-                      </p>
-                      <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                        {userData?.recentAverageErrors}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-1 flex-col  gap-2 py-4 px-5 border-2 border-bprimary rounded-2xl">
-                  <p className="font-route w-full uppercase text-[20px] font-bold text-white border-b-2 border-bprimary">
-                    Averages (all time)
-                  </p>
-                  <div className="flex flex-col pt-3">
-                    <div className="flex flex-col">
-                      <p className="font-route text-textsecond font-bold text-[20px]">
-                        WPM
-                      </p>
-                      <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                        {userData?.averageWpm}
-                      </p>
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="font-route text-textsecond font-bold text-[20px]">
-                        Accuracy
-                      </p>
-                      <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                        {userData?.averageAccuracy}
-                      </p>
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="font-route text-textsecond font-bold text-[20px]">
-                        Errors Per Game
-                      </p>
-                      <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                        {userData?.averageErrors}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1 flex-col  gap-2 py-4 px-5 border-2 border-bprimary rounded-2xl">
-                <p className="font-route w-full uppercase text-[20px] font-bold text-white border-b-2 border-bprimary">
-                  Records
-                </p>
-                <div className="flex justify-between pt-3">
-                  <div className="flex flex-col">
-                    <p className="font-route text-textsecond font-bold text-[20px]">
-                      Highest WPM
-                    </p>
-                    <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                      {userData?.topWpm}
-                    </p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-route text-textsecond font-bold text-[20px]">
-                      Games Won
-                    </p>
-                    <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                      {userData?.totalWins}
-                    </p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-route text-textsecond font-bold text-[20px]">
-                      Games Played
-                    </p>
-                    <p className="font-route text-white mt-[-9px] font-bold text-[18px]">
-                      {userData?.matchCount}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Overview userData={userData} />
           {/* Matches */}
-          <div className="bg-secondary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
-            <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-                Matches
-              </h5>
-            </div>
-
-            <div className="w-full flex flex-col px-4 pb-4  gap-2">
-              <div>
-                <div className="grid grid-cols-12 px-5 w-full">
-                  <p className="col-span-1 font-main pb-3 text-[15px] font-light text-textsecond">
-                    #
-                  </p>
-                  <p className="col-span-7 font-main  text-[15px] pb-3 font-light text-textsecond">
-                    Name
-                  </p>
-                  <p className="col-span-2 text-center mr-[-10px] font-main text-[15px] pb-3 font-light text-textsecond">
-                    Accuracy
-                  </p>
-                  <p className="col-span-2  font-main text-end pr-3 text-[15px] pb-3 font-light text-textsecond">
-                    WPM
-                  </p>
-                </div>
-                <hr className="border-b-[2px] border-bprimary mx-2" />
-              </div>
-              <div
-                className="flex flex-col gap-2 h-[600px] scroll-m-0 overflow-y-scroll 
-                          py-4 w-full px-3 border-2 scrollbar-custom border-bprimary rounded-2xl"
-              >
-                {matchHistoryList?.map((item, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className={`grid grid-cols-12 items-center px-3 py-1 w-full hover:bg-bprimary ${
-                        index === matchHistoryList?.length - 1
-                          ? ""
-                          : "border-b-2 border-bprimary"
-                      }`}
-                    >
-                      <p className="col-span-1 font-route text-[20px] text-textsecond">
-                        {index + 1}
-                      </p>
-                      <div className="col-span-8 flex flex-col pr-2">
-                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-white">
-                          {item?.snippetTitle}
-                        </p>
-                        <div className="flex mt-[-4px] items-center">
-                          <p
-                            className={`font-main text-sm ${
-                              item?.difficulty === "hard"
-                                ? "text-danger"
-                                : item?.difficulty === "easy"
-                                ? "text-success"
-                                : "text-orange"
-                            }`}
-                          >
-                            {item?.difficulty}
-                          </p>
-                          <p className="font-main text-sm text-textsecond">
-                            , {getRelativeTime(item?.created_at)}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="col-span-1 font-route text-[20px] text-textsecond">
-                        {item?.accuracy} %
-                      </p>
-                      <p className="col-span-1 font-route text-[20px] pl-6 text-textsecond text-start">
-                        {item?.wpm}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          <Matches />
         </div>
         <div className="flex flex-col flex-[3.5] gap-5">
           {/* Posts */}
-          <div className="bg-secondary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
-            <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-                Posts
-              </h5>
-            </div>
-            {!userData?.length ? (
-              <div className="flex flex-col min-h-[400px] gap-2 px-5">
-                <p className="text-white font-route text-[23px]">
-                  {isMyProfile ? "You have" : `${searchedUser?.username} has`}{" "}
-                  not created any posts.
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col m-4 gap-2 py-4 px-5 border-2 border-bprimary rounded-2xl"></div>
-            )}
-          </div>
+          <Posts
+            userData={userData}
+            isMyProfile={isMyProfile}
+            searchedUser={searchedUser}
+          />
           {/* Records */}
-          <div className="bg-secondary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
-            <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-                Records
-              </h5>
-            </div>
-            <div className="w-full px-4">
-              <div
-                className="flex flex-col gap-2 h-[600px] scrollbar-custom scroll-m-0 overflow-y-scroll 
-                          py-4 w-full px-3 border-2 border-bprimary rounded-2xl"
-              >
-                {recordList?.map((item, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className={`grid grid-cols-12 items-center px-3 py-1 w-full hover:bg-bprimary ${
-                        index === recordList?.length - 1
-                          ? ""
-                          : "border-b-2 border-bprimary"
-                      }`}
-                    >
-                      <p className="col-span-1 font-route text-[20px] text-textsecond">
-                        {index + 1}
-                      </p>
-                      <div className="col-span-8 flex flex-col pr-2">
-                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-white">
-                          {item?.snippetTitle}
-                        </p>
-                        <div className="flex mt-[-4px] items-center">
-                          <p
-                            className={`font-main text-sm ${
-                              item?.difficulty === "hard"
-                                ? "text-danger"
-                                : item?.difficulty === "easy"
-                                ? "text-success"
-                                : "text-orange"
-                            }`}
-                          >
-                            {item?.difficulty}
-                          </p>
-                          <p className="font-main text-sm text-textsecond">
-                            , {getRelativeTime(item?.created_at)}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="col-span-1 font-route text-[20px] pl-6 text-textsecond text-start">
-                        {item?.wpm}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          <Records />
         </div>
       </div>
+      <ProfileModal open={openProfileModal} setOpen={setOpenProfileModal} />
     </div>
   );
 };

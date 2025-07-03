@@ -26,24 +26,113 @@ export const getRelativeTime = (timestamp) => {
   return "just now";
 };
 
+export const formatSmartDate = (dateString) => {
+  const inputDate = new Date(dateString);
+  const now = new Date();
+
+  const diffMs = now - inputDate;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHr = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffHr / 24);
+
+  const inputDateString = inputDate.toDateString();
+  const nowDateString = now.toDateString();
+
+  const options = { hour: "numeric", minute: "2-digit", hour12: true };
+  const shortMonthDay = { month: "short", day: "numeric" };
+  const fullDate = { day: "2-digit", month: "short", year: "2-digit" };
+  const weekday = { weekday: "short" };
+
+  // Case 1: Less than a minute ago
+  if (diffSec < 60) return "Just Now";
+
+  // Case 2: Same day
+  if (inputDateString === nowDateString) {
+    return inputDate.toLocaleTimeString([], options).toUpperCase(); // 👈 added .toUpperCase()
+  }
+
+  // Case 3: Exactly yesterday
+  const yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+  if (inputDate.toDateString() === yesterday.toDateString()) {
+    return "Yesterday";
+  }
+
+  // Case 4: Within the last 7 days
+  if (diffDays < 7) {
+    return inputDate.toLocaleDateString([], weekday);
+  }
+
+  // Case 5: Same year
+  if (inputDate.getFullYear() === now.getFullYear()) {
+    return inputDate.toLocaleDateString([], shortMonthDay);
+  }
+
+  // Case 6: Older than a year
+  return inputDate.toLocaleDateString([], fullDate);
+}
+
+export const countEmojis = (str) => {
+  const trimmedStr = str.trim();
+
+  if (trimmedStr.length === 0) {
+    return 0;
+  }
+
+  if (typeof Intl !== "undefined" && Intl.Segmenter) {
+    const segmenter = new Intl.Segmenter(undefined, {
+      granularity: "grapheme",
+    });
+    const segments = [...segmenter.segment(trimmedStr)];
+
+    const emojiRegex = /\p{Emoji}/u;
+    const allSegmentsAreEmojis = segments.every((segment) =>
+      emojiRegex.test(segment.segment)
+    );
+
+    if (allSegmentsAreEmojis) {
+      return segments.length;
+    } else {
+      return 0;
+    }
+  } else {
+
+    const emojiRegex =
+      /(?:\p{Emoji_Presentation}|\p{Extended_Pictographic})(?:\u200D(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}))*|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu;
+
+    const matches = trimmedStr.match(emojiRegex) || [];
+
+    const nonEmojiContent = trimmedStr.replace(emojiRegex, "");
+
+    if (nonEmojiContent.length > 0) {
+      return 0;
+    }
+
+    return matches.length;
+  }
+};
+
 export const homeButtons = [
   {
     title: "Quick Play",
     subTitle: "Play against others",
     className: "border-bdshadow",
+    route: "/play",
   },
   {
     title: "Solo Play",
     subTitle: "Play on your own",
     className: "bg-success border-bsuccess",
+    route: "/solo",
   },
   {
     title: "Group Play",
     subTitle: "Play against friends",
     className: "bg-ponky border-bmagenta",
+    route: "/lobby",
   },
 ];
-
 
 export const countries = [
   { label: "Not Set", value: "not set" },
@@ -313,3 +402,27 @@ export const debug = (str) => {
     console.debug(str);
   }
 };
+
+
+// #FF9898
+// #81E7AF
+// #03A791
+// #FFF100
+// #B7E0FF
+// #7C00FE
+// #3AA6B9
+// #9F70FD
+// #FFCF96
+// #5AB2FF
+// #FF6363
+// #FF9149
+// #3468C0
+// #CAD315
+// #FEBA17
+// #735557
+// #9A7E6F
+// #FF90BB
+// #E90064
+// #8D8DAA
+
+

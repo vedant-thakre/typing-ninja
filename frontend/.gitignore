@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 .env
+trash
+zold.txt
+temp.js
 
 notes.txt
 # Editor directories and files

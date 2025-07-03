@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyJWT } from '../middleware/auth.js';
+import { verifyJWT } from "../middleware/auth.middleware.js";
 import { addComment, deleteComment, editComment, replyToComment } from '../controllers/comment.controller.js';
 
 const router = express.Router();

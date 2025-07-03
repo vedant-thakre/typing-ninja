@@ -1344,7 +1344,6 @@ export const emojiList = [
   "🎲",
 ]; 
 
-
 export const snippets = [[
   "The sun sets in a fiery blaze, casting orange and pink hues across the sky. It's a moment of beauty, a pause before the night takes over.",
   "He had a way of making everyone laugh, even in the darkest moments. His jokes were never mean-spirited, always filled with warmth.",

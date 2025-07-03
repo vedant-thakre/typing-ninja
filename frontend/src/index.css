@@ -4,8 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* tailwind base layer (can go in a .css or .scss file in your project) */
+@layer base {
+    :root {
+        --color-bodycolor: #ffffff;
+        --color-border: #e2e2e3;
+        --color-textcolor: #4c4c4c;
+        --color-bgprimary: #ffffff;
+        --color-bgsecondary: #eef2f6;
+        --color-bgthird: #d8e2ec;
+    }
+    
+    .dark {
+        --color-bodycolor: #2c2c2c;
+        --color-textcolor: #ffffff;
+        --color-border: #555555;
+        --color-bgprimary: #2c2c2c;
+        --color-bgsecondary: #232323;
+        --color-bgthird: #555555;
+    }
+}
+
 body {
-    background-color: #2c2c2c;
+    background-color: var(--color-bodycolor);
 }
 
 ul {
@@ -25,7 +47,7 @@ li {
     width: 5px !important;
     /* Adjust width for vertical scrollbar */
     height: 12px;
-    /* color: #18c423; */
+    /* color: #8fa6f9; */
     /* Adjust height for horizontal scrollbar */
 }
 .scrollbar-custom::-webkit-scrollbar:hover {
@@ -67,9 +89,46 @@ li {
 /* Firefox scrollbar styles */
 .scrollbar-custom {
     scrollbar-width: thin;
-    scrollbar-color: #555555 #2c2c2c;
+    scrollbar-color: var(--color-border) var(--color-bgprimary);
 }
 
 .dark .scrollbar-custom {
     scrollbar-color: #555555 #2c2c2c;
 }
+
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 30px;
+    aspect-ratio: 1;
+    display: grid;
+    border: 4px solid #0000;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    border-color: #ffffff #0000;
+    animation: l16 2s infinite linear;
+}
+
+.loader::before,
+.loader::after {
+    content: "";
+    grid-area: 1/1;
+    margin: 2px;
+    border: inherit;
+    border-radius: 50%;
+}
+
+.loader::before {
+    border-color: #ffffff #0000;
+    animation: inherit;
+    animation-duration: 1s;
+    animation-direction: reverse;
+}
+
+.loader::after {
+    margin: 8px;
+}
+
+@keyframes l16 {
+    100% {
+        transform: rotate(1turn)
+    } }

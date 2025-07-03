@@ -1,0 +1,127 @@
+
+
+const animeFirstNames = [
+  { firstname: "Naruto", lastname: "Uzumaki" },
+  { firstname: "Sasuke", lastname: "Uchiha" },
+  { firstname: "Ichigo", lastname: "Kurosaki" },
+  { firstname: "Goku", lastname: "Son" },
+  { firstname: "Vegeta", lastname: "Prince" },
+  { firstname: "Luffy", lastname: "Monkey D." },
+  { firstname: "Zoro", lastname: "Roronoa" },
+  { firstname: "Light", lastname: "Yagami" },
+  { firstname: "Levi", lastname: "Ackerman" },
+  { firstname: "Eren", lastname: "Yeager" },
+  { firstname: "Edward", lastname: "Elric" },
+  { firstname: "Alphonse", lastname: "Elric" },
+  { firstname: "Shoto", lastname: "Todoroki" },
+  { firstname: "Izuku", lastname: "Midoriya" },
+  { firstname: "Bakugo", lastname: "Katsuki" },
+  { firstname: "Killua", lastname: "Zoldyck" },
+  { firstname: "Gon", lastname: "Freecss" },
+  { firstname: "Kakashi", lastname: "Hatake" },
+  { firstname: "Itachi", lastname: "Uchiha" },
+  { firstname: "Jiraiya", lastname: "Sensei" },
+  { firstname: "Saitama", lastname: "Caped Baldy" },
+  { firstname: "Genos", lastname: "Cyborg" },
+  { firstname: "Spike", lastname: "Spiegel" },
+  { firstname: "Kenshin", lastname: "Himura" },
+  { firstname: "Inuyasha", lastname: "Hanyou" },
+  { firstname: "Tomoya", lastname: "Okazaki" },
+  { firstname: "Yusuke", lastname: "Urameshi" },
+  { firstname: "Shinji", lastname: "Ikari" },
+  { firstname: "Kyo", lastname: "Sohma" },
+  { firstname: "Yuki", lastname: "Sohma" },
+  { firstname: "Soma", lastname: "Yukihira" },
+  { firstname: "Meliodas", lastname: "Dragon's Sin" },
+  { firstname: "Ban", lastname: "Fox's Sin" },
+  { firstname: "Gintoki", lastname: "Sakata" },
+  { firstname: "Lelouch", lastname: "Lamperouge" },
+  { firstname: "Sebastian", lastname: "Michaelis" },
+  { firstname: "Ciel", lastname: "Phantomhive" },
+  { firstname: "Natsu", lastname: "Dragneel" },
+  { firstname: "Gray", lastname: "Fullbuster" },
+  { firstname: "Yato", lastname: "God of Calamity" },
+  { firstname: "Kazuto", lastname: "Kirigaya" },
+  { firstname: "Shinichi", lastname: "Kudo" },
+  { firstname: "Rintarou", lastname: "Okabe" },
+  { firstname: "Hikaru", lastname: "Shindo" },
+  { firstname: "Takashi", lastname: "Komuro" },
+  { firstname: "Yuu", lastname: "Otosaka" },
+  { firstname: "Kousei", lastname: "Arima" },
+  { firstname: "Tatsuya", lastname: "Shiba" },
+  { firstname: "Raku", lastname: "Ichijou" },
+  { firstname: "Koyomi", lastname: "Araragi" },
+  { firstname: "Sakura", lastname: "Haruno" },
+  { firstname: "Hinata", lastname: "Hyuuga" },
+  { firstname: "Ino", lastname: "Yamanaka" },
+  { firstname: "Tsunade", lastname: "Senju" },
+  { firstname: "Kushina", lastname: "Uzumaki" },
+  { firstname: "Rukia", lastname: "Kuchiki" },
+  { firstname: "Orihime", lastname: "Inoue" },
+  { firstname: "Nami", lastname: "Navigator" },
+  { firstname: "Robin", lastname: "Nico" },
+  { firstname: "Boa", lastname: "Hancock" },
+  { firstname: "Bulma", lastname: "Briefs" },
+  { firstname: "Chi-Chi", lastname: "Ox-King's Daughter" },
+  { firstname: "Android", lastname: "18" },
+  { firstname: "Winry", lastname: "Rockbell" },
+  { firstname: "Mikasa", lastname: "Ackerman" },
+  { firstname: "Annie", lastname: "Leonhart" },
+  { firstname: "Historia", lastname: "Reiss" },
+  { firstname: "Asuna", lastname: "Yuuki" },
+  { firstname: "Sinon", lastname: "Shino" },
+  { firstname: "Erza", lastname: "Scarlet" },
+  { firstname: "Lucy", lastname: "Heartfilia" },
+  { firstname: "Juvia", lastname: "Lockser" },
+  { firstname: "Levy", lastname: "McGarden" },
+  { firstname: "Saber", lastname: "Artoria" },
+  { firstname: "Rin", lastname: "Tohsaka" },
+  { firstname: "Sakura", lastname: "Matou" },
+  { firstname: "Rem", lastname: "Oni" },
+  { firstname: "Emilia", lastname: "Half-Elf" },
+  { firstname: "Megumin", lastname: "Explosion" },
+  { firstname: "Aqua", lastname: "Goddess" },
+  { firstname: "Darkness", lastname: "Crusader" },
+  { firstname: "Homura", lastname: "Akemi" },
+  { firstname: "Madoka", lastname: "Kaname" },
+  { firstname: "Sayaka", lastname: "Miki" },
+  { firstname: "Kyoko", lastname: "Sakura" },
+  { firstname: "Mami", lastname: "Tomoe" },
+  { firstname: "Yuno", lastname: "Gasai" },
+  { firstname: "Kurisu", lastname: "Makise" },
+  { firstname: "Mayuri", lastname: "Shiina" },
+  { firstname: "Misaki", lastname: "Ayuzawa" },
+  { firstname: "Yuki", lastname: "Nagato" },
+  { firstname: "Haruhi", lastname: "Suzumiya" },
+  { firstname: "Tohru", lastname: "Honda" },
+  { firstname: "Kagome", lastname: "Higurashi" },
+  { firstname: "Sango", lastname: "Demon Slayer" },
+  { firstname: "Rin", lastname: "Inuyasha" },
+  { firstname: "Milly", lastname: "Ashford" },
+  { firstname: "Shino", lastname: "Aburame" },
+  { firstname: "Temari", lastname: "Sand" },
+  { firstname: "Kurenai", lastname: "Yuhi" },
+];
+
+
+
+const generateUsers = () => {
+  const users = animeFirstNames.map((user) => {
+    const lastName = user.lastname.toLowerCase();
+    const username = user.firstname.toLowerCase();
+    const email = `${username}${lastName}@yopmail.com`.toLowerCase();
+    const password = "vedant2001";
+
+    return {
+      username,
+      email,
+      password,
+    };
+  });
+
+  return users;
+};
+
+const users = generateUsers();
+console.log(users);
+

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 const initialState = {
     loading: true,
     status: false,
+    totalPosts: 0,
     posts: [],
     post: null,
 };
@@ -16,7 +17,6 @@ export const getPosts = createAsyncThunk(
       const response = await axiosInstance.get(
         `posts/all-posts?page=${pageNo}&limit=${limit}&sort=${sortOrder}`
       );
-      console.log("response", response.data);
       if (response?.status === 200) {
         toast.success(response.data.message);
       }
@@ -31,7 +31,6 @@ export const getPosts = createAsyncThunk(
 export const getPost = createAsyncThunk("post/post", async (id) => {
   try {
     const response = await axiosInstance.get(`posts/${id}`);
-    console.log("response", response.data);
     if (response?.status === 200) {
       toast.success(response.data.message);
     }
@@ -40,7 +39,7 @@ export const getPost = createAsyncThunk("post/post", async (id) => {
     toast.error(error.response.data.message);
     throw error;
   }
-})
+});
 
 const postSlice = createSlice({
     name: "post",
@@ -55,7 +54,8 @@ const postSlice = createSlice({
             .addCase(getPosts.fulfilled, (state, action) => {
                 state.loading = false;
                 state.status = true;
-                state.posts = action.payload.data;
+                state.posts = action.payload.data.posts;
+                state.totalPosts = action.payload.data.totalPosts;
             })
             .addCase(getPosts.rejected, (state, action) => {
                 state.loading = false;

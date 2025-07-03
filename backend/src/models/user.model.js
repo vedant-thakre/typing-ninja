@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    avatar: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/dmjiwn6qy/image/upload/v1745820072/avatars/xpil1tk43cmntsahlxro.png",
+    },
     age: {
       type: Number,
       default: null,
@@ -91,6 +96,18 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 5,
     },
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    requests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

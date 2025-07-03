@@ -1,0 +1,530 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+
+const useTimer = ({ mainSeconds, preTimerSeconds, startTime = null }) => {
+  const [timeLeft, setTimeLeft] = useState(mainSeconds);
+  const [matchTime, setMatchTime] = useState(0);
+  const [preTimer, setPreTimer] = useState(preTimerSeconds);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPreTimerRunning, setIsPreTimerRunning] = useState(false);
+
+  const intervalRef = useRef(null);
+  const preTimerRef = useRef(preTimerSeconds);
+  const timeLeftRef = useRef(mainSeconds);
+
+  const INTERVAL = 100;
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    preTimerRef.current = preTimer;
+  }, [preTimer]);
+
+  useEffect(() => {
+    timeLeftRef.current = timeLeft;
+  }, [timeLeft]);
+
+  const syncWithServerStartTime = useCallback(() => {
+    if (!startTime) return;
+
+    const now = Date.now();
+    const elapsed = now - startTime;
+
+    if (elapsed >= preTimerSeconds + mainSeconds) {
+      setTimeLeft(0);
+      setPreTimer(0);
+      setIsRunning(false);
+      setIsPreTimerRunning(false);
+      return;
+    }
+
+    if (elapsed < preTimerSeconds) {
+      const remainingPre = preTimerSeconds - elapsed;
+      setPreTimer(remainingPre);
+      preTimerRef.current = remainingPre;
+      setIsPreTimerRunning(true);
+      setIsRunning(false);
+    } else {
+      const mainElapsed = elapsed - preTimerSeconds;
+      const remainingMain = Math.max(mainSeconds - mainElapsed, 0);
+      setTimeLeft(remainingMain);
+      timeLeftRef.current = remainingMain;
+      setPreTimer(0);
+      preTimerRef.current = 0;
+      setIsPreTimerRunning(false);
+      setIsRunning(true);
+    }
+
+    intervalRef.current = setInterval(() => {
+      setMatchTime((prev) => prev + INTERVAL);
+
+      if (preTimerRef.current > 0) {
+        preTimerRef.current -= INTERVAL;
+        setPreTimer(Math.max(preTimerRef.current, 0));
+      } else if (timeLeftRef.current > 0) {
+        timeLeftRef.current -= INTERVAL;
+        setTimeLeft(Math.max(timeLeftRef.current, 0));
+
+        if (timeLeftRef.current <= 0) {
+          clearInterval(intervalRef.current);
+          setIsRunning(false);
+        }
+      }
+    }, INTERVAL);
+  }, [startTime, preTimerSeconds, mainSeconds]);
+
+  useEffect(() => {
+    if (startTime) {
+      syncWithServerStartTime();
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [startTime, syncWithServerStartTime]);
+
+  const startCountdown = useCallback(() => {
+    if (isRunning || isPreTimerRunning) return;
+
+    setIsPreTimerRunning(true);
+    setPreTimer(preTimerSeconds);
+    preTimerRef.current = preTimerSeconds;
+
+    intervalRef.current = setInterval(() => {
+      setMatchTime((prev) => prev + INTERVAL);
+
+      if (preTimerRef.current > 0) {
+        preTimerRef.current -= INTERVAL;
+        setPreTimer(Math.max(preTimerRef.current, 0));
+      } else {
+        clearInterval(intervalRef.current);
+        setIsPreTimerRunning(false);
+        setIsRunning(true);
+
+        intervalRef.current = setInterval(() => {
+          setMatchTime((prev) => prev + INTERVAL);
+
+          if (timeLeftRef.current > 0) {
+            timeLeftRef.current -= INTERVAL;
+            setTimeLeft(Math.max(timeLeftRef.current, 0));
+          } else {
+            clearInterval(intervalRef.current);
+            setIsRunning(false);
+          }
+        }, INTERVAL);
+      }
+    }, INTERVAL);
+  }, [isRunning, isPreTimerRunning, preTimerSeconds]);
+
+  const stopCountdown = () => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  };
+
+  const resetCountdown = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    intervalRef.current = null;
+    setPreTimer(preTimerSeconds);
+    setTimeLeft(mainSeconds);
+    preTimerRef.current = preTimerSeconds;
+    timeLeftRef.current = mainSeconds;
+    setIsPreTimerRunning(false);
+    setIsRunning(false);
+    setMatchTime(0);
+  }, [preTimerSeconds, mainSeconds]);
+
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  return {
+    timeLeft,
+    preTimer,
+    isRunning,
+    matchTime,
+    isPreTimerRunning,
+    startCountdown,
+    stopCountdown,
+    resetCountdown,
+  };
+};
+
+export default useTimer;
+
+
+import { createContext, useContext } from "react";
+import { useLocation } from "react-router-dom";
+import useTimer from "../hooks/useTimer";
+import { useState } from "react";
+
+const TimerContext = createContext(null);
+export const useTimerContext = () => useContext(TimerContext);
+
+export const TimerProvider = ({ children }) => {
+  const location = useLocation();
+  const [startTimeContext, setStartTimeContext] = useState(null);
+
+  const getDurations = () => {
+    const path = location.pathname;
+    if (path.startsWith("/duel"))
+      return { mainSeconds: 300000, preTimerSeconds: 10700 };
+    if (path.startsWith("/solo"))
+      return { mainSeconds: 300000, preTimerSeconds: 5400 };
+    if (path.startsWith("/multiplayer"))
+      return { mainSeconds: 300000, preTimerSeconds: 10700 };
+
+    return { mainSeconds: 60000, preTimerSeconds: 5000 };
+  };
+  
+
+  const {mainSeconds, preTimerSeconds} = getDurations();
+  const timer = useTimer({
+    mainSeconds,
+    preTimerSeconds,
+    startTime: startTimeContext,
+  });
+
+  return (
+    <TimerContext.Provider
+      value={{
+        ...timer,
+        mainSeconds,
+        preTimerSeconds,
+        setStartTimeContext,
+        startTimeContext,
+      }}
+    >
+      {children}
+    </TimerContext.Provider>
+  );
+};
+
+
+import React, { useEffect } from "react";
+import { motion } from "framer-motion";
+import { socket } from "../../../utils/socket";
+import { useTimerContext } from "../../../context/TimerContext";
+
+const Timer = ({
+  mode,
+  loading,
+  roomUsers,
+  gameStarted,
+  hasGameEnded,
+  hasGameReset,
+  setGameStarted,
+  setHasGameReset,
+}) => {
+  const [loadingText, setLoadingText] = React.useState("");
+  const [showLoader, setShowLoader] = React.useState(true);
+  const requiredUsers = mode === "solo" ? 1 : mode === "duel" ? 2 : 5;  
+  const {
+    timeLeft,
+    preTimer,
+    isRunning,
+    isPreTimerRunning,
+    startCountdown,
+    stopCountdown,
+    resetCountdown,
+    setStartTimeContext,
+    startTimeContext,
+  } = useTimerContext();
+
+  // Trigger countdown on space press
+  useEffect(() => {
+    const handleSpace = (e) => {
+      if (e.code === "Space" && !loading && !gameStarted && mode === "solo") {
+        e.preventDefault();
+        setShowLoader(false);
+        setLoadingText("started");
+        setHasGameReset(false);
+        startCountdown();
+      }
+    };
+    window.addEventListener("keydown", handleSpace);
+    return () => window.removeEventListener("keydown", handleSpace);
+  }, [loading, gameStarted, startCountdown]);
+
+  useEffect(() => {
+    socket.on("matchStart", ({ startTime }) => {
+      console.log("startTime", startTime);
+      setStartTimeContext(startTime);
+    });
+
+    return () => socket.off("matchStart");
+  }, [roomUsers]);
+
+  useEffect(() => {
+    if (mode === "duel" && roomUsers.length === 1 && isPreTimerRunning) {
+      resetCountdown();
+      setLoadingText("Looking for Opponent...");
+      setShowLoader(true);
+    }
+    if (
+      (mode === "duel" || mode === "multiplayer") &&
+      roomUsers.length === requiredUsers &&
+      startTimeContext
+    ) {
+      console.log("Duel started", roomUsers);
+      setLoadingText("Get Ready");
+      setHasGameReset(false);
+      setTimeout(() => {
+        startCountdown();
+        setShowLoader(false);
+      }, 2000);
+    }
+  }, [startTimeContext, mode]);
+
+  // Trigger game start
+  useEffect(() => {
+    if (isRunning && !isPreTimerRunning) {
+      setGameStarted(true);
+    }
+  }, [isRunning, isPreTimerRunning]);
+  
+
+  useEffect(() => {
+    if (hasGameReset) {
+      resetCountdown();
+    }
+  }, [hasGameReset]);
+
+  useEffect(() => {
+    if (hasGameEnded) {
+      setTimeout(() => {
+        if (mode === "solo") {
+          stopCountdown();
+          setLoadingText("Complete");
+          setTimeout(() => {
+            setLoadingText("Game has Ended");
+          }, 1200);
+        } else if (mode === "duel") {
+          setLoadingText("Complete");
+        }
+      }, 0);
+    }
+  }, [hasGameEnded]);
+
+  // Format time function
+  const formatTime = (seconds) => {
+    const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const sec = String(seconds % 60).padStart(2, "0");
+    const time = `${min}:${sec}`;
+    return time === "05:00" ? "00:00" : time;
+  };
+
+  // Determine background color
+  const bgColor = loading
+    ? "bg-primary"
+    : isPreTimerRunning && preTimer
+    ? Math.floor(preTimer / 1000) <= 5.5
+      ? "bg-danger"
+      : "bg-[#f09834]"
+    : isRunning && !hasGameEnded
+    ? "bg-green-600"
+    : "bg-primary";
+
+  const bgBorder = loading
+    ? "border-bdshadow"
+    : isPreTimerRunning
+    ? Math.floor(preTimer / 1000) <= 5
+      ? "border-bdanger"
+      : "border-[#cb7e27]"
+    : isRunning && !hasGameEnded
+    ? "border-bsuccess"
+    : "border-bdshadow";
+
+  // Determine text
+  const displayText = loading
+    ? "Connecting to server..."
+    : isPreTimerRunning
+    ? "Get set..."
+    : isRunning && !hasGameEnded
+    ? "GO!"
+    : loadingText && loadingText !== "started"
+    ? loadingText
+    : mode === "solo"
+    ? "Press 'Space' to begin..."
+    : (mode === "duel" && roomUsers?.length === 1) ||
+      (mode === "multiplayer" && roomUsers?.length <= 3)
+    ? "Looking for opponent..."
+    : "";
+
+  return (
+    <motion.div
+      whileHover={{
+        y: -2,
+        transition: { duration: 0.3, ease: "easeOut" },
+      }}
+      whileTap={{ scale: 0.99 }}
+      className={`flex justify-end items-center cursor-pointer h-full ${
+        hasGameEnded ? "max-h-[100px]  pb-2" : "max-h-[120px] pt-5  pb-4"
+      } flex-col border-4 text-white rounded-2xl ${bgColor} ${bgBorder} px-6 shadow-lg`}
+    >
+      {loading || !loadingText || showLoader ? (
+        <div className="loader"></div>
+      ) : isPreTimerRunning || isRunning ? (
+        <h2 className="text-[32px] font-bold font-route">
+          {formatTime(
+            isPreTimerRunning
+              ? Math.floor(preTimer / 1000)
+              : Math.floor(timeLeft / 1000)
+          )}
+        </h2>
+      ) : null}
+      <h4 className="text-white w-max flex cursor-pointer items-center mt-[-15px] font-route text-[23px] font-bold">
+        {displayText}
+      </h4>
+    </motion.div>
+  );
+};
+
+export default Timer;
+
+
+
+### V2 ###
+
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { socket } from "../../../utils/socket";
+import { useTimerContext } from "../../../context/TimerContext";
+
+const Timer = ({
+  mode,
+  loading,
+  roomUsers,
+  gameStarted,
+  hasGameEnded,
+  hasGameReset,
+  setGameStarted,
+  setHasGameReset,
+}) => {
+  const [loadingText, setLoadingText] = useState("");
+  const [showLoader, setShowLoader] = useState(true);
+  const requiredUsers = mode === "solo" ? 1 : mode === "duel" ? 2 : 5;
+
+  const {
+    elapsedTime,
+    mainSeconds,
+    preTimerSeconds,
+    setStartTimeContext,
+    startTimeContext,
+    resetTimer,
+  } = useTimerContext();
+
+  useEffect(() => {
+    socket.on("ROOM_TIMER", ({ elapsedTime: serverElapsed }) => {
+      const approxStart = Date.now() - serverElapsed;
+
+      if (
+        !startTimeContext ||
+        Math.abs(startTimeContext - approxStart) > 500 // ~0.5s desync tolerance
+      ) {
+        setStartTimeContext(approxStart);
+      }
+    });
+
+    return () => {
+      socket.off("ROOM_TIMER");
+    };
+  }, [startTimeContext, setStartTimeContext]);
+
+  useEffect(() => {
+    socket.on("ROOM_TIMER_RESET", () => {
+      resetTimer();
+      setShowLoader(true);
+    });
+
+    return () => {
+      socket.off("ROOM_TIMER_RESET");
+    };
+  }, []);
+
+  
+  
+
+  useEffect(() => {
+    if (!loading && startTimeContext) {
+      setShowLoader(false);
+    }
+  }, [loading, startTimeContext]);
+  
+  
+
+  // Compute preTimer and main timer left time from elapsed
+  const preTimerLeft = Math.max(preTimerSeconds - elapsedTime, 0);
+  const mainTimerLeft = Math.max(
+    mainSeconds - Math.max(elapsedTime - preTimerSeconds, 0),
+    0
+  );
+
+  // Determine state flags
+  const isPreTimerRunning = preTimerLeft > 0;
+  const isRunning = !isPreTimerRunning && mainTimerLeft > 0;
+
+  // Set game started when main timer running
+  useEffect(() => {
+    if (isRunning) {
+      setGameStarted(true);
+    }
+  }, [isRunning, setGameStarted]);
+
+  // Format seconds for display
+  const formatTime = (ms) => {
+    const totalSeconds = Math.ceil(ms / 1000);
+    const min = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+    const sec = String(totalSeconds % 60).padStart(2, "0");
+    return `${min}:${sec}`;
+  };
+
+  // Determine UI classes & display text as before
+
+  const bgColor = loading
+    ? "bg-primary"
+    : isPreTimerRunning
+    ? preTimerLeft / 1000 <= 5.5
+      ? "bg-danger"
+      : "bg-[#f09834]"
+    : isRunning && !hasGameEnded
+    ? "bg-green-600"
+    : "bg-primary";
+
+  const bgBorder = loading
+    ? "border-bdshadow"
+    : isPreTimerRunning
+    ? preTimerLeft / 1000 <= 5
+      ? "border-bdanger"
+      : "border-[#cb7e27]"
+    : isRunning && !hasGameEnded
+    ? "border-bsuccess"
+    : "border-bdshadow";
+
+  const displayText = loading
+    ? "Connecting to server..."
+    : isPreTimerRunning
+    ? "Get set..."
+    : isRunning && !hasGameEnded
+    ? "GO!"
+    : "";
+
+  return (
+    <motion.div
+      whileHover={{ y: -2, transition: { duration: 0.3, ease: "easeOut" } }}
+      whileTap={{ scale: 0.99 }}
+      className={`flex justify-end items-center cursor-pointer h-full ${
+        hasGameEnded ? "max-h-[100px]  pb-2" : "max-h-[120px] pt-5  pb-4"
+      } flex-col border-4 text-white rounded-2xl ${bgColor} ${bgBorder} px-6 shadow-lg`}
+    >
+      {loading || showLoader ? (
+        <div className="loader"></div>
+      ) : (
+        <h2 className="text-[32px] font-bold font-route">
+          {formatTime(isPreTimerRunning ? preTimerLeft : mainTimerLeft)}
+        </h2>
+      )}
+      <h4 className="text-white w-max flex cursor-pointer items-center mt-[-15px] font-route text-[23px] font-bold">
+        {displayText}
+      </h4>
+    </motion.div>
+  );
+};
+
+export default Timer;

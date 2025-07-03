@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import AnimatedButton from "../components/AnimatedButton";
+import AnimatedButton from "../components/ui/Other/AnimatedButton";
 import { emojiList, homeRecentMatches, homeRecentPosts, matchHistoryList, recordList, userData } from "../utils/data";
 import { getRelativeTime, homeButtons } from "../utils/helper";
 import { NavLink, useNavigate } from "react-router-dom";
-import PlayButton from "../components/PlayButton";
+import PlayButton from "../components/ui/Other/PlayButton";
 import { motion } from "framer-motion";
 import { FaLongArrowAltRight, FaLessThan, FaGreaterThan } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-
-
+import Pagination from "../components/ui/Other/Pagination"
 
 
 const Home = () => {
@@ -38,14 +37,14 @@ const Home = () => {
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex gap-x-6 py-5 px-7 mt-[140px]">
-        <div className="bg-secondary flex-[3.3] h-min flex-col items-center gap-3 rounded-2xl shadow-hard">
+        <div className="bg-bgprimary flex-[3.3] h-min flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
             <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
               News
             </h5>
           </div>
           {/* Profile */}
-          <div className="flex flex-col text-white tracking-wide gap-5 leading-none m-4 py-4 px-5 border-2 border-bprimary rounded-2xl">
+          <div className="flex flex-col text-textcolor tracking-wide gap-5 leading-none m-4 py-4 px-5 border-2 border-bprimary rounded-2xl">
             <div className="flex flex-col gap-1">
               <h4 className="font-route text-[34px]">
                 Improve your typing speed and race your friends!
@@ -65,12 +64,12 @@ const Home = () => {
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {}}
-              className="bg-transperant flex justify-center gap-1 rounded-full font-route text-[24px] py-2 border-2 border-bprimary text-white shadow-lg"
+              className="bg-transperant flex justify-center gap-1 rounded-full font-route text-[24px] py-2 border-2 border-bprimary text-textcolor shadow-lg"
             >
               Join on Discord <FaLongArrowAltRight color={"white"} />
             </motion.button>
             <div className="flex flex-col gap-3">
-              <h4 className="font-route text-white font-bold text-[25px]">
+              <h4 className="font-route text-textcolor font-bold text-[25px]">
                 (Nov. 22nd, 2022) Updates :
               </h4>
               <div className="flex ml-4 flex-col gap-2">
@@ -92,7 +91,7 @@ const Home = () => {
         <div className="flex flex-col flex-[5.8] gap-5">
           {/* Overview */}
           <div className=" flex gap-5">
-            <div className="bg-secondary flex flex-col flex-[4] items-center gap-3 rounded-2xl shadow-hard">
+            <div className="bg-bgprimary flex flex-col flex-[4] items-center gap-3 rounded-2xl shadow-hard">
               <div className="w-full">
                 <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
                   You
@@ -114,7 +113,7 @@ const Home = () => {
                             setNickName(e.target.value);
                             localStorage.setItem("nickName", e.target.value);
                           }}
-                          className="outline-none px-2 text-[22px] text-white placeholder:text-center font-route placeholder:text-[22px] text-center placeholder:text-textsecond bg-transparent border-2 border-bprimary rounded-full py-[2px] w-[200px]"
+                          className="outline-none px-2 text-[22px] text-textcolor placeholder:text-center font-route placeholder:text-[22px] text-center placeholder:text-textsecond bg-transparent border-2 border-bprimary rounded-full py-[2px] w-[200px]"
                         />
                         <div className="grid grid-cols-4 px-2 gap-2">
                           {currentEmojis.map((emoji, index) => (
@@ -125,37 +124,13 @@ const Home = () => {
                                 setEmoji(emoji);
                                 localStorage.setItem("emoji", emoji);
                               }}
-                              className="flex items-center hover:border-2 border-primary justify-center w-11 h-11 cursor-pointer bg-dark text-white text-2xl rounded-full"
+                              className="flex items-center hover:border-2 border-primary justify-center w-11 h-11 cursor-pointer bg-bgsecondary text-textcolor text-2xl rounded-full"
                             >
                               {emoji}
                             </motion.div>
                           ))}
                         </div>
-                        <div className="flex justify-center gap-2 ">
-                          <AnimatedButton
-                            title="1"
-                            animated={false}
-                            className="px-3 py-[2px] rounded-lg"
-                            onClick={() => handlePageChange(1)}
-                          />
-                          <AnimatedButton
-                            icon={<FaLessThan />}
-                            onClick={() => handlePageChange(pageNo - 1)}
-                            animated={false}
-                            className="px-2 py-[2px] rounded-lg"
-                          />
-                          <AnimatedButton
-                            title={pageNo}
-                            animated={false}
-                            className="w-[26px] py-[2px] bg-transparent shadow-none rounded-lg"
-                          />
-                          <AnimatedButton
-                            icon={<FaGreaterThan />}
-                            onClick={() => handlePageChange(pageNo + 1)}
-                            animated={false}
-                            className="px-2 py-[2px] rounded-lg"
-                          />
-                        </div>
+                        <Pagination pageNo={pageNo} setpageNo={setPageNo} />
                       </div>
                     </div>
                   </div>
@@ -165,19 +140,20 @@ const Home = () => {
             <div className="flex flex-[3.5] flex-col gap-5">
               {homeButtons?.map((item, index) => {
                 return (
-                  <PlayButton
-                    key={index}
-                    onClick={() => navigate("/play")}
-                    title={item?.title}
-                    subTitle={item?.subTitle}
-                    className={item?.className}
-                  />
+                    <PlayButton
+                      key={index}
+                      route={item?.route}
+                      title={item?.title}
+                      subTitle={item?.subTitle}
+                      className={item?.className}
+                    />
+
                 );
               })}
             </div>
           </div>
           {/* Matches */}
-          <div className="bg-secondary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
+          <div className="bg-bgprimary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
               <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
                 Highscore
@@ -220,7 +196,7 @@ const Home = () => {
                         {index + 1}
                       </p>
                       <div className="col-span-8 flex flex-col pr-2">
-                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-white">
+                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-textcolor">
                           {item?.snippetTitle}
                         </p>
                         <div className="flex mt-[-4px] items-center">
@@ -255,7 +231,7 @@ const Home = () => {
         </div>
         <div className="flex flex-col flex-[3.2] gap-5">
           {/* Posts */}
-          <div className="bg-secondary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
+          <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
               <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
                 Recent Posts
@@ -263,7 +239,7 @@ const Home = () => {
             </div>
             {!homeRecentPosts?.length ? (
               <div className="flex flex-col min-h-[400px] gap-2 px-5">
-                <p className="text-white font-route text-[23px]">
+                <p className="text-textcolor font-route text-[23px]">
                   Platform has not posts yet.
                 </p>
               </div>
@@ -281,7 +257,7 @@ const Home = () => {
                         } gap-[6px]`}
                       >
                         <div className="flex w-full flex-col">
-                          <h5 className="text-white cursor-pointer font-route text-[26px] underline">
+                          <h5 className="text-textcolor cursor-pointer font-route text-[26px] underline">
                             {item?.title}
                           </h5>
                           <p className="text-textsecond mt-[-10px] font-route text-[20px]">
@@ -291,7 +267,7 @@ const Home = () => {
                             </span>
                           </p>
                         </div>
-                        <p className="cursor-pointer text-white font-route leading-none text-[22px]">
+                        <p className="cursor-pointer text-textcolor font-route leading-none text-[22px]">
                           {item?.body?.length > 110
                             ? item?.body.slice(0, 110) + "..."
                             : item?.body}
@@ -312,7 +288,7 @@ const Home = () => {
             )}
           </div>
           {/* Records */}
-          <div className="bg-secondary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
+          <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
               <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
                 Recent Matches
@@ -337,7 +313,7 @@ const Home = () => {
                         {index + 1}
                       </p>
                       <div className="col-span-8 flex flex-col pr-2">
-                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-white">
+                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-textcolor">
                           {item?.nickname}
                         </p>
                         <div className="flex mt-[-4px] items-center">

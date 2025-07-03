@@ -4,7 +4,9 @@ import { generateFromEmail } from "unique-username-generator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { sendMail } from "../utils/sendMail.js";
+import mongoose from "mongoose";
 import { verifyEmailTemplate } from "../utils/html/verifyEmailTemplate.js";
+import { getAvatarsFromCloudinary, uploadOnCloudinary } from "../lib/cloudinary.js";
 
 const options = {
   httpOnly: true,
@@ -86,12 +88,12 @@ export const register = asyncHandler(async (req, res, next) => {
   }
 
   return res
-    .status(201)
+    .status(200)
     .json(new Response(200, {user:createdUser}, "User registered Successfully"));
 });
 
 export const googleAuth = asyncHandler(async (req, res, next) => {
-  const { name, email } = req.body;
+  const { email } = req.body;
   console.log("req.body", req.body);
 
   try {
@@ -102,7 +104,6 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
       const username = generateFromEmail(email, 4);
       user = new User({
         email,
-        name: name,
         username: username,
       });
 
@@ -219,8 +220,6 @@ export const logout = asyncHandler(async (req, res, next) => {
 
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   const oldRefreshToken = req.cookies.refreshToken;
-
-  console.log("oldRefreshToken", oldRefreshToken);
 
   if (!oldRefreshToken) {
     throw new ErrorHandler(401, "Unauthorized request");
@@ -377,7 +376,7 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
     throw new ErrorHandler(400, "Username is required");
   }
   const user = await User.findOne({ username }).select(
-    "-password -refreshToken -otp -__v -createdAt -updatedAt -isVerified" 
+    "-password -refreshToken -otp -__v -requests -friends -isVerified -isAdmin"  
   );
 
   if (!user) {
@@ -389,3 +388,414 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
     .json(new Response(200, user, "User profile fetched successfully"));
 }
 );
+
+export const sendFriendRequest = asyncHandler(async (req, res, next) => {
+  const { id } = req.body;
+
+  if (!req.user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+
+  const friend = await User.findById(id);
+
+  if (!friend) {
+    throw new ErrorHandler(404, "Friend not found");
+  }
+
+  if (friend.requests.includes(req.user._id)) {
+    throw new ErrorHandler(400, "Friend request already sent");
+  }
+
+  friend.requests.push(req.user._id);
+  await friend.save();
+  return res
+    .status(200)
+    .json(new Response(200, null, "Friend request sent successfully"));
+});
+
+export const removeFriend = asyncHandler(async (req, res, next) => {
+  const { id } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+
+  if (!user.friends.includes(new mongoose.Types.ObjectId(id))) {
+    throw new ErrorHandler(400, "Friend not found");
+  }
+
+  const friend = await User.findById(id); 
+
+  if (!friend) {
+    throw new ErrorHandler(404, "Friend not found");
+  }
+
+  user.friends = user.friends.filter(
+    (friendId) => friendId.toString() !== id.toString()
+  );
+  friend.friends = friend.friends.filter(
+    (friendId) => friendId.toString() !== req.user._id.toString()
+  );
+  await user.save();
+  await friend.save();
+  return res
+    .status(200)
+    .json(new Response(200, null, "Friend removed successfully"));
+});
+
+export const acceptFriendRequest = asyncHandler(async (req, res, next) => {
+  const { id } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+  
+  const friend = await User.findById(id);
+
+
+  if (!friend) {
+    throw new ErrorHandler(404, "Friend not found");
+  }
+
+  user.friends.push(id);
+  friend.friends.push(req.user._id);
+  user.requests = user.requests.filter(
+    (requestId) => requestId.toString() !== id.toString()
+  );
+  await user.save();
+  await friend.save();
+
+  return res
+    .status(200)
+    .json(new Response(200, null, "Friend request accepted successfully"));
+});
+
+export const rejectFriendRequest = asyncHandler(async (req, res, next) => {
+  const { id } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user?.requests.includes(new mongoose.Types.ObjectId(id))) {
+    throw new ErrorHandler(400, "Friend request not found");
+  }
+
+  if (!user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+  user.requests = user.requests.filter((requestId) => requestId.toString() !== id.toString());
+  await user.save();
+  return res
+    .status(200)
+    .json(new Response(200, null, "Friend request rejected successfully"));
+});
+
+export const getFriendRequests = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user._id).populate({
+    path: "requests",
+    select: "email username avatar",
+  });
+
+  if (!user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+  return res
+    .status(200)
+    .json(new Response(200, user.requests, "Friend requests fetched successfully")); 
+})
+
+export const getFriendsAndRequests = asyncHandler(async (req, res, next) => {
+  const { isFriend = "true", search = "", page = 1, limit = 10 } = req.query;
+  const userId = req.user._id;
+
+  const searchRegex = new RegExp(search, "i"); // Case-insensitive regex
+
+  const pipeline = [
+    {
+      $match: { _id: new mongoose.Types.ObjectId(userId) },
+    },
+    {
+      $project: {
+        friendsOrRequests: isFriend === "true" ? "$friends" : "$requests",
+      },
+    },
+    {
+      $unwind: "$friendsOrRequests",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "friendsOrRequests",
+        foreignField: "_id",
+        as: "friendDetails",
+        pipeline: [
+          {
+            $match: { username: { $regex: searchRegex } },
+          },
+          {
+            $project: { username: 1, avatar: 1, email: 1, createdAt: 1 },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: {
+        path: "$friendDetails",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $match: {
+        friendDetails: { $ne: null }, // Only include matched users
+      },
+    },
+    {
+      $replaceRoot: { newRoot: "$friendDetails" },
+    },
+    {
+      $sort: { createdAt: -1 }, // Sort by createdAt descending (optional)
+    },
+    {
+      $facet: {
+        metadata: [{ $count: "total" }],
+        data: [
+          { $skip: (parseInt(page) - 1) * parseInt(limit) },
+          { $limit: parseInt(limit) },
+        ],
+      },
+    },
+  ];
+
+  const result = await User.aggregate(pipeline);
+
+  const metadata = result[0]?.metadata[0] || { total: 0 };
+  const data = result[0]?.data || [];
+
+  return res
+    .status(200)
+    .json(
+      new Response(200, data, metadata.total === 0 ? "No matching users found" : "Users fetched successfully" , {
+        total: metadata.total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+      })
+    );
+});
+
+export const getFriends = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user._id).populate({
+    path: "friends",
+    select: "email username avatar createdAt",
+  });
+
+  if (!user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+  return res
+    .status(200)
+    .json(new Response(200, user.friends, "Friends fetched successfully")); 
+});
+
+export const checkIsFriend = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await User.findById(req.user._id);
+  const searchedUser = await User.findById(id);
+  let requested = false;
+  if (searchedUser.requests.includes(new mongoose.Types.ObjectId(req.user._id))) {
+    requested = true;
+  }
+  if (!user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+  if(user.friends.includes(new mongoose.Types.ObjectId(id))){
+    return res
+      .status(200)
+      .json(
+        new Response(
+          200,
+          { isFriend: true, requested: requested || false },
+          "User is a friend"
+        )
+      ); 
+  }else{
+    return res
+    .status(200)
+    .json(new Response(200, {isFriend: false, requested: requested || false}, "User is not a friend"));
+  } 
+});
+
+export const changeAvatar = asyncHandler(async (req, res, next) => {
+  const {avatar} = req.body;
+
+  if(!avatar){
+    throw new ErrorHandler(400, "Avatar is required");
+  }
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { avatar },
+    { new: true }
+  ).select("-password -refreshToken -otp");
+
+  if (!user) {
+    throw new ErrorHandler(404, "User not found");
+  }
+ 
+  return res
+    .status(200)
+    .json(new Response(200, user, "Avatar updated successfully")); 
+});
+
+export const searchUser = asyncHandler(async (req, res, next) => {
+  const { user = "", page = 1, limit = 10 } = req.query;
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const matchStage = {
+    username: { $regex: user, $options: "i" },
+  };
+
+  const pipeline = [
+    { $match: matchStage },
+    {
+      $facet: {
+        metadata: [{ $count: "total" }],
+        data: [
+          { $sort: { insertedAt: -1 } },
+          { $skip: skip },
+          { $limit: limitNumber },
+          {
+            $project: {
+              username: 1,
+              avatar: 1,
+              createdAt: 1,
+              bio: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        data: 1,
+        total: { $arrayElemAt: ["$metadata.total", 0] },
+      },
+    },
+  ];
+
+  const result = await User.aggregate(pipeline);
+
+  if (!result || result.length === 0) {
+    throw new ErrorHandler(404, "No matching users found");
+  }
+
+  const { data, total } = result[0];
+  const metadata = {
+    total: total || 0,
+    page: pageNumber,
+    limit: limitNumber,
+  };
+
+  return res
+    .status(200)
+    .json(new Response(200, {data, metadata}, "Users fetched successfully"));
+});
+
+
+// admin
+export const uploadAvatar = asyncHandler(async (req, res, next) => {
+  const { file } = req;
+
+  if (!file) {
+    throw new ErrorHandler(400, "Avatar is required");
+  }
+
+  const uploadResult = await uploadOnCloudinary(file.path, "avatars");
+
+  if (!uploadResult || !uploadResult.url) {
+    throw new ErrorHandler(500, "Failed to upload avatar to Cloudinary");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new Response(
+        200,
+        { url: uploadResult.url },
+        "Avatar uploaded successfully"
+      )
+    );
+});
+
+export const getAllAvatars = asyncHandler(async (req, res) => {
+    const { folder } = req.params;
+    const data = await getAvatarsFromCloudinary(folder);
+
+    if (!data || data.length === 0) {
+      throw new ErrorHandler(500, "No avatars found");
+    }
+
+    return res
+      .status(200)
+      .json(
+        new Response(
+          200,
+          data,
+          "Avatars fetched successfully"
+        )
+      );
+});
+
+// export const bulkRegister = asyncHandler(async (req, res, next) => {
+//   const insertedUsers = [];
+//   const skippedUsers = [];
+
+//   for (const { username, email, password } of final) {
+//     if ([email, username, password].some((field) => !field?.trim())) {
+//       skippedUsers.push({ username, email, reason: "Missing required fields" });
+//       continue;
+//     }
+
+//     const existedUser = await User.findOne({
+//       $or: [{ username }, { email }],
+//     });
+
+//     if (existedUser) {
+//       skippedUsers.push({ username, email, reason: "Already exists" });
+//       continue;
+//     }
+
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(password, salt);
+
+//     const user = await User.create({
+//       email,
+//       password: hashedPassword,
+//       username: username.toLowerCase(),
+//     });
+
+//     insertedUsers.push({
+//       id: user._id,
+//       username: user.username,
+//       email: user.email,
+//     });
+//   }
+
+//   return res.status(200).json(
+//     new Response(
+//       200,
+//       {
+//         insertedCount: insertedUsers.length,
+//         skippedCount: skippedUsers.length,
+//         insertedUsers,
+//         skippedUsers,
+//       },
+//       "Bulk registration complete"
+//     )
+//   );
+// });

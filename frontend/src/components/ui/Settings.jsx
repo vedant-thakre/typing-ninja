@@ -1,8 +1,8 @@
 import React, { use, useEffect, useState } from 'react'
-import AnimatedButton from '../AnimatedButton';
+import AnimatedButton from '../ui/Other/AnimatedButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
-import SelectList from './SelectList';
+import SelectList from '../ui/Other/SelectList';
 import { errorToast } from '../../utils/helper';
 import { updateUserDetails } from '../../store/slices/userSlice';
 
@@ -63,7 +63,7 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <div className="bg-secondary mb-[50px]  mt-[120px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
+      <div className="bg-bgprimary mb-[50px]  mt-[120px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
         <div className="w-full">
           <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
             Account Settings
@@ -87,12 +87,12 @@ const Settings = () => {
                     <div className="flex gap-2 items-center">
                       <label
                         key={index}
-                        className="font-route text-[21px] text-white font-normal flex items-center h-[42px]"
+                        className="font-route text-[21px] text-textcolor font-normal flex items-center h-[42px]"
                       >
                         {label}
                       </label>
                       {user?.isVerified ? (
-                        <span className="text-white text-sm font-main">
+                        <span className="text-textcolor text-sm font-main">
                           ( verified ✅ )
                         </span>
                       ) : (
@@ -105,7 +105,7 @@ const Settings = () => {
                   ) : (
                     <label
                       key={index}
-                      className="font-route text-[21px] text-white font-normal flex items-center h-[42px]"
+                      className="font-route text-[21px] text-textcolor font-normal flex items-center h-[42px]"
                     >
                       {label}
                     </label>
@@ -117,7 +117,7 @@ const Settings = () => {
             {/* Input Fields Column */}
             <div className="flex col-span-4 flex-col gap-4">
               {/* Username (Non-Editable) */}
-              <div className="flex items-center h-[42px] pr-3 rounded-md text-white font-main text-sm ">
+              <div className="flex items-center h-[42px] pr-3 rounded-md text-textcolor font-main text-sm ">
                 {user?.username}
               </div>
 
@@ -126,13 +126,13 @@ const Settings = () => {
                 type="number"
                 value={dailyGoal}
                 onChange={(e) => setDailyGoal(e.target.value)}
-                className="border-2 border-bprimary w-[260px] rounded-md placeholder-white outline-none font-main text-sm focus:ring-0 py-2 px-2 bg-dark text-white h-[42px] flex items-center"
+                className="border-2 border-bprimary w-[260px] rounded-md placeholder-white outline-none font-main text-sm focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor h-[42px] flex items-center"
               />
 
               <input
                 type="email"
                 value={user?.email}
-                className="border-2 border-bprimary w-full rounded-md placeholder-white outline-none font-main text-sm focus:ring-0 py-2 px-2 bg-dark text-white h-[42px] flex items-center"
+                className="border-2 border-bprimary w-full rounded-md placeholder-white outline-none font-main text-sm focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor h-[42px] flex items-center"
               />
               <div className="relative">
                 {showCountriesMenu && (
@@ -150,7 +150,7 @@ const Settings = () => {
                     country.charAt(0).toUpperCase() + country.slice(1)
                   }
                   onClick={() => setShowCountriesMenu(!showCountriesMenu)}
-                  className="border-2 border-bprimary w-full font-main text-sm rounded-md placeholder-white outline-none focus:ring-0 py-2 px-2 bg-dark text-white h-[42px] flex items-center"
+                  className="border-2 border-bprimary w-full font-main text-sm rounded-md placeholder-white outline-none focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor h-[42px] flex items-center"
                 />
               </div>
               <input
@@ -161,7 +161,7 @@ const Settings = () => {
                 max={99}
                 onChange={(e) => setAge(e.target.value)}
                 className="border-2 border-bprimary w-full text-sm font-main rounded-md placeholder-secon
-                 outline-none focus:ring-0 py-2 px-2 bg-dark text-white h-[42px] flex items-center"
+                 outline-none focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor h-[42px] flex items-center"
               />
               <div className="relative">
                 {showGendersMenu && (
@@ -178,7 +178,7 @@ const Settings = () => {
                     gender && gender.charAt(0).toUpperCase() + gender.slice(1)
                   }
                   onClick={() => setShowGendersMenu(!showGendersMenu)}
-                  className="border-2 border-bprimary w-full rounded-md placeholder-white font-main text-sm outline-none focus:ring-0 py-2 px-2 bg-dark text-white h-[42px] flex items-center"
+                  className="border-2 border-bprimary w-full rounded-md placeholder-white font-main text-sm outline-none focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor h-[42px] flex items-center"
                 />
               </div>
               <div className="p-1">
@@ -187,7 +187,7 @@ const Settings = () => {
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Typing is fun..."
-                  className="border-2 border-bprimary w-full rounded-md scrollbar-custom font-main text-sm outline-none focus:ring-0 py-2 px-2 bg-dark text-white flex items-center"
+                  className="border-2 border-bprimary w-full rounded-md scrollbar-custom font-main text-sm outline-none focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor flex items-center"
                 ></textarea>
               </div>
             </div>
@@ -197,7 +197,7 @@ const Settings = () => {
               title={"SAVE"}
               disabled={disalbeSave}
               onClick={handleSave}
-              className="bg-primary border-bdshadow font-bold rounded-lg px-4 py-[2px] font-route text-lg border-4"
+              className="bg-primary border-bdshadow text-white font-bold rounded-lg px-4 py-[2px] font-route text-lg border-4"
             />
           </div>
         </div>
