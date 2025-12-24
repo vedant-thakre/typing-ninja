@@ -30,21 +30,21 @@ const PlayerCard = ({ user, mode, stats }) => {
       } flex-col items-center px-2   pb-2 rounded-2xl shadow-hard bg-bgprimary h-min`}
     >
       <div className="w-full flex justify-between px-2 py-2">
-        <div className="flex text-textsecond font-route flex-col items-center justify-center">
-          <p className="font-bold text-[16px] tracking-wider">ERRORS</p>
-          <p className="font-bold text-[20px] tracking-wide mt-[-10px]">
+        <div className="flex text-textsecond font-route flex-col items-center justify-center gap-2">
+          <p className="font-bold text-[14px] tracking-wider">ERRORS</p>
+          <p className="font-bold text-[17px] tracking-wide mt-[-10px]">
             {myInfo && stats?.errorCount ? stats?.errorCount : "0"}
           </p>
         </div>
-        <div className="flex text-textsecond font-route flex-col items-center justify-center">
-          <p className="font-bold text-[16px] tracking-wider">ACCURACY</p>
-          <p className="font-bold text-[20px] tracking-wide mt-[-10px]">
+        <div className="flex text-textsecond font-route flex-col items-center justify-center gap-2">
+          <p className="font-bold text-[14px] tracking-wider">ACCURACY</p>
+          <p className="font-bold text-[17px] tracking-wide mt-[-10px]">
             {myInfo && stats?.accuracy ? stats?.accuracy + "%" : "100%"}
           </p>
         </div>
-        <div className="flex text-textsecond font-route flex-col items-center justify-center">
-          <p className="font-bold text-[16px] tracking-wider">TIME</p>
-          <p className="font-bold text-[20px] tracking-wide mt-[-10px]">
+        <div className="flex text-textsecond font-route flex-col items-center justify-center gap-2">
+          <p className="font-bold text-[14px] tracking-wider">TIME</p>
+          <p className="font-bold text-[17px] tracking-wide mt-[-10px]">
             {myInfo && stats?.time ? formatTime(stats?.time) : "--:--"}
           </p>
         </div>
@@ -69,27 +69,27 @@ const PlayerCard = ({ user, mode, stats }) => {
         {/* Content layer on top */}
         <div className="relative z-10 w-full h-full flex items-center justify-between px-2">
           <div className="flex gap-[5px] items-center">
-            <p className="text-2xl">{"🌸"}</p>
-            <p className="text-white font-route text-xl font-bold">
+            <p className="text-xl">{"🌸"}</p>
+            <p className="text-white font-route text-lg font-bold">
               {user?.username}
             </p>
           </div>
-          <p className="text-white font-route text-md tracking-wider">
+          <p className="text-white font-route text-sm tracking-wider">
             {stats?.progress > 0 ? stats?.progress + "%" : "0%"}
           </p>
           <div className="flex gap-[5px] items-center">
             <div className="flex flex-col items-center justify-center">
-              <p className="text-white w-[45px] font-route text-lg tracking-wider">
+              <p className="text-white w-[45px] font-route text-sm tracking-wider">
                 {myInfo && stats?.wpm ? stats?.wpm : "0"}
               </p>
-              <p className="text-white font-route mt-[-8px] text-sm tracking-wider">
+              <p className="text-white font-route mt-[-8px] text-xs tracking-wider">
                 WPM
               </p>
             </div>
-            <div className="bg-white w-7 h-7 relative rounded-full font-route text-xl font-bold">
+            <div className="bg-white w-6 h-6 relative rounded-full font-route text-xl font-bold">
               <p
-                className={`absolute text-[17px] ${
-                  stats?.wpm ? "top-[1px] left-[6px]" : "top-[1px] left-[11px]"
+                className={`absolute text-[13px] ${
+                  stats?.wpm ? "top-[0px] left-[4px]" : "top-[1px] left-[11px]"
                 } ${
                   myInfo || mode === "solo" ? "text-bgyou" : "text-bgopponent"
                 }`}

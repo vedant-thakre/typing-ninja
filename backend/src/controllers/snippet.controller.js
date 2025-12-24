@@ -33,7 +33,15 @@ export const addSnippet = asyncHandler(async (req, res, next) => {
 
   return res
     .status(200)
-    .json(new Response(200, newSnippet, req.user.isAdmin ? "Snippet added successfully" : "Snippet requested successfully"));
+    .json(
+      new Response(
+        200,
+        newSnippet,
+        req.user.isAdmin
+          ? "Snippet added successfully"
+          : "Snippet requested successfully"
+      )
+    );
 });
 
 export const approveSnippet = asyncHandler(async (req, res, next) => {

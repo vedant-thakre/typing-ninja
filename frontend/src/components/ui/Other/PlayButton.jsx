@@ -13,7 +13,7 @@ const PlayButton = ({ title, className, subTitle, route }) => {
     } else {
       navigate(route);
     }
-  }
+  };
   return (
     <motion.div
       whileHover={
@@ -42,7 +42,7 @@ const PlayButton = ({ title, className, subTitle, route }) => {
             }}
             className={` ${
               mode !== "1v1" ? "bg-primary text-white" : "bg-white text-primary"
-            } border-2 rounded-[5px] pt-[3px] border-white font-route font-bold px-1 tracking-widest leading-5 text-[18px]`}
+            } border-2 rounded-[5px] pt-[3px] border-white font-route font-bold px-1 tracking-widest leading-5 text-[15px]`}
           >
             1V1
           </p>
@@ -53,7 +53,7 @@ const PlayButton = ({ title, className, subTitle, route }) => {
             }}
             className={` ${
               mode !== "1v5" ? "bg-primary text-white" : "bg-white text-primary"
-            } border-2 rounded-[5px] border-white font-route pt-[3px] font-bold px-1 tracking-widest leading-5 text-[18px]`}
+            } border-2 rounded-[5px] border-white font-route pt-[3px] font-bold px-1 tracking-widest leading-5 text-[15px]`}
           >
             1V5
           </p>

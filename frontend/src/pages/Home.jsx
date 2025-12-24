@@ -1,21 +1,29 @@
 import React, { useState } from "react";
 import AnimatedButton from "../components/ui/Other/AnimatedButton";
-import { emojiList, homeRecentMatches, homeRecentPosts, matchHistoryList, recordList, userData } from "../utils/data";
+import {
+  emojiList,
+  homeRecentMatches,
+  homeRecentPosts,
+  matchHistoryList,
+  recordList,
+  userData,
+} from "../utils/data";
 import { getRelativeTime, homeButtons } from "../utils/helper";
 import { NavLink, useNavigate } from "react-router-dom";
 import PlayButton from "../components/ui/Other/PlayButton";
 import { motion } from "framer-motion";
 import { FaLongArrowAltRight, FaLessThan, FaGreaterThan } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-import Pagination from "../components/ui/Other/Pagination"
-
+import Pagination from "../components/ui/Other/Pagination";
 
 const Home = () => {
   const navigate = useNavigate();
   const [emoji, setEmoji] = useState(
     localStorage.getItem("emoji") ?? emojiList[230]
   );
-  const [nickName, setNickName] = useState(localStorage.getItem("nickName") ?? "");
+  const [nickName, setNickName] = useState(
+    localStorage.getItem("nickName") ?? ""
+  );
   const [pageNo, setPageNo] = useState(1);
   const emojisPerPage = 16;
   const totalPages = Math.ceil(emojiList.length / emojisPerPage);
@@ -34,26 +42,27 @@ const Home = () => {
   };
 
   document.title = "TyperX | Home";
+
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex gap-x-6 py-5 px-7 mt-[140px]">
         <div className="bg-bgprimary flex-[3.3] h-min flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
               News
             </h5>
           </div>
           {/* Profile */}
           <div className="flex flex-col text-textcolor tracking-wide gap-5 leading-none m-4 py-4 px-5 border-2 border-bprimary rounded-2xl">
             <div className="flex flex-col gap-1">
-              <h4 className="font-route text-[34px]">
+              <h4 className="font-route text-[25px]">
                 Improve your typing speed and race your friends!
               </h4>
-              <p className="text-textsecond font-route text-[20px]">
+              <p className="text-textsecond font-route text-[16px]">
                 Updated {getRelativeTime("2023-02-06T16:18:55Z")}
               </p>
             </div>
-            <p className="font-route font-bold leading-none text-[22px]">
+            <p className="font-route font-bold leading-none text-[19px]">
               Hello, thank you for visiting the website. Join the Discord to
               arrange very large lobbies!
             </p>
@@ -64,23 +73,23 @@ const Home = () => {
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => {}}
-              className="bg-transperant flex justify-center gap-1 rounded-full font-route text-[24px] py-2 border-2 border-bprimary text-textcolor shadow-lg"
+              className="bg-transperant flex justify-center gap-1 rounded-full font-route text-[18px] py-2 border-2 border-bprimary text-textcolor shadow-lg"
             >
               Join on Discord <FaLongArrowAltRight color={"white"} />
             </motion.button>
             <div className="flex flex-col gap-3">
-              <h4 className="font-route text-textcolor font-bold text-[25px]">
+              <h4 className="font-route text-textcolor font-bold text-[17px]">
                 (Nov. 22nd, 2022) Updates :
               </h4>
-              <div className="flex ml-4 flex-col gap-2">
-                <p className="font-route flex gap-2 items-start text-[21px]">
+              <div className="flex ml-4 flex-col text-[16px] gap-2">
+                <p className="font-route flex gap-2 items-start ">
                   <GoDotFill size={13} /> Added daily match goal
                 </p>
-                <p className="font-route flex gap-2 items-start text-[21px]">
+                <p className="font-route flex gap-2 items-start ">
                   <GoDotFill size={13} />
                   Updated match connectivity
                 </p>
-                <p className="font-route flex gap-2 items-start text-[21px]">
+                <p className="font-route flex gap-2 items-start ">
                   <GoDotFill size={13} className="flex-shrink-0" />
                   You can now use custom text in private lobbies
                 </p>
@@ -93,7 +102,7 @@ const Home = () => {
           <div className=" flex gap-5">
             <div className="bg-bgprimary flex flex-col flex-[4] items-center gap-3 rounded-2xl shadow-hard">
               <div className="w-full">
-                <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+                <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
                   You
                 </h5>
               </div>
@@ -113,7 +122,7 @@ const Home = () => {
                             setNickName(e.target.value);
                             localStorage.setItem("nickName", e.target.value);
                           }}
-                          className="outline-none px-2 text-[22px] text-textcolor placeholder:text-center font-route placeholder:text-[22px] text-center placeholder:text-textsecond bg-transparent border-2 border-bprimary rounded-full py-[2px] w-[200px]"
+                          className="outline-none px-2 text-[17px] text-textcolor placeholder:text-center font-route placeholder:text-[16px] text-center placeholder:text-textsecond bg-transparent border-2 border-bprimary rounded-full py-[2px] w-[200px]"
                         />
                         <div className="grid grid-cols-4 px-2 gap-2">
                           {currentEmojis.map((emoji, index) => (
@@ -140,14 +149,13 @@ const Home = () => {
             <div className="flex flex-[3.5] flex-col gap-5">
               {homeButtons?.map((item, index) => {
                 return (
-                    <PlayButton
-                      key={index}
-                      route={item?.route}
-                      title={item?.title}
-                      subTitle={item?.subTitle}
-                      className={item?.className}
-                    />
-
+                  <PlayButton
+                    key={index}
+                    route={item?.route}
+                    title={item?.title}
+                    subTitle={item?.subTitle}
+                    className={item?.className}
+                  />
                 );
               })}
             </div>
@@ -155,7 +163,7 @@ const Home = () => {
           {/* Matches */}
           <div className="bg-bgprimary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
                 Highscore
               </h5>
             </div>
@@ -192,11 +200,11 @@ const Home = () => {
                           : "border-b-2 border-bprimary"
                       }`}
                     >
-                      <p className="col-span-1 font-route text-[20px] text-textsecond">
+                      <p className="col-span-1 font-route text-[16px] text-textsecond">
                         {index + 1}
                       </p>
                       <div className="col-span-8 flex flex-col pr-2">
-                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-textcolor">
+                        <p className="col-span-8 font-route pr-2 font-bold text-[17px] text-textcolor">
                           {item?.snippetTitle}
                         </p>
                         <div className="flex mt-[-4px] items-center">
@@ -216,10 +224,10 @@ const Home = () => {
                           </p>
                         </div>
                       </div>
-                      <p className="col-span-1 font-route text-[20px] text-textsecond">
+                      <p className="col-span-1 font-route text-[16px] text-textsecond">
                         {item?.accuracy} %
                       </p>
-                      <p className="col-span-1 font-route text-[20px] pl-6 text-textsecond text-start">
+                      <p className="col-span-1 font-route text-[16px] pl-6 text-textsecond text-start">
                         {item?.wpm}
                       </p>
                     </div>
@@ -233,7 +241,7 @@ const Home = () => {
           {/* Posts */}
           <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
                 Recent Posts
               </h5>
             </div>
@@ -257,27 +265,27 @@ const Home = () => {
                         } gap-[6px]`}
                       >
                         <div className="flex w-full flex-col">
-                          <h5 className="text-textcolor cursor-pointer font-route text-[26px] underline">
+                          <h5 className="text-textcolor tracking-wider cursor-pointer font-route text-[20px] underline">
                             {item?.title}
                           </h5>
-                          <p className="text-textsecond mt-[-10px] font-route text-[20px]">
+                          <p className="text-textsecond mt-[-3px] font-route text-[16px]">
                             Posted {getRelativeTime(item?.createdAt)} by{" "}
                             <span className="underline cursor-pointer">
                               {item?.user?.username}
                             </span>
                           </p>
                         </div>
-                        <p className="cursor-pointer text-textcolor font-route leading-none text-[22px]">
+                        <p className="cursor-pointer text-textcolor font-route leading-none text-[17px]">
                           {item?.body?.length > 110
                             ? item?.body.slice(0, 110) + "..."
                             : item?.body}
                         </p>
                         {item?.commentCount > 0 && (
-                          <p className="text-textsecond font-route text-[19px]">
+                          <p className="text-textsecond font-route text-[16px]">
                             Last Comment {getRelativeTime(item?.updatedAt)}
                           </p>
                         )}
-                        <p className="underline mt-[-10px] cursor-pointer text-textsecond font-route text-[19px]">
+                        <p className="underline mt-[-10px] cursor-pointer text-textsecond font-route text-[16px]">
                           {item?.commentCount} comments
                         </p>
                       </div>
@@ -290,7 +298,7 @@ const Home = () => {
           {/* Records */}
           <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
                 Recent Matches
               </h5>
             </div>
@@ -309,20 +317,20 @@ const Home = () => {
                           : "border-b-2 border-bprimary"
                       }`}
                     >
-                      <p className="col-span-1 font-route text-[20px] text-textsecond">
+                      <p className="col-span-1 font-route text-[17px] text-textsecond">
                         {index + 1}
                       </p>
                       <div className="col-span-8 flex flex-col pr-2">
-                        <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-textcolor">
+                        <p className="col-span-8 font-route pr-2 font-bold text-[18px] text-textcolor">
                           {item?.nickname}
                         </p>
                         <div className="flex mt-[-4px] items-center">
-                          <p className="font-main font-thin text-sm text-textsecond">
+                          <p className="font-main text-[16px] font-thin text-sm text-textsecond">
                             {getRelativeTime(item?.created_at)}
                           </p>
                         </div>
                       </div>
-                      <p className="col-span-1 font-route text-[20px] pl-6 text-textsecond text-start">
+                      <p className="col-span-1 font-route text-[17px] pl-6 text-textsecond text-start">
                         {item?.wpm}
                       </p>
                     </div>
