@@ -32,7 +32,6 @@ const Timer = ({
     defaultMainTimer,
   } = useTimerContext();
 
-  
   useEffect(() => {
     const handleSpace = (e) => {
       if (e.code === "Space" && !loading && !gameStarted && mode === "solo") {
@@ -64,7 +63,6 @@ const Timer = ({
     };
   }, [startTimeContext, setStartTimeContext]);
 
-
   useEffect(() => {
     socket.on("ROOM_TIMER_RESET", () => {
       console.log("ROOM_TIMER_RESET");
@@ -77,7 +75,13 @@ const Timer = ({
     };
   }, []);
 
-
+  useEffect(() => {
+    if (!loading && startTimeContext) {
+      setTimeout(() => {
+        setShowLoader(false);
+      }, 1000);
+    }
+  }, [loading, startTimeContext]);
 
   useEffect(() => {
     if (!loading && startTimeContext) {
@@ -86,15 +90,7 @@ const Timer = ({
       }, 1000);
     }
   }, [loading, startTimeContext]);
-  
-  useEffect(() => {
-    if (!loading && startTimeContext) {
-      setTimeout(() => {
-        setShowLoader(false);
-      }, 1000);
-    }
-  }, [loading, startTimeContext]);
-  
+
   // Compute preTimer and main timer left time from elapsed
   const preTimerLeft = Math.max(preTimerSeconds - elapsedTime, 0);
   const mainTimerLeft = Math.max(
@@ -103,8 +99,12 @@ const Timer = ({
   );
 
   // Determine state flags
-  const isPreTimerRunning = preTimerLeft > 0 && preTimerLeft !== defaultPreTimer;
-  const isRunning = !isPreTimerRunning && (mainTimerLeft > 0 && mainTimerLeft !== defaultMainTimer);
+  const isPreTimerRunning =
+    preTimerLeft > 0 && preTimerLeft !== defaultPreTimer;
+  const isRunning =
+    !isPreTimerRunning &&
+    mainTimerLeft > 0 &&
+    mainTimerLeft !== defaultMainTimer;
   const isGameStarted = mainTimerLeft < 300000;
 
   // Set game started when main timer running
@@ -160,18 +160,18 @@ const Timer = ({
     <motion.div
       whileHover={{ y: -2, transition: { duration: 0.3, ease: "easeOut" } }}
       whileTap={{ scale: 0.99 }}
-      className={`flex justify-end items-center cursor-pointer h-full ${
+      className={`flex justify-end gap-2 items-center cursor-pointer h-full ${
         hasGameEnded ? "max-h-[100px]  pb-2" : "max-h-[120px] pt-5  pb-4"
       } flex-col border-4 text-white rounded-2xl ${bgColor} ${bgBorder} px-6 shadow-lg`}
     >
       {loading || showLoader ? (
         <div className="loader"></div>
       ) : (
-        <h2 className="text-[32px] font-bold font-route">
+        <h2 className="text-[26px] font-bold font-route">
           {formatTime(isPreTimerRunning ? preTimerLeft : mainTimerLeft)}
         </h2>
       )}
-      <h4 className="text-white w-max flex cursor-pointer items-center mt-[-15px] font-route text-[23px] font-bold">
+      <h4 className="text-white w-max flex cursor-pointer items-center mt-[-15px] font-route text-[18px] font-bold">
         {displayText}
       </h4>
     </motion.div>

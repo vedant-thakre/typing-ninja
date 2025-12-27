@@ -1,13 +1,13 @@
-import React from 'react'
-import { getRelativeTime } from '../../../utils/helper';
-import ListSkeletton from '../../skeletons/ListSkeletton';
+import React from "react";
+import { getRelativeTime } from "../../../utils/helper";
+import ListSkeletton from "../../skeletons/ListSkeletton";
 
 const SnippetHighscores = ({ snippetData, loading }) => {
   return (
     <div className="flex flex-col flex-[3] gap-5">
       <div className="bg-bgsecondary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
         <div className="w-full">
-          <h5 className="text-white tracking-wider py-2 px-5 bg-primary rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+          <h5 className="text-white tracking-wider py-2 px-5 bg-primary rounded-t-2xl rounded-b-md font-route text-[21px] font-bold">
             Snippet Highscore
           </h5>
         </div>
@@ -33,11 +33,11 @@ const SnippetHighscores = ({ snippetData, loading }) => {
                             : "border-b-2 border-bprimary"
                         }`}
                       >
-                        <p className="col-span-1 font-route text-[20px] text-textsecond">
+                        <p className="col-span-1 font-route text-[17px] text-textsecond">
                           {index + 1}
                         </p>
                         <div className="col-span-8 flex flex-col pr-2">
-                          <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-textcolor">
+                          <p className="col-span-8 font-route pr-2 font-bold text-[18px] text-textcolor">
                             {item?.username}
                           </p>
                           <div className="flex mt-[-5px] items-center">
@@ -46,7 +46,7 @@ const SnippetHighscores = ({ snippetData, loading }) => {
                             </p>
                           </div>
                         </div>
-                        <p className="col-span-3 w-[100px] font-route text-[18px] text-textsecond text-start">
+                        <p className="col-span-3 w-[100px] font-route text-[15px] text-textsecond text-start">
                           {item?.wpm} WPM
                         </p>
                       </div>
@@ -59,6 +59,6 @@ const SnippetHighscores = ({ snippetData, loading }) => {
       </div>
     </div>
   );
-}
+};
 
-export default SnippetHighscores
+export default SnippetHighscores;

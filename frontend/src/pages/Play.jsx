@@ -39,34 +39,42 @@ const Play = () => {
   });
   const mode = location.pathname?.includes("duel")
     ? "duel"
-    : location.pathname?.includes("solo") ? "solo" : "multiplayer"; 
-  const { snippetData, roomUsers, loading, fetchNewSnippet } =
-    useMatch(mode, gameStarted);
+    : location.pathname?.includes("solo")
+    ? "solo"
+    : "multiplayer";
+  const { snippetData, roomUsers, loading, fetchNewSnippet } = useMatch(
+    mode,
+    gameStarted
+  );
   window.onkeydown = function (e) {
     return !(e.keyCode == 32 && e.target == document.body);
   };
 
+  const handleKeyDown = () => {
+    fetchNewSnippet(snippetData?.roomId);
+    resetTimer();
+    setMyMatchStats({
+      userId: user?._id,
+      time: "",
+      wpm: "",
+      accuracy: "",
+      errorCount: "",
+      progress: 0,
+    });
+    setHasGameReset(true);
+    setGameStarted(false);
+    setHasGameEnded(false);
+  };
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleAction = (e) => {
       if (e.ctrlKey && e.key === "Enter") {
-        fetchNewSnippet(snippetData?.roomId);
-        resetTimer();
-        setMyMatchStats({
-          userId: user?._id,
-          time: "",
-          wpm: "",
-          accuracy: "",
-          errorCount: "",
-          progress: 0,
-        });
-        setHasGameReset(true);
-        setGameStarted(false);
-        setHasGameEnded(false);
+        handleKeyDown();
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleAction);
+    return () => window.removeEventListener("keydown", handleAction);
   }, [fetchNewSnippet]);
 
   return (
@@ -102,8 +110,11 @@ const Play = () => {
               {hasGameEnded && (
                 <AnimatedButton
                   title={"NEW GAME (CLTR + ENTER)"}
+                  onClick={() => {
+                    handleKeyDown();
+                  }}
                   className={
-                    "font-route py-[2px] text-[18px] font-bold rounded-lg text-white bg-[#4e6edd] border-bdshadow border-4 w-full"
+                    "font-route py-[5px] text-[15px] font-bold rounded-lg text-white bg-[#4e6edd] border-bdshadow border-4 w-full"
                   }
                 />
               )}

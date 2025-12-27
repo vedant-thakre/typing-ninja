@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Cursor from "./Cursor";
 
-const TypingInput = ({ typedLetters, currentWord, correctWordIndex, isSnippetComplete, dummy}) => {
+const TypingInput = ({
+  typedLetters,
+  currentWord,
+  correctWordIndex,
+  isSnippetComplete,
+  dummy,
+}) => {
   const [typedText, setTypedText] = useState("");
   const [isStarted, setIsStarted] = useState(false); // Track whether typing has started
 
   useEffect(() => {
-    if(!dummy){
+    if (!dummy) {
       if (isSnippetComplete) {
         setTypedText("");
         return;
@@ -37,7 +43,7 @@ const TypingInput = ({ typedLetters, currentWord, correctWordIndex, isSnippetCom
           className={`flex flex-col gap-2 py-4 w-full px-16 border-2 border-bprimary rounded-2xl transition-all bg-${bgColor}`}
         >
           <div
-            className={`bg-transparent placeholder:text-bold outline-none text-textcolor font-route text-center text-[25px] border-b-2 transition-all ${
+            className={`bg-transparent placeholder:text-bold outline-none text-textcolor font-route text-center text-[19px] border-b-2 transition-all ${
               isCorrect ? "border-bprimary" : "border-danger text-[#d43b41] "
             }`}
           >

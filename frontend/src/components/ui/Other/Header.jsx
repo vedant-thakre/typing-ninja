@@ -70,7 +70,7 @@ const Header = () => {
       <div className="md:w-[80rem] w-full 2xl:w-[85rem] mx-auto flex justify-between">
         <div className="flex gap-4 lg:gap-6 xl:gap-10 items-center">
           <NavLink onClick={() => handleTabTitle("Home")} to="/">
-            <h2 className="text-2xl xl:text-4xl cursor-pointer text-bold text-white tracking-wider font-small font-logo">
+            <h2 className="text-2xl xl:text-3xl cursor-pointer text-bold text-white tracking-wider font-small font-logo">
               TYPING NINJA
             </h2>
           </NavLink>
@@ -81,7 +81,7 @@ const Header = () => {
                   size={27}
                   className="mb-1 text-white font-medium cursor-pointer"
                 />
-                <h5 className="text-white text-[19px] font-bold tracking-wider  font-route cursor-pointer hover:underline">
+                <h5 className="text-white text-[17px] font-bold tracking-wider  font-route cursor-pointer hover:underline">
                   HOME
                 </h5>
               </div>
@@ -92,7 +92,7 @@ const Header = () => {
                   size={26}
                   className="mb-1 text-white font-medium cursor-pointer"
                 />
-                <h5 className="text-white text-[19px] font-bold tracking-wider font-route cursor-pointer hover:underline">
+                <h5 className="text-white text-[17px] font-bold tracking-wider font-route cursor-pointer hover:underline">
                   DISCUSS
                 </h5>
               </div>
@@ -106,7 +106,7 @@ const Header = () => {
                   size={27}
                   className="mb-1 text-white font-medium cursor-pointer"
                 />
-                <h5 className="text-white text-[19px] font-bold tracking-wider font-route cursor-pointer hover:underline">
+                <h5 className="text-white text-[17px] font-bold tracking-wider font-route cursor-pointer hover:underline">
                   HIGHSCORES
                 </h5>
               </div>
@@ -118,7 +118,7 @@ const Header = () => {
                     size={24}
                     className="mb-1 text-white font-medium cursor-pointer"
                   />
-                  <h5 className="text-white text-[19px] font-bold tracking-wider font-route cursor-pointer hover:underline">
+                  <h5 className="text-white text-[17px] font-bold tracking-wider font-route cursor-pointer hover:underline">
                     STORE
                   </h5>
                 </div>
@@ -165,15 +165,17 @@ const Header = () => {
                 />
               )}
             </div>
+
+            {/* Header Profile */}
             {authStatus ? (
               <div className="flex relative items-center cursor-pointer">
                 <div className="bg-[#4865cd] pl-6 pr-10 py-1 rounded-lg flex flex-col items-center">
                   <p className="text-white font-main text-sm">
                     {user?.username}
                   </p>
-                  <h5 className="text-white font-main text-[14px]">
+                  <h5 className="text-white font-main text-[13px]">
                     Daily Goal:{" "}
-                    <span className="font-route ml-1 font-bold text-[18px]">
+                    <span className="font-route ml-1 font-bold text-[14px]">
                       0&nbsp;/&nbsp;&nbsp;5
                     </span>
                   </h5>
@@ -237,12 +239,12 @@ const Header = () => {
             ) : (
               <>
                 <NavLink to="/login" onClick={() => handleTabTitle("Login")}>
-                  <h5 className="text-white text-[19px] my-4 cursor-pointer font-bold tracking-wider font-route">
+                  <h5 className="text-white text-[17px] my-4 cursor-pointer font-bold tracking-wider font-route">
                     LOGIN
                   </h5>
                 </NavLink>
                 <NavLink to="/signup" onClick={() => handleTabTitle("Signup")}>
-                  <h5 className="text-white text-[19px] cursor-pointer font-bold tracking-wider font-route">
+                  <h5 className="text-white text-[17px] cursor-pointer font-bold tracking-wider font-route">
                     SIGNUP
                   </h5>
                 </NavLink>

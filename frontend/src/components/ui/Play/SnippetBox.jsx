@@ -17,8 +17,7 @@ const SnippetBox = ({
   mode,
 }) => {
   const navigate = useNavigate();
-  const { defaultPreTimer, stopTimer, pauseTimer } =
-    useTimerContext();
+  const { defaultPreTimer, stopTimer, pauseTimer } = useTimerContext();
   const user = useSelector((state) => state.user.userData);
   const [matchTime, setMatchTime] = useState(0);
   const {
@@ -34,7 +33,7 @@ const SnippetBox = ({
     typedCharactersCount,
   } = useTyping(snippetData, gameStarted);
   const hasEmittedRef = useRef(false);
-  
+
   // Realtime stats updating
   useEffect(() => {
     if (gameStarted) {
@@ -63,7 +62,6 @@ const SnippetBox = ({
     }
   }, [progress, typedCharactersCount, matchTime]);
 
-  
   useEffect(() => {
     if (isSnippetComplete && !hasEmittedRef.current) {
       const matchTimeRef = pauseTimer();
@@ -105,7 +103,10 @@ const SnippetBox = ({
           time: matchTime,
         };
         if (mode === "solo") {
-          socket.emit("matchComplete", { matchData, roomId: snippetData?.roomId} );
+          socket.emit("matchComplete", {
+            matchData,
+            roomId: snippetData?.roomId,
+          });
         }
 
         hasEmittedRef.current = true;
@@ -117,7 +118,7 @@ const SnippetBox = ({
     <div className="flex flex-col gap-5">
       <div className="bg-bgprmiary min-h-[400px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
         <div className="w-full">
-          <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+          <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[21px] font-bold">
             Snippet
           </h5>
         </div>
@@ -135,7 +136,7 @@ const SnippetBox = ({
             {snippetData?.author?.length > 0 && (
               <>
                 <div className="flex gap-3 items-center">
-                  <h4 className="text-textcolor font-route text-[23px] items-center font-bold">
+                  <h4 className="text-textcolor font-route text-[18px] items-center font-bold">
                     {snippetData?.title}
                   </h4>
                   <span
@@ -152,11 +153,11 @@ const SnippetBox = ({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <p className="font-route text-textsecond flex gap-2 mt-[-10px] items-center text-[19px]">
+                  <p className="font-route text-textsecond flex gap-2 mt-[-5px] items-center text-[16px]">
                     <GoDotFill size={13} /> Added{" "}
                     {getRelativeTime(snippetData?.createdAt)}
                   </p>
-                  <p className="font-route text-textsecond flex gap-2 mt-[-10px] items-center text-[19px]">
+                  <p className="font-route text-textsecond flex gap-2 mt-[-10px] items-center text-[17px]">
                     Posted by{" "}
                     <span
                       onClick={() =>
@@ -186,4 +187,4 @@ const SnippetBox = ({
   );
 };
 
-export default SnippetBox; 
+export default SnippetBox;

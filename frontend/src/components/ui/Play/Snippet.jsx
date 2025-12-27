@@ -2,19 +2,14 @@ import React, { use } from "react";
 import TypingIndicator from "./TypingIndicator";
 import { useSelector } from "react-redux";
 
-const Snippet = ({
-  gameRef,
-  cursorRef,
-  typedLetters,
-  wordsList,
-}) => {
+const Snippet = ({ gameRef, cursorRef, typedLetters, wordsList }) => {
   const theme = useSelector((state) => state.user.theme);
   return (
     <div className="w-full text-sm  rounded-lg">
       <div
         className={`${
           theme === "dark" ? "text-gray-400" : "text-textcolor"
-        }  text-[22px] font-route relative leading-6`}
+        }  text-[18px] font-route relative leading-6`}
         ref={gameRef}
       >
         {wordsList?.length > 0 &&

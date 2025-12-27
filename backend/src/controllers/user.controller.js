@@ -6,7 +6,10 @@ import bcrypt from "bcryptjs";
 import { sendMail } from "../utils/sendMail.js";
 import mongoose from "mongoose";
 import { verifyEmailTemplate } from "../utils/html/verifyEmailTemplate.js";
-import { getAvatarsFromCloudinary, uploadOnCloudinary } from "../lib/cloudinary.js";
+import {
+  getAvatarsFromCloudinary,
+  uploadOnCloudinary,
+} from "../lib/cloudinary.js";
 
 const options = {
   httpOnly: true,
@@ -39,7 +42,7 @@ const generateAccessAndRefreshToken = async (userId) => {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
       }
     );
-    
+
     user.refreshToken = refreshToken;
     await user.save();
 
@@ -89,7 +92,9 @@ export const register = asyncHandler(async (req, res, next) => {
 
   return res
     .status(200)
-    .json(new Response(200, {user:createdUser}, "User registered Successfully"));
+    .json(
+      new Response(200, { user: createdUser }, "User registered Successfully")
+    );
 });
 
 export const googleAuth = asyncHandler(async (req, res, next) => {
@@ -120,7 +125,13 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
     return res
       .status(200)
       .cookie("token", refreshToken, options)
-      .json(new Response(200, {user: createdUser, accessToken}, "User authenticated successfully"));
+      .json(
+        new Response(
+          200,
+          { user: createdUser, accessToken },
+          "User authenticated successfully"
+        )
+      );
   } catch (error) {
     throw new ErrorHandler(400, "Server error");
   }
@@ -136,7 +147,7 @@ export const login = asyncHandler(async (req, res, next) => {
   if (!password) {
     throw new ErrorHandler(400, "Password is required");
   }
-  
+
   let user;
   const isEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   if (isEmail(credentials)) {
@@ -145,13 +156,8 @@ export const login = asyncHandler(async (req, res, next) => {
     user = await User.findOne({ username: credentials });
   }
 
-  
   if (!user) {
     throw new ErrorHandler(404, "User does not exist.");
-  }
-
-  if(!user?.password){
-    throw new ErrorHandler(404, "Password not found. Login with google or reset password");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -208,14 +214,12 @@ export const logout = asyncHandler(async (req, res, next) => {
     { refreshToken: refreshToken },
     { $unset: { refreshToken: 1 } },
     { new: true }
-  )
-
-  return (
-    res
-      .status(200)
-      .clearCookie("refreshToken", options)
-      .json(new Response(200, null, "User logged out successfully"))
   );
+
+  return res
+    .status(200)
+    .clearCookie("refreshToken", options)
+    .json(new Response(200, null, "User logged out successfully"));
 });
 
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
@@ -235,8 +239,8 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
     throw new ErrorHandler(401, "Unauthorized request");
   }
 
-  const { accessToken, refreshToken } =  await generateAccessAndRefreshToken( 
-    user._id      
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
   );
 
   return res
@@ -258,12 +262,17 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     throw new ErrorHandler(404, "User not found");
   }
 
-  const otp =  Math.floor(1000 + Math.random() * 9000);
+  const otp = Math.floor(1000 + Math.random() * 9000);
 
   user.otp = otp;
   await user.save();
 
-  const response = await sendMail(user?.email, "Reset Password", otp, forgetPasswordTemplate);
+  const response = await sendMail(
+    user?.email,
+    "Reset Password",
+    otp,
+    forgetPasswordTemplate
+  );
 
   if (!response) {
     throw new ErrorHandler(500, "Failed to send email");
@@ -271,12 +280,11 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 
   console.log("mail response", response);
 
-  return res
-    .json(new Response(200, null, "Check your mail and condfirm OTP"));
+  return res.json(new Response(200, null, "Check your mail and condfirm OTP"));
 });
 
 export const confirmOTP = asyncHandler(async (req, res, next) => {
-  const { otp } = req.body; 
+  const { otp } = req.body;
   if (!otp) {
     throw new ErrorHandler(400, "Invalid otp");
   }
@@ -292,11 +300,9 @@ export const confirmOTP = asyncHandler(async (req, res, next) => {
   }
 
   user.otp = null;
-  await user.save();  
+  await user.save();
 
-  return res
-    .status(200)
-    .json(new Response(200, null, "OTP confirmed"));
+  return res.status(200).json(new Response(200, null, "OTP confirmed"));
 });
 
 export const resetPassword = asyncHandler(async (req, res, next) => {
@@ -307,7 +313,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   }
 
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt); 
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   const user = await User.findById(req.user._id);
 
@@ -334,7 +340,12 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
   if (user.isVerified) {
     throw new ErrorHandler(400, "User already verified");
   }
-  const response = await sendMail(user?.email, "Verify Your Email", otp, verifyEmailTemplate);
+  const response = await sendMail(
+    user?.email,
+    "Verify Your Email",
+    otp,
+    verifyEmailTemplate
+  );
 
   if (!response) {
     throw new ErrorHandler(500, "Failed to send email");
@@ -345,8 +356,7 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
 
   return res
     .status(200)
-    .json(new Response(200, null, "Check your mail and confirm OTP"));  
-
+    .json(new Response(200, null, "Check your mail and confirm OTP"));
 });
 
 export const confirmEmailOtp = asyncHandler(async (req, res, next) => {
@@ -371,12 +381,12 @@ export const confirmEmailOtp = asyncHandler(async (req, res, next) => {
 
 export const getUserProfile = asyncHandler(async (req, res, next) => {
   const { username } = req.query;
-  
+
   if (!username) {
     throw new ErrorHandler(400, "Username is required");
   }
   const user = await User.findOne({ username }).select(
-    "-password -refreshToken -otp -__v -requests -friends -isVerified -isAdmin"  
+    "-password -refreshToken -otp -__v -requests -friends -isVerified -isAdmin"
   );
 
   if (!user) {
@@ -386,8 +396,7 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json(new Response(200, user, "User profile fetched successfully"));
-}
-);
+});
 
 export const sendFriendRequest = asyncHandler(async (req, res, next) => {
   const { id } = req.body;
@@ -426,7 +435,7 @@ export const removeFriend = asyncHandler(async (req, res, next) => {
     throw new ErrorHandler(400, "Friend not found");
   }
 
-  const friend = await User.findById(id); 
+  const friend = await User.findById(id);
 
   if (!friend) {
     throw new ErrorHandler(404, "Friend not found");
@@ -453,9 +462,8 @@ export const acceptFriendRequest = asyncHandler(async (req, res, next) => {
   if (!user) {
     throw new ErrorHandler(404, "User not found");
   }
-  
-  const friend = await User.findById(id);
 
+  const friend = await User.findById(id);
 
   if (!friend) {
     throw new ErrorHandler(404, "Friend not found");
@@ -486,7 +494,9 @@ export const rejectFriendRequest = asyncHandler(async (req, res, next) => {
   if (!user) {
     throw new ErrorHandler(404, "User not found");
   }
-  user.requests = user.requests.filter((requestId) => requestId.toString() !== id.toString());
+  user.requests = user.requests.filter(
+    (requestId) => requestId.toString() !== id.toString()
+  );
   await user.save();
   return res
     .status(200)
@@ -504,8 +514,10 @@ export const getFriendRequests = asyncHandler(async (req, res, next) => {
   }
   return res
     .status(200)
-    .json(new Response(200, user.requests, "Friend requests fetched successfully")); 
-})
+    .json(
+      new Response(200, user.requests, "Friend requests fetched successfully")
+    );
+});
 
 export const getFriendsAndRequests = asyncHandler(async (req, res, next) => {
   const { isFriend = "true", search = "", page = 1, limit = 10 } = req.query;
@@ -574,15 +586,20 @@ export const getFriendsAndRequests = asyncHandler(async (req, res, next) => {
   const metadata = result[0]?.metadata[0] || { total: 0 };
   const data = result[0]?.data || [];
 
-  return res
-    .status(200)
-    .json(
-      new Response(200, data, metadata.total === 0 ? "No matching users found" : "Users fetched successfully" , {
+  return res.status(200).json(
+    new Response(
+      200,
+      data,
+      metadata.total === 0
+        ? "No matching users found"
+        : "Users fetched successfully",
+      {
         total: metadata.total,
         page: parseInt(page),
         limit: parseInt(limit),
-      })
-    );
+      }
+    )
+  );
 });
 
 export const getFriends = asyncHandler(async (req, res, next) => {
@@ -596,7 +613,7 @@ export const getFriends = asyncHandler(async (req, res, next) => {
   }
   return res
     .status(200)
-    .json(new Response(200, user.friends, "Friends fetched successfully")); 
+    .json(new Response(200, user.friends, "Friends fetched successfully"));
 });
 
 export const checkIsFriend = asyncHandler(async (req, res, next) => {
@@ -605,13 +622,15 @@ export const checkIsFriend = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
   const searchedUser = await User.findById(id);
   let requested = false;
-  if (searchedUser.requests.includes(new mongoose.Types.ObjectId(req.user._id))) {
+  if (
+    searchedUser.requests.includes(new mongoose.Types.ObjectId(req.user._id))
+  ) {
     requested = true;
   }
   if (!user) {
     throw new ErrorHandler(404, "User not found");
   }
-  if(user.friends.includes(new mongoose.Types.ObjectId(id))){
+  if (user.friends.includes(new mongoose.Types.ObjectId(id))) {
     return res
       .status(200)
       .json(
@@ -620,18 +639,24 @@ export const checkIsFriend = asyncHandler(async (req, res, next) => {
           { isFriend: true, requested: requested || false },
           "User is a friend"
         )
-      ); 
-  }else{
+      );
+  } else {
     return res
-    .status(200)
-    .json(new Response(200, {isFriend: false, requested: requested || false}, "User is not a friend"));
-  } 
+      .status(200)
+      .json(
+        new Response(
+          200,
+          { isFriend: false, requested: requested || false },
+          "User is not a friend"
+        )
+      );
+  }
 });
 
 export const changeAvatar = asyncHandler(async (req, res, next) => {
-  const {avatar} = req.body;
+  const { avatar } = req.body;
 
-  if(!avatar){
+  if (!avatar) {
     throw new ErrorHandler(400, "Avatar is required");
   }
 
@@ -644,10 +669,10 @@ export const changeAvatar = asyncHandler(async (req, res, next) => {
   if (!user) {
     throw new ErrorHandler(404, "User not found");
   }
- 
+
   return res
     .status(200)
-    .json(new Response(200, user, "Avatar updated successfully")); 
+    .json(new Response(200, user, "Avatar updated successfully"));
 });
 
 export const searchUser = asyncHandler(async (req, res, next) => {
@@ -703,9 +728,8 @@ export const searchUser = asyncHandler(async (req, res, next) => {
 
   return res
     .status(200)
-    .json(new Response(200, {data, metadata}, "Users fetched successfully"));
+    .json(new Response(200, { data, metadata }, "Users fetched successfully"));
 });
-
 
 // admin
 export const uploadAvatar = asyncHandler(async (req, res, next) => {
@@ -733,22 +757,16 @@ export const uploadAvatar = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllAvatars = asyncHandler(async (req, res) => {
-    const { folder } = req.params;
-    const data = await getAvatarsFromCloudinary(folder);
+  const { folder } = req.params;
+  const data = await getAvatarsFromCloudinary(folder);
 
-    if (!data || data.length === 0) {
-      throw new ErrorHandler(500, "No avatars found");
-    }
+  if (!data || data.length === 0) {
+    throw new ErrorHandler(500, "No avatars found");
+  }
 
-    return res
-      .status(200)
-      .json(
-        new Response(
-          200,
-          data,
-          "Avatars fetched successfully"
-        )
-      );
+  return res
+    .status(200)
+    .json(new Response(200, data, "Avatars fetched successfully"));
 });
 
 // export const bulkRegister = asyncHandler(async (req, res, next) => {
