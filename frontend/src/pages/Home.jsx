@@ -19,10 +19,10 @@ import Pagination from "../components/ui/Other/Pagination";
 const Home = () => {
   const navigate = useNavigate();
   const [emoji, setEmoji] = useState(
-    localStorage.getItem("emoji") ?? emojiList[230]
+    localStorage.getItem("emoji") ?? emojiList[230],
   );
   const [nickName, setNickName] = useState(
-    localStorage.getItem("nickName") ?? ""
+    localStorage.getItem("nickName") ?? "",
   );
   const [pageNo, setPageNo] = useState(1);
   const emojisPerPage = 16;
@@ -31,7 +31,7 @@ const Home = () => {
   // Get emojis for the current page
   const currentEmojis = emojiList.slice(
     (pageNo - 1) * emojisPerPage,
-    pageNo * emojisPerPage
+    pageNo * emojisPerPage,
   );
 
   // Handle page change
@@ -139,7 +139,11 @@ const Home = () => {
                             </motion.div>
                           ))}
                         </div>
-                        <Pagination pageNo={pageNo} setpageNo={setPageNo} />
+                        <Pagination
+                          pageNo={pageNo}
+                          total={emojiList.length}
+                          setpageNo={setPageNo}
+                        />
                       </div>
                     </div>
                   </div>
@@ -213,8 +217,8 @@ const Home = () => {
                               item?.difficulty === "hard"
                                 ? "text-danger"
                                 : item?.difficulty === "easy"
-                                ? "text-success"
-                                : "text-orange"
+                                  ? "text-success"
+                                  : "text-orange"
                             }`}
                           >
                             {item?.difficulty}
