@@ -32,6 +32,7 @@ const SnippetBox = ({
     progress,
     typedCharactersCount,
   } = useTyping(snippetData, gameStarted);
+
   const hasEmittedRef = useRef(false);
 
   // Realtime stats updating
@@ -67,6 +68,7 @@ const SnippetBox = ({
       const matchTimeRef = pauseTimer();
       setMatchTime(matchTimeRef);
       setHasGameEnded(true);
+      console.log("Game ended creating match now");
       if (matchTime > 0 && user) {
         console.log("matchTime", matchTimeRef);
         const totalCharacters = snippetData?.characters;
@@ -80,7 +82,7 @@ const SnippetBox = ({
         // Calculate Accuracy: (correct / (correct + errors)) * 100
         const correctKeystrokes = totalCharacters - errorCount;
         const accuracy = Math.round(
-          (correctKeystrokes / totalCharacters) * 100
+          (correctKeystrokes / totalCharacters) * 100,
         );
         setMyMatchStats({
           userId: user?._id,
@@ -91,7 +93,7 @@ const SnippetBox = ({
           progress: 100,
         });
         const matchData = {
-          snippetId: snippetData._id,
+          snippetId: snippetData?._id,
           userId: user?._id,
           username: user?.username,
           accuracy,
@@ -144,8 +146,8 @@ const SnippetBox = ({
                       snippetData?.difficulty === "hard"
                         ? "bg-danger"
                         : snippetData?.difficulty === "easy"
-                        ? "bg-success"
-                        : "bg-orange"
+                          ? "bg-success"
+                          : "bg-orange"
                     } rounded-md tracking-wide font-bold text-[12px]`}
                   >
                     {snippetData?.difficulty?.charAt(0).toUpperCase() +

@@ -1,7 +1,15 @@
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
-const AnimatedButton = ({ title, className, onClick, both=false, icon, animated=true, ...props }) => {
+const AnimatedButton = ({
+  title,
+  className,
+  onClick,
+  both = false,
+  icon,
+  animated = true,
+  ...props
+}) => {
   return (
     <>
       {animated ? (
@@ -17,13 +25,13 @@ const AnimatedButton = ({ title, className, onClick, both=false, icon, animated=
             !className?.includes("bg-") && "bg-primary",
             !className?.includes("border-") && "border-bdshadow",
             !className?.includes("shadow") && "shadow-lg",
-            className
+            className,
           )}
         >
           {both ? (
             <div className="flex items-center justify-center gap-2">
-              {icon}
-              {title}
+              <div>{icon}</div>
+              <span className="mt-1">{title}</span>
             </div>
           ) : icon ? (
             icon
@@ -38,7 +46,7 @@ const AnimatedButton = ({ title, className, onClick, both=false, icon, animated=
             !className.includes("bg-") && "bg-primary",
             !className.includes("border-") && "border-bdshadow",
             !className.includes("shadow") && "shadow-lg",
-            className
+            className,
           )}
           {...props}
         >

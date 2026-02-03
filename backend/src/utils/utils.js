@@ -13,7 +13,6 @@ import colors from "colors";
 // try to implement duel match if possible
 // create the ui for custom matches.
 
-
 const generateUsername = () => {
   const customNumbers = () => Math.floor(Math.random() * 100);
   const baseUsername = uniqueNamesGenerator({
@@ -50,7 +49,7 @@ export const findOrCreateDuelRoom = (rooms) => {
     roomId = waitingRoomId;
   } else {
     // Create a new room with a unique ID
-    const id = uuidv4();
+    const id = v4();
     roomId = `duel-${id}`;
     rooms[roomId] = { users: [], mode: "duel", started: false };
   }
@@ -71,7 +70,7 @@ export const getBotUser = (socketId) => {
     errorCount: "",
     time: "",
   };
-}
+};
 
 export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
   try {
@@ -121,7 +120,7 @@ export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
   } catch (error) {
     console.error("Error fetching random snippet:", error);
   }
-}
+};
 
 export const startMatch = (roomId, rooms, io) => {
   const room = rooms[roomId];
@@ -143,12 +142,11 @@ export const startMatch = (roomId, rooms, io) => {
         elapsed < 0
           ? "waiting"
           : elapsed < 10000
-          ? "lobby"
-          : elapsed < 310000
-          ? "game"
-          : "ended",
+            ? "lobby"
+            : elapsed < 310000
+              ? "game"
+              : "ended",
     });
-    
 
     if (elapsed >= 300000) {
       clearInterval(room.intervalId);
@@ -195,7 +193,6 @@ export const simulateBotTyping = (bot, room, io) => {
   bot.intervalId = setInterval(updateProgress, interval);
 };
 
-
 export const duelMatch = async (
   userId,
   username,
@@ -203,7 +200,7 @@ export const duelMatch = async (
   roomId,
   rooms,
   io,
-  mode
+  mode,
 ) => {
   try {
     if (!rooms[roomId]) {
@@ -215,12 +212,21 @@ export const duelMatch = async (
     if (room.started) {
       return socket.emit("error", "Match already started");
     }
-    
+
     if (!room.users.some((u) => u.userId === userId)) {
-      room.users.push({ userId, username, socketId: socket.id, progress: 0, wpm: "", accuracy: "", errorCount: "", time: "" });
+      room.users.push({
+        userId,
+        username,
+        socketId: socket.id,
+        progress: 0,
+        wpm: "",
+        accuracy: "",
+        errorCount: "",
+        time: "",
+      });
       socket.join(roomId);
     }
-      
+
     // Send room user list
     // io.in(roomId).emit("roomUpdate", {
     //   users: room.users.map((u) => u.username),
@@ -276,7 +282,15 @@ export const duelMatch = async (
   }
 };
 
-export const multiplayerMatch = async (userId, username, socket, roomId, rooms, io, mode) => {
+export const multiplayerMatch = async (
+  userId,
+  username,
+  socket,
+  roomId,
+  rooms,
+  io,
+  mode,
+) => {
   try {
     if (!rooms[roomId]) {
       rooms[roomId] = { users: [], mode, started: false };
@@ -330,4 +344,3 @@ errorCount: 17, wpm - 74.82, time - 1.08.61
 
 
 */
-

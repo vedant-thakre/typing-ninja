@@ -48,7 +48,7 @@ const Home = () => {
       <div className="flex gap-x-6 py-5 px-7 mt-[140px]">
         <div className="bg-bgprimary flex-[3.3] h-min flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
               News
             </h5>
           </div>
@@ -102,7 +102,7 @@ const Home = () => {
           <div className=" flex gap-5">
             <div className="bg-bgprimary flex flex-col flex-[4] items-center gap-3 rounded-2xl shadow-hard">
               <div className="w-full">
-                <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+                <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                   You
                 </h5>
               </div>
@@ -167,7 +167,7 @@ const Home = () => {
           {/* Matches */}
           <div className="bg-bgprimary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                 Highscore
               </h5>
             </div>
@@ -245,7 +245,7 @@ const Home = () => {
           {/* Posts */}
           <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                 Recent Posts
               </h5>
             </div>
@@ -269,7 +269,7 @@ const Home = () => {
                         } gap-[6px]`}
                       >
                         <div className="flex w-full flex-col">
-                          <h5 className="text-textcolor tracking-wider cursor-pointer font-route text-[20px] underline">
+                          <h5 className="text-textcolor tracking-wider cursor-pointer font-route text-title2 underline">
                             {item?.title}
                           </h5>
                           <p className="text-textsecond mt-[-3px] font-route text-[16px]">
@@ -302,7 +302,7 @@ const Home = () => {
           {/* Records */}
           <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                 Recent Matches
               </h5>
             </div>

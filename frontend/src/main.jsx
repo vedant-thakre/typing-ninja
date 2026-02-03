@@ -54,13 +54,14 @@ const router = createBrowserRouter([
       { path: "/search/:username", element: <Search /> },
       { path: "/post/:id", element: <PostPage /> },
       { path: "/profile/:username", element: <Profile /> },
+      { path: "/world", element: <Discuss /> },
+
       {
         element: <ProtectedRoute />,
         children: [
           { path: "/settings", element: <Settings /> },
           // { path: "/store", element: <Store /> },
           { path: "/chats", element: <Chats /> },
-          { path: "/world", element: <Discuss /> },
           { path: "/friends", element: <Friends /> },
           { path: "/submit-snippets", element: <SnippetsList /> },
           { path: "/chats/:username/:id", element: <Chats /> },
@@ -95,5 +96,5 @@ createRoot(document.getElementById("root")).render(
         </QueryClientProvider>
       </Provider>
     </GoogleOAuthProvider>
-  </>
+  </>,
 );

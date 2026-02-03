@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
-import AnimatedButton from '../components/ui/Other/AnimatedButton';
+import React, { useState } from "react";
+import AnimatedButton from "../components/ui/Other/AnimatedButton";
 import { FaLessThan, FaGreaterThan } from "react-icons/fa";
-import { highscoreList } from '../utils/data';
-import Pagination from '../components/ui/Other/Pagination';
-
+import { highscoreList } from "../utils/data";
+import Pagination from "../components/ui/Other/Pagination";
 
 const Highscores = () => {
   const [tabValue, setTabValue] = useState("TOP SPEED");
@@ -31,7 +30,7 @@ const Highscores = () => {
         </div>
         <div className="bg-bgprimary mb-[50px] w-full flex flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
               {(tabValue === "TOP SPEED" ? "Top Speed" : "Top Matches") +
                 ` - ${difficultyValue.toLowerCase()} quotes`}
             </h5>
@@ -126,6 +125,6 @@ const Highscores = () => {
       </div>
     </div>
   );
-}
+};
 
-export default Highscores
+export default Highscores;
