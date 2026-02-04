@@ -1,17 +1,21 @@
 import { Snippet } from "../models/snippet.model.js";
 import { asyncHandler, ErrorHandler, Response } from "../utils/handlers.js";
+import { validateAddSnippet } from "../utils/validation.js";
 
 export const addSnippet = asyncHandler(async (req, res, next) => {
   const { title, content, difficulty } = req.body;
 
-  if (!content || !title) {
-    throw new ErrorHandler(400, "Snippet title and content cannot be empty");
+  const { error } = validateAddSnippet(req.body);
+
+  if (error) {
+    throw new ErrorHandler(400, error.details[0].message);
   }
+
   if (!req.user?.isVerified) {
     throw new ErrorHandler(400, "User is not verified");
   }
 
-  const isAdmin = req.user.isAdmin;
+  const isAdmin = req?.user?.isAdmin;
 
   const snippet = await Snippet.findOne({ title });
 
@@ -37,10 +41,10 @@ export const addSnippet = asyncHandler(async (req, res, next) => {
       new Response(
         200,
         newSnippet,
-        req.user.isAdmin
+        req?.user?.isAdmin
           ? "Snippet added successfully"
-          : "Snippet requested successfully"
-      )
+          : "Snippet requested successfully",
+      ),
     );
 });
 
@@ -57,7 +61,7 @@ export const approveSnippet = asyncHandler(async (req, res, next) => {
   const updatedSnippet = await Snippet.findByIdAndUpdate(
     id,
     { status: "approved" },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedSnippet) {
@@ -113,11 +117,15 @@ export const pendingSnippets = asyncHandler(async (req, res, next) => {
 
 export const editSnippet = asyncHandler(async (req, res, next) => {
   const { title, content, difficulty } = req.body;
+
   const { id } = req.params;
 
-  if (!content || !title) {
-    throw new ErrorHandler(400, "Snippet title and content cannot be empty");
+  const { error } = validateAddSnippet(req.body);
+
+  if (error) {
+    throw new ErrorHandler(400, error?.details[0]?.message);
   }
+
   if (!req.user?.isVerified) {
     throw new ErrorHandler(400, "User is not verified");
   }
@@ -133,7 +141,7 @@ export const editSnippet = asyncHandler(async (req, res, next) => {
     },
     {
       new: true,
-    }
+    },
   );
 
   if (!newSnippet) {

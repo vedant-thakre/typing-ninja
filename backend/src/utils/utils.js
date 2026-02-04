@@ -25,6 +25,25 @@ const generateUsername = () => {
   return shouldAddNumber ? `${baseUsername}${customNumbers()}` : baseUsername;
 };
 
+// Wherever you delete rooms, also clear the interval
+export const deleteRoom = (roomId, rooms) => {
+  const room = rooms[roomId];
+  if (room && room.intervalId) {
+    clearInterval(room.intervalId);
+    delete room.intervalId;
+  }
+  delete rooms[roomId];
+  console.log(colors.bgRed(`Deleting old interval for room ${roomId}`));
+};
+
+export const deleteRoomInterval = (roomId, rooms) => {
+  const room = rooms[roomId];
+  if (room && room.intervalId) {
+    clearInterval(room.intervalId);
+    delete room.intervalId;
+  }
+};
+
 export const getRandomSnippet = async (snippetId) => {
   const matchStage = snippetId
     ? [{ $match: { status: "approved", _id: { $ne: snippetId } } }]
@@ -130,6 +149,14 @@ export const startMatch = (roomId, rooms, io) => {
   if (!room.lobbyStartTime) {
     room.lobbyStartTime = now;
     room.matchStartTime = now + 1500; // match begins 1.5s later
+  }
+
+  // Check if room object is valid
+  const currentRoom = rooms[roomId];
+  if (!currentRoom || !currentRoom.matchStartTime) {
+    clearInterval(room.intervalId);
+    if (currentRoom) delete currentRoom.intervalId;
+    return;
   }
 
   // Run emit loop every 500ms

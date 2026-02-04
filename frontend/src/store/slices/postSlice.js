@@ -3,11 +3,11 @@ import axiosInstance from "../../services/axiosInstance";
 import toast from "react-hot-toast";
 
 const initialState = {
-    loading: true,
-    status: false,
-    totalPosts: 0,
-    posts: [],
-    post: null,
+  loading: true,
+  status: false,
+  totalPosts: 0,
+  posts: [],
+  post: null,
 };
 
 export const getPosts = createAsyncThunk(
@@ -15,17 +15,17 @@ export const getPosts = createAsyncThunk(
   async ({ pageNo, limit, sortOrder }) => {
     try {
       const response = await axiosInstance.get(
-        `posts/all-posts?page=${pageNo}&limit=${limit}&sort=${sortOrder}`
+        `posts/all-posts?page=${pageNo}&limit=${limit}&sort=${sortOrder}`,
       );
-      if (response?.status === 200) {
-        toast.success(response.data.message);
-      }
+      // if (response?.status === 200) {
+      //   toast.success(response.data.message);
+      // }
       return response.data;
     } catch (error) {
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const getPost = createAsyncThunk("post/post", async (id) => {
@@ -42,39 +42,39 @@ export const getPost = createAsyncThunk("post/post", async (id) => {
 });
 
 const postSlice = createSlice({
-    name: "post",
-    initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(getPosts.pending, (state) => {
-                state.loading = true;
-                state.status = false;
-            })
-            .addCase(getPosts.fulfilled, (state, action) => {
-                state.loading = false;
-                state.status = true;
-                state.posts = action.payload.data.posts;
-                state.totalPosts = action.payload.data.totalPosts;
-            })
-            .addCase(getPosts.rejected, (state, action) => {
-                state.loading = false;
-                state.status = false;
-            })
-            .addCase(getPost.pending, (state) => {
-                state.loading = true;
-                state.status = false;
-            })
-            .addCase(getPost.fulfilled, (state, action) => {
-                state.loading = false;
-                state.status = true;
-                state.post = action.payload.data;
-            })
-            .addCase(getPost.rejected, (state, action) => {
-                state.loading = false;
-                state.status = false;
-            });
-    },
+  name: "post",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getPosts.pending, (state) => {
+        state.loading = true;
+        state.status = false;
+      })
+      .addCase(getPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = true;
+        state.posts = action.payload.data.posts;
+        state.totalPosts = action.payload.data.totalPosts;
+      })
+      .addCase(getPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.status = false;
+      })
+      .addCase(getPost.pending, (state) => {
+        state.loading = true;
+        state.status = false;
+      })
+      .addCase(getPost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = true;
+        state.post = action.payload.data;
+      })
+      .addCase(getPost.rejected, (state, action) => {
+        state.loading = false;
+        state.status = false;
+      });
+  },
 });
 
 export default postSlice.reducer;

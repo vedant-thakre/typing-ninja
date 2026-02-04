@@ -119,6 +119,7 @@ const Home = () => {
                           type="text"
                           value={nickName}
                           onChange={(e) => {
+                            if (e.target.value.length > 15) return;
                             setNickName(e.target.value);
                             localStorage.setItem("nickName", e.target.value);
                           }}

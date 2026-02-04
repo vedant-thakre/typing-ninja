@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import {  useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { searchUser } from "../store/slices/userSlice";
-import { getRelativeTime } from '../utils/helper'
-import Pagination from '../components/ui/Other/Pagination';
+import { getRelativeTime } from "../utils/helper";
+import Pagination from "../components/ui/Other/Pagination";
 
 const Search = () => {
   const dispatch = useDispatch();
@@ -15,10 +15,10 @@ const Search = () => {
   const apiLoading = useSelector((state) => state.user.apiLoading);
   const total = useSelector((state) => state.user.searchResultCount);
 
-    useEffect(() => {
-     if(username){
-        dispatch(searchUser({ user: username, page }));
-     }
+  useEffect(() => {
+    if (username) {
+      dispatch(searchUser({ user: username, page }));
+    }
   }, [username, page]);
 
   const handlePageChange = (newPage) => {
@@ -30,7 +30,7 @@ const Search = () => {
       <div className="flex flex-col gap-4 w-[700px] mt-[110px]">
         <div className="bg-bgprimary mb-[50px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full flex justify-between px-4 bg-primary py-2 rounded-t-2xl">
-            <h5 className="text-white font-route text-[24px] font-bold">
+            <h5 className="text-white font-route text-title font-bold">
               Search Results - {username}
             </h5>
           </div>
@@ -48,19 +48,17 @@ const Search = () => {
                     <div className="w-full flex justify-between items-center">
                       <div className="flex w-full items-center gap-2">
                         <img
-                          src={user.avatar}
+                          src={user?.avatar}
                           alt="profile"
-                          className="w-[60px] h-[60px] border-2 border-bprimary group-hover:border-textsecond rounded-full"
+                          className="w-[50px] h-[50px] border-2 border-bprimary group-hover:border-textsecond rounded-full"
                           crossOrigin="anonymous"
                         />
                         <div className="flex flex-col leading-7">
-                          <p
-                            className="text-textcolor  cursor-pointer hover:underline font-route text-[21px] tracking-wide"
-                          >
-                            {user.username}
+                          <p className="text-textcolor  cursor-pointer hover:underline font-route text-title3 tracking-wide">
+                            {user?.username}
                           </p>
-                          <p className="text-textsecond font-route text-[20px] tracking-wide">
-                            Joined {getRelativeTime(user.createdAt)}
+                          <p className="text-textsecond font-route text-subtitle tracking-wide">
+                            Joined {getRelativeTime(user?.createdAt)}
                           </p>
                         </div>
                       </div>
@@ -85,10 +83,9 @@ const Search = () => {
       </div>
     </div>
   );
-}
+};
 
-export default Search
-
+export default Search;
 
 // https://buser-photos-gallery.s3.amazonaws.com/655e08b7dafba104ba889741/Passport%20Photo-1710794485308.jpg
 

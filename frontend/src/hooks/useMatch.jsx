@@ -33,11 +33,11 @@ const useMatch = (gameMode, gameStarted) => {
     }
 
     // Try to get guest username from localStorage, or generate one
-    let guestUsername = localStorage.getItem("username");
-    if (!guestUsername) {
-      guestUsername = generateUsername("-", 2, 19);
-      localStorage.setItem("guestUsername", guestUsername);
-    }
+    const guestUsername = localStorage.getItem("nickName")
+      ? localStorage.getItem("nickName")
+      : generateUsername("-", 1, 10);
+    localStorage.setItem("guestUsername", guestUsername);
+
     return guestUsername;
   };
 

@@ -11,7 +11,7 @@ const PlayerCard = ({ user, mode, stats }) => {
     const seconds = String(totalSeconds % 60).padStart(2, "0");
     const hundredths = String(Math.floor((milliseconds % 1000) / 10)).padStart(
       2,
-      "0"
+      "0",
     );
     return `${minutes}:${seconds}.${hundredths}`;
   };
@@ -70,33 +70,45 @@ const PlayerCard = ({ user, mode, stats }) => {
         <div className="relative z-10 w-full h-full flex items-center justify-between px-2">
           <div className="flex gap-[5px] items-center">
             <p className="text-xl">{"🌸"}</p>
-            <p className="text-white font-route text-lg font-bold">
-              {user?.username}
+            <p className="text-white font-route text-lg font-normal">
+              {user?.username?.length > 15
+                ? user?.username?.slice(0, 15) + "..."
+                : user?.username}
             </p>
           </div>
-          <p className="text-white font-route text-sm tracking-wider">
+          <p
+            className={`${stats?.progress === 100 && mode !== "solo" ? "hidden" : "block"} text-white font-route text-sm tracking-wider`}
+          >
             {stats?.progress > 0 ? stats?.progress + "%" : "0%"}
           </p>
-          <div className="flex gap-[5px] items-center">
-            <div className="flex flex-col items-center justify-center">
-              <p className="text-white w-[45px] font-route text-sm tracking-wider">
+          <div
+            className={`${mode === "solo" && stats?.progress !== 100 ? "hidden" : "flex"} gap-[5px] items-center`}
+          >
+            <div
+              className={"flex flex-col gap-[5px] items-center justify-center"}
+            >
+              <p className="text-white w-[45px] text-center font-route text-sm tracking-wider">
                 {myInfo && stats?.wpm ? stats?.wpm : "0"}
               </p>
               <p className="text-white font-route mt-[-8px] text-xs tracking-wider">
                 WPM
               </p>
             </div>
-            <div className="bg-white w-6 h-6 relative rounded-full font-route text-xl font-bold">
-              <p
-                className={`absolute text-[13px] ${
-                  stats?.wpm ? "top-[0px] left-[4px]" : "top-[1px] left-[11px]"
-                } ${
-                  myInfo || mode === "solo" ? "text-bgyou" : "text-bgopponent"
-                }`}
-              >
-                {myInfo && stats?.wpm ? "1st" : "-"}
-              </p>
-            </div>
+            {mode !== "solo" && (
+              <div className="bg-white w-6 h-6 relative rounded-full font-route text-xl font-bold">
+                <p
+                  className={`absolute text-[13px] ${
+                    stats?.wpm
+                      ? "top-[0px] left-[4px]"
+                      : "top-[1px] left-[11px]"
+                  } ${
+                    myInfo || mode === "solo" ? "text-bgyou" : "text-bgopponent"
+                  }`}
+                >
+                  {myInfo && stats?.wpm ? "1st" : "-"}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

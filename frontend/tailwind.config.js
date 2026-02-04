@@ -48,6 +48,8 @@ export default {
         title3: "18px",
         subtitle: "16px",
         content: "17px",
+        body1: "15px",
+        body2: "14px",
       },
     },
   },

@@ -34,7 +34,7 @@ const PostList = ({ tabValue }) => {
         </h5>
         {user && (
           <NavLink to="/post" onClick={() => handleTabTitle("Post")}>
-            <h5 className="text-white underline w-max flex gap-[2px] cursor-pointer items-center font-route text-[21px] font-bold">
+            <h5 className="text-white tracking-wide underline w-max flex gap-[2px] cursor-pointer items-center font-route text-title3 font-bold">
               Create Post <FaLongArrowAltRight color={"white"} />
             </h5>
           </NavLink>

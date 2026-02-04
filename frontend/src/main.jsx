@@ -88,7 +88,7 @@ createRoot(document.getElementById("root")).render(
           <Toaster
             toastOptions={{
               className:
-                "bg-primary border-bdshadow text-[22px] py-1 border-4 text-white font-route",
+                "bg-primary border-bdshadow tracking-wide text-title3 py-1 border-4 text-white font-route",
               duration: 3000,
             }}
             position="bottom-right"

@@ -68,8 +68,7 @@ const SnippetBox = ({
       const matchTimeRef = pauseTimer();
       setMatchTime(matchTimeRef);
       setHasGameEnded(true);
-      console.log("Game ended creating match now");
-      if (matchTime > 0 && user) {
+      if (matchTime > 0) {
         console.log("matchTime", matchTimeRef);
         const totalCharacters = snippetData?.characters;
         // Calculate WPM: (characters including spaces / 5) / (time in minutes)
@@ -84,6 +83,7 @@ const SnippetBox = ({
         const accuracy = Math.round(
           (correctKeystrokes / totalCharacters) * 100,
         );
+
         setMyMatchStats({
           userId: user?._id,
           time: matchTime,
@@ -92,6 +92,7 @@ const SnippetBox = ({
           errorCount,
           progress: 100,
         });
+
         const matchData = {
           snippetId: snippetData?._id,
           userId: user?._id,
@@ -104,11 +105,27 @@ const SnippetBox = ({
           difficulty: snippetData?.difficulty,
           time: matchTime,
         };
+
         if (mode === "solo") {
-          socket.emit("matchComplete", {
-            matchData,
-            roomId: snippetData?.roomId,
-          });
+          if (user && user._id) {
+            socket.emit("matchComplete", {
+              matchData,
+              roomId: snippetData?.roomId,
+              isGuestUser: false,
+            });
+          } else {
+            const guestId = localStorage.getItem("guestId");
+            const guestUsername = localStorage.getItem("guestUsername");
+            socket.emit("matchComplete", {
+              matchData: {
+                ...matchData,
+                userId: guestId,
+                username: guestUsername,
+              },
+              roomId: snippetData?.roomId,
+              isGuestUser: true,
+            });
+          }
         }
 
         hasEmittedRef.current = true;

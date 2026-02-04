@@ -5,44 +5,39 @@ import { highscoreList } from "../utils/data";
 import Pagination from "../components/ui/Other/Pagination";
 
 const Highscores = () => {
-  const [tabValue, setTabValue] = useState("TOP SPEED");
+  const [tabValue, setTabValue] = useState("Top Speed");
   const [difficultyValue, setDifficultyValue] = useState("ALL");
   const difficuties = ["ALL", "EASY", "MEDIUM", "HARD"];
   const [pageNo, setpageNo] = useState(1);
   return (
-    <div className="min-h-screen flex flex-col  mt-[150px] justify-center gap-5 items-center">
-      <div className=" w-[700px] flex flex-col gap-5 justify-center">
-        <div className="grid grid-cols-2 gap-5 ">
+    <div className="min-h-screen mx-3 md:mx-0 flex justify-center">
+      <div className="flex flex-col gap-4 w-[800px] mt-[30px]">
+        <div className="grid grid-cols-2 gap-3 ">
           <AnimatedButton
-            title="TOP SPEED"
-            onClick={() => setTabValue("TOP SPEED")}
-            className={
-              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
-            }
+            title="Top Speed"
+            onClick={() => setTabValue("Top Speed")}
+            className="font-route shadow-hard text-white hover:underline tracking-wide font-medium text-xl rounded-xl py-2 px-24"
           />
           <AnimatedButton
-            title="TOP MATCHES"
-            onClick={() => setTabValue("TOP MATCHES")}
-            className={
-              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
-            }
+            title="Top Matches"
+            onClick={() => setTabValue("Top Matches")}
+            className="font-route shadow-hard text-white hover:underline font-normal tracking-normal text-title2 rounded-xl py-2 px-24"
           />
         </div>
         <div className="bg-bgprimary mb-[50px] w-full flex flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
-              {(tabValue === "TOP SPEED" ? "Top Speed" : "Top Matches") +
-                ` - ${difficultyValue.toLowerCase()} quotes`}
+            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title2 font-bold">
+              {tabValue + ` - ${difficultyValue.toLowerCase()} quotes`}
             </h5>
 
             <Pagination pageNo={pageNo} setpageNo={setpageNo} />
-            <div className="grid grid-cols-4 pt-6 w-full">
+            <div className="grid grid-cols-4 pt-4 w-full">
               {difficuties.map((item, index) => {
                 return (
                   <div
                     key={index}
                     onClick={() => setDifficultyValue(item)}
-                    className={` font-route text-[22px] pb-2 border-b-[3px]  ${
+                    className={` font-route text-title3 pb-2 border-b-[3px]  ${
                       difficultyValue === item
                         ? "border-primary text-primary"
                         : "text-textsecond border-bprimary"
@@ -53,7 +48,7 @@ const Highscores = () => {
                 );
               })}
             </div>
-            {tabValue === "TOP SPEED" ? (
+            {tabValue === "Top Speed" ? (
               <>
                 <div className="grid grid-cols-12  px-11 pt-4 w-full">
                   <p className="col-span-1 font-main pb-3 text-[16px] font-medium text-textsecond">
@@ -90,7 +85,7 @@ const Highscores = () => {
               {highscoreList.map((item, index) => {
                 return (
                   <>
-                    {tabValue === "TOP SPEED" ? (
+                    {tabValue === "Top Speed" ? (
                       <div
                         key={index}
                         className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary ${
@@ -99,16 +94,16 @@ const Highscores = () => {
                             : "border-b-2 border-bprimary"
                         }`}
                       >
-                        <p className="col-span-1 font-route text-[20px] text-textcolor">
+                        <p className="col-span-1 font-route text-title3 text-textcolor">
                           {index + 1}
                         </p>
-                        <p className="col-span-7 font-route text-[20px] text-textcolor">
+                        <p className="col-span-7 font-route text-title3 text-textcolor">
                           {item?.user?.username}
                         </p>
-                        <p className="col-span-2 font-route text-[20px] text-textcolor">
+                        <p className="col-span-2 font-route text-title3 text-textcolor">
                           {item?.user?.id}
                         </p>
-                        <p className="col-span-2 font-route text-[20px] pl-6 text-textcolor text-start">
+                        <p className="col-span-2 font-route text-title3  pl-6 text-textcolor text-start">
                           {item?.wpm}
                         </p>
                       </div>
