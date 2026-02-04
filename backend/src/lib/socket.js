@@ -4,6 +4,8 @@ import { Server } from "socket.io";
 import dotenv from "dotenv";
 import colors from "colors";
 import {
+  deleteRoom,
+  deleteRoomInterval,
   duelMatch,
   findOrCreateDuelRoom,
   getRandomSnippet,
@@ -27,8 +29,6 @@ export const io = new Server(server, {
 const users = {};
 const rooms = {};
 
-
-
 io.on("connection", (socket) => {
   socket.on("joinuser", async ({ userId, username, mode }) => {
     console.log("total rooms", Object.keys(rooms).length);
@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
 
   console.log("rooms", rooms);
 
-  socket.on("matchComplete", async ({matchData, roomId}) => {
+  socket.on("matchComplete", async ({ matchData, roomId, isGuestUser }) => {
     console.log("matchComplete", matchData);
     const room = rooms[roomId];
     io.in(roomId).emit("MATCH_COMPLETE");
@@ -59,7 +59,9 @@ io.on("connection", (socket) => {
     }
     delete room.lobbyStartTime;
     delete room.matchStartTime;
-    await createMatch(matchData);
+    if (!isGuestUser) {
+      await createMatch(matchData);
+    }
   });
 
   socket.on("startSoloMatch", ({ roomId }) => {
@@ -69,12 +71,14 @@ io.on("connection", (socket) => {
     console.log(`Starting solo match for room ${roomId}`);
     startMatch(roomId, rooms, io);
   });
-  
 
-  socket.on("requestSnippet", async ({ userId, username, snippetId, roomId }) => {
-    delete rooms[roomId];
-    await soloMatch(userId, username, socket, rooms, snippetId);
-  });
+  socket.on(
+    "requestSnippet",
+    async ({ userId, username, snippetId, roomId }) => {
+      await deleteRoom(roomId, rooms);
+      await soloMatch(userId, username, socket, rooms, snippetId);
+    },
+  );
 
   // Track user progress (without setName) IGNORE THIS NOT IMPORTANT
   socket.on("playerProgress", ({ userId, progress, roomId }) => {
@@ -122,9 +126,12 @@ io.on("connection", (socket) => {
 
     delete room.lobbyStartTime;
     delete room.matchStartTime;
-  
+
     // If no users left, you can optionally delete the room
-    if (room.users.length === 0 || (room.users.length === 1 && room?.users[0]?.userId?.slice(0, 3) === "bot")) {
+    if (
+      room.users.length === 0 ||
+      (room.users.length === 1 && room?.users[0]?.userId?.slice(0, 3) === "bot")
+    ) {
       delete rooms[roomId];
       console.log(`Deleted empty room: ${roomId}`.bgRed.bold);
     }

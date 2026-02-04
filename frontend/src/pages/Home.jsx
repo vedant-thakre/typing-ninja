@@ -19,10 +19,10 @@ import Pagination from "../components/ui/Other/Pagination";
 const Home = () => {
   const navigate = useNavigate();
   const [emoji, setEmoji] = useState(
-    localStorage.getItem("emoji") ?? emojiList[230]
+    localStorage.getItem("emoji") ?? emojiList[230],
   );
   const [nickName, setNickName] = useState(
-    localStorage.getItem("nickName") ?? ""
+    localStorage.getItem("nickName") ?? "",
   );
   const [pageNo, setPageNo] = useState(1);
   const emojisPerPage = 16;
@@ -31,7 +31,7 @@ const Home = () => {
   // Get emojis for the current page
   const currentEmojis = emojiList.slice(
     (pageNo - 1) * emojisPerPage,
-    pageNo * emojisPerPage
+    pageNo * emojisPerPage,
   );
 
   // Handle page change
@@ -48,7 +48,7 @@ const Home = () => {
       <div className="flex gap-x-6 py-5 px-7 mt-[140px]">
         <div className="bg-bgprimary flex-[3.3] h-min flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
               News
             </h5>
           </div>
@@ -102,7 +102,7 @@ const Home = () => {
           <div className=" flex gap-5">
             <div className="bg-bgprimary flex flex-col flex-[4] items-center gap-3 rounded-2xl shadow-hard">
               <div className="w-full">
-                <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+                <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                   You
                 </h5>
               </div>
@@ -119,6 +119,7 @@ const Home = () => {
                           type="text"
                           value={nickName}
                           onChange={(e) => {
+                            if (e.target.value.length > 15) return;
                             setNickName(e.target.value);
                             localStorage.setItem("nickName", e.target.value);
                           }}
@@ -139,7 +140,11 @@ const Home = () => {
                             </motion.div>
                           ))}
                         </div>
-                        <Pagination pageNo={pageNo} setpageNo={setPageNo} />
+                        <Pagination
+                          pageNo={pageNo}
+                          total={emojiList.length}
+                          setpageNo={setPageNo}
+                        />
                       </div>
                     </div>
                   </div>
@@ -163,7 +168,7 @@ const Home = () => {
           {/* Matches */}
           <div className="bg-bgprimary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                 Highscore
               </h5>
             </div>
@@ -213,8 +218,8 @@ const Home = () => {
                               item?.difficulty === "hard"
                                 ? "text-danger"
                                 : item?.difficulty === "easy"
-                                ? "text-success"
-                                : "text-orange"
+                                  ? "text-success"
+                                  : "text-orange"
                             }`}
                           >
                             {item?.difficulty}
@@ -241,7 +246,7 @@ const Home = () => {
           {/* Posts */}
           <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                 Recent Posts
               </h5>
             </div>
@@ -265,7 +270,7 @@ const Home = () => {
                         } gap-[6px]`}
                       >
                         <div className="flex w-full flex-col">
-                          <h5 className="text-textcolor tracking-wider cursor-pointer font-route text-[20px] underline">
+                          <h5 className="text-textcolor tracking-wider cursor-pointer font-route text-title2 underline">
                             {item?.title}
                           </h5>
                           <p className="text-textsecond mt-[-3px] font-route text-[16px]">
@@ -298,7 +303,7 @@ const Home = () => {
           {/* Records */}
           <div className="bg-bgprimary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full">
-              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
+              <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
                 Recent Matches
               </h5>
             </div>

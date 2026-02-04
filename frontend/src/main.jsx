@@ -54,13 +54,14 @@ const router = createBrowserRouter([
       { path: "/search/:username", element: <Search /> },
       { path: "/post/:id", element: <PostPage /> },
       { path: "/profile/:username", element: <Profile /> },
+      { path: "/world", element: <Discuss /> },
+
       {
         element: <ProtectedRoute />,
         children: [
           { path: "/settings", element: <Settings /> },
           // { path: "/store", element: <Store /> },
           { path: "/chats", element: <Chats /> },
-          { path: "/world", element: <Discuss /> },
           { path: "/friends", element: <Friends /> },
           { path: "/submit-snippets", element: <SnippetsList /> },
           { path: "/chats/:username/:id", element: <Chats /> },
@@ -87,7 +88,7 @@ createRoot(document.getElementById("root")).render(
           <Toaster
             toastOptions={{
               className:
-                "bg-primary border-bdshadow text-[22px] py-1 border-4 text-white font-route",
+                "bg-primary border-bdshadow tracking-wide text-title3 py-1 border-4 text-white font-route",
               duration: 3000,
             }}
             position="bottom-right"
@@ -95,5 +96,5 @@ createRoot(document.getElementById("root")).render(
         </QueryClientProvider>
       </Provider>
     </GoogleOAuthProvider>
-  </>
+  </>,
 );

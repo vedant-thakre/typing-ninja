@@ -13,7 +13,6 @@ import colors from "colors";
 // try to implement duel match if possible
 // create the ui for custom matches.
 
-
 const generateUsername = () => {
   const customNumbers = () => Math.floor(Math.random() * 100);
   const baseUsername = uniqueNamesGenerator({
@@ -24,6 +23,25 @@ const generateUsername = () => {
 
   const shouldAddNumber = Math.random() < 0.5;
   return shouldAddNumber ? `${baseUsername}${customNumbers()}` : baseUsername;
+};
+
+// Wherever you delete rooms, also clear the interval
+export const deleteRoom = (roomId, rooms) => {
+  const room = rooms[roomId];
+  if (room && room.intervalId) {
+    clearInterval(room.intervalId);
+    delete room.intervalId;
+  }
+  delete rooms[roomId];
+  console.log(colors.bgRed(`Deleting old interval for room ${roomId}`));
+};
+
+export const deleteRoomInterval = (roomId, rooms) => {
+  const room = rooms[roomId];
+  if (room && room.intervalId) {
+    clearInterval(room.intervalId);
+    delete room.intervalId;
+  }
 };
 
 export const getRandomSnippet = async (snippetId) => {
@@ -50,7 +68,7 @@ export const findOrCreateDuelRoom = (rooms) => {
     roomId = waitingRoomId;
   } else {
     // Create a new room with a unique ID
-    const id = uuidv4();
+    const id = v4();
     roomId = `duel-${id}`;
     rooms[roomId] = { users: [], mode: "duel", started: false };
   }
@@ -71,7 +89,7 @@ export const getBotUser = (socketId) => {
     errorCount: "",
     time: "",
   };
-}
+};
 
 export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
   try {
@@ -121,7 +139,7 @@ export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
   } catch (error) {
     console.error("Error fetching random snippet:", error);
   }
-}
+};
 
 export const startMatch = (roomId, rooms, io) => {
   const room = rooms[roomId];
@@ -131,6 +149,14 @@ export const startMatch = (roomId, rooms, io) => {
   if (!room.lobbyStartTime) {
     room.lobbyStartTime = now;
     room.matchStartTime = now + 1500; // match begins 1.5s later
+  }
+
+  // Check if room object is valid
+  const currentRoom = rooms[roomId];
+  if (!currentRoom || !currentRoom.matchStartTime) {
+    clearInterval(room.intervalId);
+    if (currentRoom) delete currentRoom.intervalId;
+    return;
   }
 
   // Run emit loop every 500ms
@@ -143,12 +169,11 @@ export const startMatch = (roomId, rooms, io) => {
         elapsed < 0
           ? "waiting"
           : elapsed < 10000
-          ? "lobby"
-          : elapsed < 310000
-          ? "game"
-          : "ended",
+            ? "lobby"
+            : elapsed < 310000
+              ? "game"
+              : "ended",
     });
-    
 
     if (elapsed >= 300000) {
       clearInterval(room.intervalId);
@@ -195,7 +220,6 @@ export const simulateBotTyping = (bot, room, io) => {
   bot.intervalId = setInterval(updateProgress, interval);
 };
 
-
 export const duelMatch = async (
   userId,
   username,
@@ -203,7 +227,7 @@ export const duelMatch = async (
   roomId,
   rooms,
   io,
-  mode
+  mode,
 ) => {
   try {
     if (!rooms[roomId]) {
@@ -215,12 +239,21 @@ export const duelMatch = async (
     if (room.started) {
       return socket.emit("error", "Match already started");
     }
-    
+
     if (!room.users.some((u) => u.userId === userId)) {
-      room.users.push({ userId, username, socketId: socket.id, progress: 0, wpm: "", accuracy: "", errorCount: "", time: "" });
+      room.users.push({
+        userId,
+        username,
+        socketId: socket.id,
+        progress: 0,
+        wpm: "",
+        accuracy: "",
+        errorCount: "",
+        time: "",
+      });
       socket.join(roomId);
     }
-      
+
     // Send room user list
     // io.in(roomId).emit("roomUpdate", {
     //   users: room.users.map((u) => u.username),
@@ -276,7 +309,15 @@ export const duelMatch = async (
   }
 };
 
-export const multiplayerMatch = async (userId, username, socket, roomId, rooms, io, mode) => {
+export const multiplayerMatch = async (
+  userId,
+  username,
+  socket,
+  roomId,
+  rooms,
+  io,
+  mode,
+) => {
   try {
     if (!rooms[roomId]) {
       rooms[roomId] = { users: [], mode, started: false };
@@ -330,4 +371,3 @@ errorCount: 17, wpm - 74.82, time - 1.08.61
 
 
 */
-

@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineHome } from "react-icons/ai";
-import { RxChatBubble } from "react-icons/rx";
-import { RxRocket } from "react-icons/rx";
+import { RxChatBubble, RxRocket, RxMoon } from "react-icons/rx";
 import { FiSun } from "react-icons/fi";
-import { RxMoon } from "react-icons/rx";
 import { BsCart3 } from "react-icons/bs";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LuMenu } from "react-icons/lu";
@@ -21,7 +19,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const showResponsiveNav = useSelector(
-    (state) => state.user.showResponsiveNav
+    (state) => state?.user?.showResponsiveNav,
   );
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const loading = useSelector((state) => state.user.loading);
@@ -76,9 +74,9 @@ const Header = () => {
           </NavLink>
           <div className="hidden lg:flex gap-3 xl:gap-6">
             <NavLink to="/" onClick={() => handleTabTitle("Home")}>
-              <div className="flex items-center justify-center gap-1.5 xl:gap-3">
+              <div className="flex items-center justify-center gap-1.5 xl:gap-2">
                 <AiOutlineHome
-                  size={27}
+                  size={22}
                   className="mb-1 text-white font-medium cursor-pointer"
                 />
                 <h5 className="text-white text-[17px] font-bold tracking-wider  font-route cursor-pointer hover:underline">
@@ -87,9 +85,9 @@ const Header = () => {
               </div>
             </NavLink>
             <NavLink to="/discuss" onClick={() => handleTabTitle("Discuss")}>
-              <div className="flex items-center justify-center gap-1.5 xl:gap-3">
+              <div className="flex items-center justify-center gap-1.5 xl:gap-2">
                 <RxChatBubble
-                  size={26}
+                  size={22}
                   className="mb-1 text-white font-medium cursor-pointer"
                 />
                 <h5 className="text-white text-[17px] font-bold tracking-wider font-route cursor-pointer hover:underline">
@@ -101,9 +99,9 @@ const Header = () => {
               to="/highscores"
               onClick={() => handleTabTitle("Highscores")}
             >
-              <div className="flex items-center justify-center gap-1 xl:gap-3">
+              <div className="flex items-center justify-center gap-1 xl:gap-2">
                 <RxRocket
-                  size={27}
+                  size={22}
                   className="mb-1 text-white font-medium cursor-pointer"
                 />
                 <h5 className="text-white text-[17px] font-bold tracking-wider font-route cursor-pointer hover:underline">
@@ -205,20 +203,20 @@ const Header = () => {
                         onClick={() =>
                           handleTabTitle(`Profile - ${user?.username}`)
                         }
-                        className="px-3 cursor-pointer font-route text-[20px] py-1 text-textcolor w-full rounded-lg border-2 border-bprimary"
+                        className="px-3 cursor-pointer tracking-wide font-route text-subtitle py-1 text-textcolor w-full rounded-lg border-2 border-bprimary"
                       >
                         <p>Profile</p>
                       </NavLink>
                       <NavLink
                         to="/friends"
-                        className="px-3 cursor-pointer font-route text-[20px] py-1 text-textcolor w-full rounded-lg border-2 border-bprimary"
+                        className="px-3 cursor-pointer tracking-wide font-route text-subtitle py-1 text-textcolor w-full rounded-lg border-2 border-bprimary"
                         onClick={() => handleTabTitle("Friends")}
                       >
                         <p>Friends</p>
                       </NavLink>
                       <NavLink
                         to="/settings"
-                        className="px-3 cursor-pointer font-route text-[20px] py-1 text-textcolor w-full rounded-lg border-2 border-bprimary"
+                        className="px-3 cursor-pointer tracking-wide font-route text-subtitle py-1 text-textcolor w-full rounded-lg border-2 border-bprimary"
                         onClick={() => handleTabTitle("Settings")}
                       >
                         <p>Settings</p>
@@ -228,7 +226,7 @@ const Header = () => {
                         title={"LOG OUT"}
                         onClick={handleLogout}
                         className={
-                          "mt-1 font-route text-[20px] font-bold rounded-lg text-white bg-[#4e6edd] border-bdshadow border-4 w-[200px]"
+                          "mt-1 font-route pt-1 text-subtitle font-bold rounded-lg text-white bg-[#4e6edd] border-bdshadow border-4 w-[200px]"
                         }
                       />
                       <div className=""></div>
@@ -274,16 +272,26 @@ const Header = () => {
               />
             )}
           </div>
-          <img
-            src={user?.avatar}
-            alt="Profile"
-            onClick={() => {
-              dispatch(setShowResponsiveNav(!showResponsiveNav));
-            }}
-            loading="lazy"
-            crossOrigin="anonymous"
-            className="w-[40px] h-[40px] border-2 bg-bdshadow p-1 border-[] rounded-full object-cover"
-          />
+          {user && user?.avatar ? (
+            <img
+              src={user?.avatar}
+              alt="Profile"
+              onClick={() => {
+                dispatch(setShowResponsiveNav(!showResponsiveNav));
+              }}
+              loading="lazy"
+              crossOrigin="anonymous"
+              className="w-[40px] h-[40px] border-2 bg-bdshadow p-1 border-[] rounded-full object-cover"
+            />
+          ) : (
+            <LuMenu
+              size={25}
+              className="text-white font-medium cursor-pointer"
+              onClick={() => {
+                dispatch(setShowResponsiveNav(!showResponsiveNav));
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import { GoDotFill } from "react-icons/go";
 import CommentReplyBox from "./CommentReplyBox";
 import CommentBox from "./CommentBox";
 import { getPost } from "../../../store/slices/postSlice";
+import LoginWarningBanner from "../Other/LoginWarningBanner";
 
 const PostPage = () => {
   const dispatch = useDispatch();
@@ -24,22 +25,15 @@ const PostPage = () => {
     <div className="min-h-screen mx-3 md:mx-0 flex flex-col justify-center items-center">
       <div className="flex flex-col gap-4 w-[700px] mt-[100px]">
         {!user && (
-          <div className="bg-danger rounded-lg px-4 py-2 flex justify-between items-center">
-            <div className=" font-route text-[21px] text-white ">
-              Log in to comment on this post.
-            </div>
-            <span onClick={() => navigate("/login")} className="font-route text-[18px] text-white underline cursor-pointer">
-              Login
-            </span>
-          </div>
+          <LoginWarningBanner warning="Log in to comment on this post." />
         )}
         <div className="bg-bgsecondary mb-[30px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full flex justify-between px-5 bg-primary py-2 rounded-t-2xl">
-            <h5 className="text-white font-route text-[24px] font-bold">
+            <h5 className="text-white font-route text-title font-bold">
               Discussion
             </h5>
             <NavLink to="/discuss" onClick={() => handleTabTitle("Discuss")}>
-              <h5 className="text-white underline w-max flex gap-[2px] cursor-pointer items-center font-route text-[21px] font-bold">
+              <h5 className="text-white underline w-max flex gap-[2px] cursor-pointer items-center font-route text-title2 font-bold">
                 Back
               </h5>
             </NavLink>
@@ -48,10 +42,10 @@ const PostPage = () => {
             <div className="flex flex-col mx-5 my-2 gap-2 pt-4 pb-4 px-6 border-2 border-bprimary rounded-2xl">
               <div className="flex flex-col px-1 gap-7">
                 <div className="flex flex-col gap-3">
-                  <h2 className="text-4xl text-textcolor font-route">
+                  <h2 className="text-posttitle text-textcolor font-route">
                     {post?.title}
                   </h2>
-                  <p className="font-route text-[21px] mt-[-17px] tracking-w_ide text-textsecond">
+                  <p className="font-route text-title3 mt-[-15px] tracking-w_ide text-textsecond">
                     Posted by{" "}
                     <span
                       className="text-textcolor underline cursor-pointer"
@@ -64,7 +58,7 @@ const PostPage = () => {
                     {getRelativeTime(post?.createdAt)}
                   </p>
                 </div>
-                <p className="font-main text-[16px] text-textcolor leading-7">
+                <p className="font-main text-content text-textcolor leading-7">
                   {post?.content}
                 </p>
               </div>
@@ -83,7 +77,7 @@ const PostPage = () => {
         <div className="flex flex-col gap-4 w-[700px]">
           <div className="bg-bgsecondary mb-[50px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
             <div className="w-full flex justify-between px-5 bg-primary py-2 rounded-t-2xl">
-              <h5 className="text-white font-route tracking-wider text-[24px] font-bold">
+              <h5 className="text-white font-route tracking-wider text-title font-bold">
                 {post?.commentsCount}{" "}
                 {post?.commentsCount > 1 ? "Comments" : "Comment"}
               </h5>
