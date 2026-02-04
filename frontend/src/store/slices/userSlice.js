@@ -8,7 +8,7 @@ const accessToken = localStorage.getItem("accessToken")
 
 const theme = localStorage.getItem("theme")
   ? localStorage.getItem("theme")
-  : "dark";  
+  : "dark";
 
 const initialState = {
   loading: true,
@@ -24,30 +24,28 @@ const initialState = {
   theme,
 };
 
-export const registerUser = createAsyncThunk( "user/register", async (user) => {
-    try {
-      const response = await axiosInstance.post("users/register", user);
-      toast.success(response.data.message);
-      return response.data;
-    } catch (error) {
-      toast.error(error.response.data.message);
-      throw error;
-    }
+export const registerUser = createAsyncThunk("user/register", async (user) => {
+  try {
+    const response = await axiosInstance.post("users/register", user);
+    toast.success(response.data.message);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response.data.message);
+    throw error;
   }
-);
+});
 
-export const googleAuth = createAsyncThunk( "user/google-auth", async (user) => {
-    try {
-      const response = await axiosInstance.post("users/google-auth", user);
-      console.log(response.data);
-      toast.success(response.data.message);
-      return response.data;
-    } catch (error) {
-      toast.error(error.response.data.message);
-      throw error;
-    }
+export const googleAuth = createAsyncThunk("user/google-auth", async (user) => {
+  try {
+    const response = await axiosInstance.post("users/google-auth", user);
+    console.log(response.data);
+    toast.success(response.data.message);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response.data.message);
+    throw error;
   }
-);
+});
 
 export const loginUser = createAsyncThunk("user/login", async (user) => {
   try {
@@ -64,7 +62,7 @@ export const getUserProfile = createAsyncThunk("user/profile", async () => {
   try {
     const response = await axiosInstance.get("users/user-profile");
     console.log("profile", response.data);
-    toast.success("Profile fetched ")
+    toast.success("Profile fetched ");
     return response.data;
   } catch (error) {
     toast.error(error.response.data.message);
@@ -83,7 +81,7 @@ export const updateUserDetails = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const logoutUser = createAsyncThunk("user/logout", async () => {
@@ -93,43 +91,48 @@ export const logoutUser = createAsyncThunk("user/logout", async () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("username");
     return response.data;
-  }
-  catch (error) {
-    toast.error(error.response.data.message);
-    throw error;
-  }
-});
-
-export const refreshAccessToken = createAsyncThunk("user/refresh-token", async () => {
-  try {
-    const response = await axiosInstance.get("users/refresh-access-token");
-    localStorage.setItem("accessToken", response.data.data.accessToken);
-    return response.data;
   } catch (error) {
     toast.error(error.response.data.message);
     throw error;
   }
 });
 
-export const getSearchedUser = createAsyncThunk("user/search", async (username) => {
-  try {
-    const response = await axiosInstance.get(
-      `users/get-user-profile?username=${username}`
-    );
-    toast.success("Search User fetched");
-    return response.data;
-  } catch (error) {
-    toast.error(error.response.data.message);
-    throw error;
-  }
-});
+export const refreshAccessToken = createAsyncThunk(
+  "user/refresh-token",
+  async () => {
+    try {
+      const response = await axiosInstance.get("users/refresh-access-token");
+      localStorage.setItem("accessToken", response.data.data.accessToken);
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      throw error;
+    }
+  },
+);
+
+export const getSearchedUser = createAsyncThunk(
+  "user/search",
+  async (username) => {
+    try {
+      const response = await axiosInstance.get(
+        `users/get-user-profile?username=${username}`,
+      );
+      toast.success("Search User fetched");
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      throw error;
+    }
+  },
+);
 
 export const getFriendsAndRequestsList = createAsyncThunk(
   "user/friends-requests",
-  async ({isFriend, search, pageNo, limit}) => {
+  async ({ isFriend, search, pageNo, limit }) => {
     try {
       const response = await axiosInstance.get(
-        `users/get-friends-requsts?isFriend=${isFriend}&search=${search}&pageNo=${pageNo}&limit=${limit}`
+        `users/get-friends-requsts?isFriend=${isFriend}&search=${search}&pageNo=${pageNo}&limit=${limit}`,
       );
       toast.success("Friends fetched");
       return response.data;
@@ -137,7 +140,7 @@ export const getFriendsAndRequestsList = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const acceptRequest = createAsyncThunk(
@@ -152,7 +155,7 @@ export const acceptRequest = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const sendRequest = createAsyncThunk(
@@ -162,7 +165,7 @@ export const sendRequest = createAsyncThunk(
       const response = await axiosInstance.post(`users/add-friend`, {
         id,
       });
-      if(response?.status === 200){
+      if (response?.status === 200) {
         toast.success(response.data.message);
       }
       return response.data;
@@ -170,7 +173,7 @@ export const sendRequest = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const rejectRequest = createAsyncThunk(
@@ -185,46 +188,57 @@ export const rejectRequest = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
-export const removeFriend = createAsyncThunk("user/remove-friend", async (id) => {
-  try {
-    const response = await axiosInstance.post(`users/remove-friend`, {
-      id,
-    });
-    return response.data;
-  } catch (error) {
-    toast.error(error.response.data.message);
-    throw error;
-  }
-});
-
-export const getAvatars = createAsyncThunk("user/all-avatars", async (folder) => {
-  try {
-    const response = await axiosInstance.get(`users/get-all-avatars/${folder}`);
-    return response.data;
-  } catch (error) {
-    toast.error(error.response.data.message);
-    throw error;
-  }
-});
-
-export const updateAvatar = createAsyncThunk("user/change-avatar", async (avatar, {dispatch}) => {
-  try {
-    const response = await axiosInstance.patch(`users/change-avatar`, {
-      avatar,
-    });
-    if(response?.status === 200){
-      dispatch(getUserProfile());
-      toast.success(response.data.message);
+export const removeFriend = createAsyncThunk(
+  "user/remove-friend",
+  async (id) => {
+    try {
+      const response = await axiosInstance.post(`users/remove-friend`, {
+        id,
+      });
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      throw error;
     }
-    return response.data;
-  } catch (error) {
-    toast.error(error.response.data.message);
-    throw error;
-  }
-});
+  },
+);
+
+export const getAvatars = createAsyncThunk(
+  "user/all-avatars",
+  async (folder) => {
+    try {
+      const response = await axiosInstance.get(
+        `users/get-all-avatars/${folder}`,
+      );
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      throw error;
+    }
+  },
+);
+
+export const updateAvatar = createAsyncThunk(
+  "user/change-avatar",
+  async (avatar, { dispatch }) => {
+    try {
+      const response = await axiosInstance.patch(`users/change-avatar`, {
+        avatar,
+      });
+      if (response?.status === 200) {
+        dispatch(getUserProfile());
+        toast.success(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      throw error;
+    }
+  },
+);
 
 export const checkFriend = createAsyncThunk("user/check-friend", async (id) => {
   try {
@@ -240,13 +254,15 @@ export const searchUser = createAsyncThunk(
   "user/search-result",
   async ({ user, page }) => {
     try {
-      const response = await axiosInstance.get(`users/search?user=${user}&page=${page}&limit=${10}`);
+      const response = await axiosInstance.get(
+        `users/search?user=${user}&page=${page}&limit=${10}`,
+      );
       return response.data;
     } catch (error) {
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 const userSlice = createSlice({
@@ -291,7 +307,7 @@ const userSlice = createSlice({
       state.loading = false;
       state.status = true;
       state.userData = action.payload.data;
-    }); 
+    });
     builder.addCase(getUserProfile.rejected, (state) => {
       state.loading = false;
       state.status = false;
@@ -325,7 +341,7 @@ const userSlice = createSlice({
     builder.addCase(checkFriend.fulfilled, (state, action) => {
       state.apiLoading = false;
       console.log("checkFriend", action.payload);
-      state.isFriend = action.payload.data
+      state.isFriend = action.payload.data;
     });
     builder.addCase(checkFriend.rejected, (state) => {
       state.apiLoading = false;
@@ -335,7 +351,7 @@ const userSlice = createSlice({
     });
     builder.addCase(sendRequest.fulfilled, (state, action) => {
       state.apiLoading = false;
-      state.isFriend = {isFriend: false, requested: true}; 
+      state.isFriend = { isFriend: false, requested: true };
     });
     builder.addCase(sendRequest.rejected, (state) => {
       state.apiLoading = false;
