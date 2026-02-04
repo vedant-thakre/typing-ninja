@@ -27,6 +27,7 @@ import Chats from "./pages/Chats.jsx";
 import Friends from "./pages/Friends.jsx";
 import Search from "./pages/Search.jsx";
 import SnippetsList from "./pages/SnippetsList.jsx";
+import VerifyEmail from "./pages/VerifyEmail.jsx";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const router = createBrowserRouter([
           { path: "/friends", element: <Friends /> },
           { path: "/submit-snippets", element: <SnippetsList /> },
           { path: "/chats/:username/:id", element: <Chats /> },
+           { path: "/verify-email", element: <VerifyEmail/> },
         ],
       },
       {

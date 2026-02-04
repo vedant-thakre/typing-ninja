@@ -29,7 +29,7 @@ const Discuss = () => {
             onClick={() => {
               navigate("/discuss");
             }}
-            className="font-route shadow-hard text-white hover:underline font-bold text-2xl rounded-xl py-2 px-24"
+            className="font-route shadow-hard text-white hover:underline font-bold text-[20px] rounded-xl py-2 px-24"
           />
           <AnimatedButton
             title="World Chat"
@@ -38,7 +38,7 @@ const Discuss = () => {
             onClick={() => {
               navigate("/world");
             }}
-            className="font-route shadow-hard text-white hover:underline font-bold text-2xl rounded-xl py-2 px-24"
+            className="font-route shadow-hard text-white hover:underline font-bold text-[20px] rounded-xl py-2 px-24"
           />
         </div>
         {tabValue === "Discussion" ? (

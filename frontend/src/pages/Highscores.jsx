@@ -18,20 +18,20 @@ const Highscores = () => {
             title="TOP SPEED"
             onClick={() => setTabValue("TOP SPEED")}
             className={
-              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
+              "font-route shadow-hard text-white font-bold text-[20px] rounded-2xl py-10 px-24"
             }
           />
           <AnimatedButton
             title="TOP MATCHES"
             onClick={() => setTabValue("TOP MATCHES")}
             className={
-              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
+              "font-route shadow-hard text-white font-bold text-[20px] rounded-2xl py-10 px-24"
             }
           />
         </div>
         <div className="bg-bgprimary mb-[50px] w-full flex flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
               {(tabValue === "TOP SPEED" ? "Top Speed" : "Top Matches") +
                 ` - ${difficultyValue.toLowerCase()} quotes`}
             </h5>
@@ -43,7 +43,7 @@ const Highscores = () => {
                   <div
                     key={index}
                     onClick={() => setDifficultyValue(item)}
-                    className={` font-route text-[22px] pb-2 border-b-[3px]  ${
+                    className={` font-route text-[20px] pb-2 border-b-[3px]  ${
                       difficultyValue === item
                         ? "border-primary text-primary"
                         : "text-textsecond border-bprimary"

@@ -59,11 +59,11 @@ const RequestSnippet = () => {
         className={`bg-bgsecondary flex flex-col items-center gap-3 rounded-2xl  shadow-hard`}
       >
         <div className="w-full flex justify-between px-5 bg-primary py-2 rounded-t-2xl">
-          <h5 className="text-white font-route text-[24px] font-bold">
+          <h5 className="text-white font-route text-[20px] font-bold">
             Create Post
           </h5>
           <NavLink to="/discuss" onClick={() => navigate(-1)}>
-            <h5 className="text-white underline w-max flex gap-[2px] cursor-pointer items-center font-route text-[21px] font-bold">
+            <h5 className="text-white underline w-max flex gap-[2px] cursor-pointer items-center font-route text-[20px] font-bold">
               Back
             </h5>
           </NavLink>
@@ -72,7 +72,7 @@ const RequestSnippet = () => {
           <div className="flex flex-col gap-3">
             <div className="grid grid-cols-3 gap-3">
               <div className="flex flex-col col-span-2 ">
-                <p className="font-route text-[21px] text-textcolor font-normal">
+                <p className="font-route text-[20px] text-textcolor font-normal">
                   Title
                 </p>
                 <input
@@ -86,7 +86,7 @@ const RequestSnippet = () => {
                 />
               </div>
               <div className="flex flex-col col-span-1 ">
-                <p className="font-route text-[21px] text-textcolor font-normal">
+                <p className="font-route text-[20px] text-textcolor font-normal">
                   Difficulty
                 </p>
                 <select
@@ -103,7 +103,7 @@ const RequestSnippet = () => {
                     else if (e.target.value === "hard")
                       setWordLimit({ min: 380, max: 460 });
                   }}
-                  className="border-2 border-bprimary cursor-pointer  ml-2 mt-[-5px] lg:ml-0 rounded-md placeholder-white outline-none focus:ring-0 py-2 font-main text-[13px] px-2 bg-transparent text-textcolor"
+                  className="border-2 border-bprimary cursor-pointer ml-2 mt-[-5px] lg:ml-0 rounded-md placeholder-white outline-none focus:ring-0 py-2 font-main text-[13px] px-2 bg-transparent text-textcolor"
                   id=""
                 >
                   <option value="easy">Easy</option>
@@ -114,12 +114,12 @@ const RequestSnippet = () => {
             </div>
             <div className="flex flex-col">
               <div className="flex justify-between">
-                <p className="font-route text-[21px] text-textcolor font-normal">
+                <p className="font-route text-[20px] text-textcolor font-normal">
                   Content
                 </p>
-                <p className="font-route text-[21px] text-textcolor font-normal">
+                <p className="font-route text-[20px] text-textcolor font-normal">
                   Limit :{" "}
-                  <span className="font-route text-[18px] ml-1 text-textsecond">
+                  <span className="font-route text-[16px] ml-1 text-textsecond">
                     {wordLimit?.min} - {wordLimit?.max} words
                   </span>
                 </p>
@@ -131,7 +131,7 @@ const RequestSnippet = () => {
                   setSnippetInfo({ ...snippetInfo, content: e.target.value })
                 }
                 placeholder="The content of your snippet..."
-                className="border-2 border-bprimary w-full font-route text-[20px] leading-6 tracking-wide  mt-[-5px] placeholder:font-route rounded-md placeholder:text-[20px]  placeholder-textsecond outline-none focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor flex items-center"
+                className="border-2 border-bprimary w-full font-route text-[20px] leading-6 tracking-wide  mt-[-5px] placeholder:font-route rounded-md placeholder:text-[16px]  placeholder-textsecond outline-none focus:ring-0 py-2 px-2 bg-bgsecondary text-textcolor flex items-center"
               />
             </div>
           </div>

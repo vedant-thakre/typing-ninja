@@ -76,7 +76,7 @@ const WorldChat = () => {
     <div className="w-[800px] flex flex-col h-[38rem] gap-5 justify-center">
       <div className="bg-bgprimary w-full relative h-full pb-3 flex flex-col items-center gap-3 rounded-2xl shadow-hard">
         <div className="w-full">
-          <h5 className="text-white flex items-center justify-between tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+          <h5 className="text-white flex items-center justify-between tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[20px] font-bold">
             <span>{`Chat`}</span>
             <span className="text-[20px] text-[#96f471]">{`${activeUserCount} Online`}</span>
           </h5>
