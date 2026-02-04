@@ -111,7 +111,9 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+userSchema.index({ matchCount: -1 });
 
 export const User = model("User", userSchema);

@@ -12,9 +12,19 @@ const snippetSchema = new mongoose.Schema(
     },
     highScores: [
       {
-        username: { type: String, required: true },
-        wpm: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now },
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        wpm: {
+          type: Number,
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
     status: {
@@ -27,7 +37,10 @@ const snippetSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+
+snippetSchema.index({ difficulty: 1 });
+snippetSchema.index({ "highScores.user": 1 });
 
 export const Snippet = mongoose.model("Snippet", snippetSchema);

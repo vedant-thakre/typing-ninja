@@ -71,7 +71,7 @@ export const formatSmartDate = (dateString) => {
 
   // Case 6: Older than a year
   return inputDate.toLocaleDateString([], fullDate);
-}
+};
 
 export const countEmojis = (str) => {
   const trimmedStr = str.trim();
@@ -88,7 +88,7 @@ export const countEmojis = (str) => {
 
     const emojiRegex = /\p{Emoji}/u;
     const allSegmentsAreEmojis = segments.every((segment) =>
-      emojiRegex.test(segment.segment)
+      emojiRegex.test(segment.segment),
     );
 
     if (allSegmentsAreEmojis) {
@@ -97,7 +97,6 @@ export const countEmojis = (str) => {
       return 0;
     }
   } else {
-
     const emojiRegex =
       /(?:\p{Emoji_Presentation}|\p{Extended_Pictographic})(?:\u200D(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}))*|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu;
 
@@ -336,7 +335,7 @@ export const genders = [
   { label: "Male", value: "male" },
   { label: "Female", value: "female" },
   { label: "Other", value: "other" },
-]
+];
 
 export const errorToast = {
   position: "top-center",
@@ -347,8 +346,6 @@ export const errorToast = {
     border: "3px solid #d73c42",
   },
 };
-
-
 
 // accept only letters and whitespaces
 export const isKeyboardCodeAllowed = (code) => {
@@ -370,7 +367,6 @@ export const isKeyboardCodeAllowed = (code) => {
     code === "Space" // Allow space
   );
 };
-
 
 export const countErrors = (actual, expected) => {
   const expectedCharacters = expected.split("");
@@ -403,7 +399,6 @@ export const debug = (str) => {
   }
 };
 
-
 // #FF9898
 // #81E7AF
 // #03A791
@@ -424,5 +419,3 @@ export const debug = (str) => {
 // #FF90BB
 // #E90064
 // #8D8DAA
-
-

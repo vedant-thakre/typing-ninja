@@ -45,16 +45,46 @@ export const deleteRoomInterval = (roomId, rooms) => {
 };
 
 export const getRandomSnippet = async (snippetId) => {
-  const matchStage = snippetId
-    ? [{ $match: { status: "approved", _id: { $ne: snippetId } } }]
-    : [{ $match: { status: "approved" } }];
+  let query = { status: "approved" };
 
-  const [randomSnippet] = await Snippet.aggregate([
-    ...matchStage,
-    { $sample: { size: 1 } },
-  ]);
+  if (snippetId) {
+    query._id = { $ne: snippetId };
+  }
 
-  return randomSnippet || null;
+  // Get count for random selection
+  const count = await Snippet.countDocuments(query);
+
+  if (count === 0) return null;
+
+  // Get random document
+  const random = Math.floor(Math.random() * count);
+  const snippet = await Snippet.findOne(query)
+    .skip(random)
+    .populate({
+      path: "highScores.user",
+      select: "username",
+    })
+    .lean();
+
+  if (!snippet) return null;
+
+  // Transform highScores to only have username (remove user ObjectId)
+  snippet.highScores = snippet.highScores.map((score) => {
+    // Create new object with only desired fields
+    const newScore = {
+      username: score.user?.username || null,
+      wpm: score.wpm,
+      createdAt: score.createdAt,
+      _id: score._id,
+    };
+
+    // Remove user field completely
+    delete newScore.user;
+
+    return newScore;
+  });
+
+  return snippet;
 };
 
 export const findOrCreateDuelRoom = (rooms) => {
@@ -118,6 +148,8 @@ export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
     }
 
     const snippet = await getRandomSnippet(snippetId);
+
+    console.log(snippet);
 
     if (!snippet) {
       console.error("No snippets found.");

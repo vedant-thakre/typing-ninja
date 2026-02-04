@@ -1,26 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AnimatedButton from "../components/ui/Other/AnimatedButton";
 import { FaLessThan, FaGreaterThan } from "react-icons/fa";
 import { highscoreList } from "../utils/data";
 import Pagination from "../components/ui/Other/Pagination";
+import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHighScores } from "../store/slices/scoreSlice";
+import { getRelativeTime } from "../utils/helper";
 
 const Highscores = () => {
-  const [tabValue, setTabValue] = useState("Top Speed");
-  const [difficultyValue, setDifficultyValue] = useState("ALL");
-  const difficuties = ["ALL", "EASY", "MEDIUM", "HARD"];
-  const [pageNo, setpageNo] = useState(1);
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab") || "speed";
+  const difficultyParam = searchParams.get("difficulty") || "all";
+  const pageParam = parseInt(searchParams.get("page")) || 1;
+  const limitParam = parseInt(searchParams.get("limit")) || 10;
+
+  const tabValue = tabParam === "matches" ? "Top Matches" : "Top Speed";
+  const difficultyValue = difficultyParam.toUpperCase();
+  const pageNo = pageParam;
+  const limit = limitParam;
+  const query = tabParam === "matches" ? "matchCount" : "wpm";
+
+  const difficulties = ["ALL", "EASY", "MEDIUM", "HARD"];
+
+  const { cache, loading } = useSelector((state) => state.scores);
+
+  const cacheKey = `${difficultyParam}-${query}-${pageNo}-${limit}`;
+  const leaderboardData = cache[cacheKey] || {};
+  const rows = leaderboardData.data || [];
+  console.log(rows);
+
+  const updateParams = (updates) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    Object.entries(updates).forEach(([key, value]) => {
+      newParams.set(key, value);
+    });
+
+    setSearchParams(newParams);
+  };
+
+  useEffect(() => {
+    if (!searchParams.toString()) {
+      setSearchParams({
+        tab: "speed",
+        difficulty: "all",
+        page: 1,
+        limit: 10,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(
+      fetchHighScores({
+        page: pageNo,
+        limit: limit,
+        difficulty: difficultyParam,
+        query,
+      }),
+    );
+  }, [dispatch, pageNo, limit, difficultyParam, query]);
+
   return (
     <div className="min-h-screen mx-3 md:mx-0 flex justify-center">
       <div className="flex flex-col gap-4 w-[800px] mt-[30px]">
         <div className="grid grid-cols-2 gap-3 ">
           <AnimatedButton
             title="Top Speed"
-            onClick={() => setTabValue("Top Speed")}
+            onClick={() => updateParams({ tab: "speed", page: 1 })}
             className="font-route shadow-hard text-white hover:underline tracking-wide font-medium text-xl rounded-xl py-2 px-24"
           />
           <AnimatedButton
             title="Top Matches"
-            onClick={() => setTabValue("Top Matches")}
+            onClick={() => updateParams({ tab: "matches", page: 1 })}
             className="font-route shadow-hard text-white hover:underline font-normal tracking-normal text-title2 rounded-xl py-2 px-24"
           />
         </div>
@@ -30,13 +84,21 @@ const Highscores = () => {
               {tabValue + ` - ${difficultyValue.toLowerCase()} quotes`}
             </h5>
 
-            <Pagination pageNo={pageNo} setpageNo={setpageNo} />
+            <Pagination
+              pageNo={pageNo}
+              setpageNo={(newPage) => updateParams({ page: newPage })}
+            />
             <div className="grid grid-cols-4 pt-4 w-full">
-              {difficuties.map((item, index) => {
+              {difficulties.map((item, index) => {
                 return (
                   <div
                     key={index}
-                    onClick={() => setDifficultyValue(item)}
+                    onClick={() =>
+                      updateParams({
+                        difficulty: item.toLowerCase(),
+                        page: 1,
+                      })
+                    }
                     className={` font-route text-title3 pb-2 border-b-[3px]  ${
                       difficultyValue === item
                         ? "border-primary text-primary"
@@ -82,38 +144,51 @@ const Highscores = () => {
           </div>
           <div className="px-6 pb-5 w-full">
             <div className="flex w-full flex-col gap-2 pt-2 pb-3 px-3 border-2  border-bprimary rounded-2xl">
-              {highscoreList.map((item, index) => {
-                return (
-                  <>
-                    {tabValue === "Top Speed" ? (
-                      <div
-                        key={index}
-                        className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary ${
-                          index === highscoreList?.length - 1
-                            ? ""
-                            : "border-b-2 border-bprimary"
-                        }`}
-                      >
-                        <p className="col-span-1 font-route text-title3 text-textcolor">
-                          {index + 1}
-                        </p>
-                        <p className="col-span-7 font-route text-title3 text-textcolor">
-                          {item?.user?.username}
-                        </p>
+              {loading && (
+                <p className="text-center text-textsecond py-4">
+                  Loading leaderboard…
+                </p>
+              )}
+              {!loading &&
+                rows?.length > 0 &&
+                rows.map((item, index) => {
+                  return (
+                    <div
+                      key={item?.userId || index}
+                      className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary ${
+                        index === rows?.length - 1
+                          ? ""
+                          : "border-b-2 border-bprimary"
+                      }`}
+                    >
+                      <p className="col-span-1 font-route text-title3 text-textcolor">
+                        {index + 1}
+                      </p>
+                      <p className="col-span-7 font-route text-title3 text-textcolor">
+                        {item?.username}
+                      </p>
+
+                      {tabValue === "Top Speed" ? (
+                        <>
+                          <p className="col-span-2 font-route text-body1 text-textcolor">
+                            {getRelativeTime(item?.date)}
+                          </p>
+                          <p className="col-span-2 font-route text-content  pl-6 text-textcolor text-center">
+                            {item?.wpm}
+                          </p>
+                        </>
+                      ) : (
                         <p className="col-span-2 font-route text-title3 text-textcolor">
-                          {item?.user?.id}
+                          {item?.matchCount}
                         </p>
-                        <p className="col-span-2 font-route text-title3  pl-6 text-textcolor text-start">
-                          {item?.wpm}
-                        </p>
-                      </div>
-                    ) : (
-                      <div key={index} className=""></div>
-                    )}
-                  </>
-                );
-              })}
-              <Pagination pageNo={pageNo} setpageNo={setpageNo} />
+                      )}
+                    </div>
+                  );
+                })}
+              <Pagination
+                pageNo={pageNo}
+                setpageNo={(page) => updateParams({ page })}
+              />
             </div>
           </div>
         </div>
