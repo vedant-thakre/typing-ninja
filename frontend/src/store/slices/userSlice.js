@@ -9,7 +9,6 @@ const accessToken = localStorage.getItem("accessToken")
 const theme = localStorage.getItem("theme")
   ? localStorage.getItem("theme")
   : "dark";
-  : "dark";
 
 const initialState = {
   loading: false,
