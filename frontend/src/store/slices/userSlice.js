@@ -9,9 +9,10 @@ const accessToken = localStorage.getItem("accessToken")
 const theme = localStorage.getItem("theme")
   ? localStorage.getItem("theme")
   : "dark";
+  : "dark";
 
 const initialState = {
-  loading: true,
+  loading: false,
   apiLoading: false,
   status: false,
   userData: null,
@@ -22,11 +23,40 @@ const initialState = {
   search: [],
   accessToken,
   theme,
+  otp: null,
 };
 
 export const registerUser = createAsyncThunk("user/register", async (user) => {
   try {
     const response = await axiosInstance.post("users/register", user);
+    toast.success(response.data.message);
+    return response.data;
+  } catch (error) {
+    toast.error(error.response.data.message);
+    throw error;
+  }
+});
+
+export const verifyEmailOTP = createAsyncThunk(
+  "user/confirm-email-otp",
+  async (data) => {
+    try {
+      const response = await axiosInstance.post(
+        "users/confirm-email-otp",
+        data,
+      );
+      toast.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      throw error;
+    }
+  },
+);
+
+export const validateEmail = createAsyncThunk("user/verify-email", async () => {
+  try {
+    const response = await axiosInstance.get("users/verify-email");
     toast.success(response.data.message);
     return response.data;
   } catch (error) {
@@ -284,6 +314,21 @@ const userSlice = createSlice({
       state.status = true;
       state.loading = false;
       state.userData = action.payload.data?.user;
+    });
+    builder.addCase(verifyEmailOTP.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(verifyEmailOTP.fulfilled, (state, action) => {
+      state.status = true;
+      state.loading = false;
+      state.otp = action.payload.data?.otp;
+    });
+    builder.addCase(validateEmail.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(validateEmail.fulfilled, (state) => {
+      state.status = true;
+      state.loading = false;
     });
     builder.addCase(loginUser.pending, (state) => {
       state.loading = true;

@@ -109,7 +109,7 @@ const RequestSnippet = () => {
                     else if (e.target.value === "hard")
                       setWordLimit({ min: 380, max: 460 });
                   }}
-                  className="border-2 border-bprimary cursor-pointer  ml-2 mt-[-5px] lg:ml-0 rounded-md placeholder-white outline-none focus:ring-0 py-2 font-main text-[13px] px-2 bg-transparent text-textcolor"
+                  className="border-2 border-bprimary cursor-pointer ml-2 mt-[-5px] lg:ml-0 rounded-md placeholder-white outline-none focus:ring-0 py-2 font-main text-[13px] px-2 bg-transparent text-textcolor"
                   id=""
                 >
                   <option value="easy">Easy</option>

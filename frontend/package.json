@@ -7,7 +7,8 @@
     "dev": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && vite'",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:win": "vite"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.2",
@@ -30,6 +31,7 @@
     "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-loader-spinner": "^8.0.0",
+    "react-otp-input": "^3.1.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.2.0",
     "react-scroll-to-bottom": "^4.2.0",
