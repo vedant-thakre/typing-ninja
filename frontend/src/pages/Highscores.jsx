@@ -1,49 +1,105 @@
-import React, { useState } from 'react'
-import AnimatedButton from '../components/ui/Other/AnimatedButton';
+import React, { useEffect, useState } from "react";
+import AnimatedButton from "../components/ui/Other/AnimatedButton";
 import { FaLessThan, FaGreaterThan } from "react-icons/fa";
-import { highscoreList } from '../utils/data';
-import Pagination from '../components/ui/Other/Pagination';
-
+import { highscoreList } from "../utils/data";
+import Pagination from "../components/ui/Other/Pagination";
+import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHighScores } from "../store/slices/scoreSlice";
+import { getRelativeTime } from "../utils/helper";
 
 const Highscores = () => {
-  const [tabValue, setTabValue] = useState("TOP SPEED");
-  const [difficultyValue, setDifficultyValue] = useState("ALL");
-  const difficuties = ["ALL", "EASY", "MEDIUM", "HARD"];
-  const [pageNo, setpageNo] = useState(1);
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab") || "speed";
+  const difficultyParam = searchParams.get("difficulty") || "all";
+  const pageParam = parseInt(searchParams.get("page")) || 1;
+  const limitParam = parseInt(searchParams.get("limit")) || 10;
+
+  const tabValue = tabParam === "matches" ? "Top Matches" : "Top Speed";
+  const difficultyValue = difficultyParam.toUpperCase();
+  const pageNo = pageParam;
+  const limit = limitParam;
+  const query = tabParam === "matches" ? "matchCount" : "wpm";
+
+  const difficulties = ["ALL", "EASY", "MEDIUM", "HARD"];
+
+  const { cache, loading } = useSelector((state) => state.scores);
+
+  const cacheKey = `${difficultyParam}-${query}-${pageNo}-${limit}`;
+  const leaderboardData = cache[cacheKey] || {};
+  const rows = leaderboardData.data || [];
+  console.log(rows);
+
+  const updateParams = (updates) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    Object.entries(updates).forEach(([key, value]) => {
+      newParams.set(key, value);
+    });
+
+    setSearchParams(newParams);
+  };
+
+  useEffect(() => {
+    if (!searchParams.toString()) {
+      setSearchParams({
+        tab: "speed",
+        difficulty: "all",
+        page: 1,
+        limit: 10,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(
+      fetchHighScores({
+        page: pageNo,
+        limit: limit,
+        difficulty: difficultyParam,
+        query,
+      }),
+    );
+  }, [dispatch, pageNo, limit, difficultyParam, query]);
+
   return (
-    <div className="min-h-screen flex flex-col  mt-[150px] justify-center gap-5 items-center">
-      <div className=" w-[700px] flex flex-col gap-5 justify-center">
-        <div className="grid grid-cols-2 gap-5 ">
+    <div className="min-h-screen mx-3 md:mx-0 flex justify-center">
+      <div className="flex flex-col gap-4 w-[800px] mt-[30px]">
+        <div className="grid grid-cols-2 gap-3 ">
           <AnimatedButton
-            title="TOP SPEED"
-            onClick={() => setTabValue("TOP SPEED")}
-            className={
-              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
-            }
+            title="Top Speed"
+            onClick={() => updateParams({ tab: "speed", page: 1 })}
+            className="font-route shadow-hard text-white hover:underline tracking-wide font-medium text-xl rounded-xl py-2 px-24"
           />
           <AnimatedButton
-            title="TOP MATCHES"
-            onClick={() => setTabValue("TOP MATCHES")}
-            className={
-              "font-route shadow-hard text-white font-bold text-xl rounded-2xl py-10 px-24"
-            }
+            title="Top Matches"
+            onClick={() => updateParams({ tab: "matches", page: 1 })}
+            className="font-route shadow-hard text-white hover:underline font-normal tracking-normal text-title2 rounded-xl py-2 px-24"
           />
         </div>
         <div className="bg-bgprimary mb-[50px] w-full flex flex-col items-center gap-3 rounded-2xl shadow-hard">
           <div className="w-full">
-            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-              {(tabValue === "TOP SPEED" ? "Top Speed" : "Top Matches") +
-                ` - ${difficultyValue.toLowerCase()} quotes`}
+            <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title2 font-bold">
+              {tabValue + ` - ${difficultyValue.toLowerCase()} quotes`}
             </h5>
 
-            <Pagination pageNo={pageNo} setpageNo={setpageNo} />
-            <div className="grid grid-cols-4 pt-6 w-full">
-              {difficuties.map((item, index) => {
+            {/* <Pagination
+              pageNo={pageNo}
+              setpageNo={(newPage) => updateParams({ page: newPage })}
+            /> */}
+            <div className="grid grid-cols-4 pt-4 w-full">
+              {difficulties.map((item, index) => {
                 return (
                   <div
                     key={index}
-                    onClick={() => setDifficultyValue(item)}
-                    className={` font-route text-[22px] pb-2 border-b-[3px]  ${
+                    onClick={() =>
+                      updateParams({
+                        difficulty: item.toLowerCase(),
+                        page: 1,
+                      })
+                    }
+                    className={` font-route text-title3 pb-2 border-b-[3px]  ${
                       difficultyValue === item
                         ? "border-primary text-primary"
                         : "text-textsecond border-bprimary"
@@ -54,7 +110,7 @@ const Highscores = () => {
                 );
               })}
             </div>
-            {tabValue === "TOP SPEED" ? (
+            {tabValue === "Top Speed" ? (
               <>
                 <div className="grid grid-cols-12  px-11 pt-4 w-full">
                   <p className="col-span-1 font-main pb-3 text-[16px] font-medium text-textsecond">
@@ -87,45 +143,72 @@ const Highscores = () => {
             )}
           </div>
           <div className="px-6 pb-5 w-full">
-            <div className="flex w-full flex-col gap-2 pt-2 pb-3 px-3 border-2  border-bprimary rounded-2xl">
-              {highscoreList.map((item, index) => {
-                return (
-                  <>
-                    {tabValue === "TOP SPEED" ? (
-                      <div
-                        key={index}
-                        className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary ${
-                          index === highscoreList?.length - 1
-                            ? ""
-                            : "border-b-2 border-bprimary"
-                        }`}
+            <div className="flex w-full flex-col gap-2 pt-2 pb-3 px-3 border-2 border-bprimary rounded-2xl">
+              {loading ? (
+                [...Array(10)].map((_, index) => (
+                  <div
+                    key={`skeleton-${index}`}
+                    className={`grid grid-cols-12 gap-2  rounded-lg  w-full animate-pulse ${
+                      index === 9 ? "" : "border-b-2 border-bprimary"
+                    }`}
+                  >
+                    <div className="col-span-12 h-10 bg-pulse rounded"></div>
+                  </div>
+                ))
+              ) : rows?.length > 0 ? (
+                <>
+                  {rows.map((item, index) => (
+                    <div
+                      key={item?.userId || index}
+                      className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary ${
+                        index === rows?.length - 1
+                          ? ""
+                          : "border-b-2 border-bprimary"
+                      }`}
+                    >
+                      <p className="col-span-1 font-route text-title3 text-textcolor">
+                        {index + 1}
+                      </p>
+                      <p
+                        className={`${tabValue === "Top Speed" ? "col-span-7" : "col-span-9"} font-route text-title3 text-textcolor`}
                       >
-                        <p className="col-span-1 font-route text-[20px] text-textcolor">
-                          {index + 1}
+                        {item?.username}
+                      </p>
+                      {tabValue === "Top Speed" ? (
+                        <>
+                          <p className="col-span-2 font-route text-body1 text-textcolor">
+                            {getRelativeTime(item?.date)}
+                          </p>
+                          <p className="col-span-2 font-route text-content pl-6 text-textcolor text-center">
+                            {parseFloat(item?.wpm).toFixed(2)}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="col-span-2 text-center font-route text-title3 text-textcolor">
+                          {item?.matchCount}
                         </p>
-                        <p className="col-span-7 font-route text-[20px] text-textcolor">
-                          {item?.user?.username}
-                        </p>
-                        <p className="col-span-2 font-route text-[20px] text-textcolor">
-                          {item?.user?.id}
-                        </p>
-                        <p className="col-span-2 font-route text-[20px] pl-6 text-textcolor text-start">
-                          {item?.wpm}
-                        </p>
-                      </div>
-                    ) : (
-                      <div key={index} className=""></div>
-                    )}
-                  </>
-                );
-              })}
-              <Pagination pageNo={pageNo} setpageNo={setpageNo} />
+                      )}
+                    </div>
+                  ))}
+                  <Pagination
+                    pageNo={pageNo}
+                    setpageNo={(page) => updateParams({ page })}
+                  />
+                </>
+              ) : (
+                // Empty state
+                <div className="flex items-center justify-center py-10">
+                  <p className="text-center text-textsecond">
+                    No leaderboard data available
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default Highscores
+export default Highscores;

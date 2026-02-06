@@ -13,21 +13,20 @@ import commentRoutes from "./routes/comment.routes.js";
 import messageRoutes from "./routes/message.route.js";
 import chatRoutes from "./routes/chat.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import highscoreRoutes from "./routes/scores.routes.js";
 
 // Load environment variables
 dotenv.config();
-
 
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
-  })
+  }),
 );
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
-
 
 // Routes
 app.use("/api/admin", adminRoutes);
@@ -36,7 +35,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/chats", chatRoutes);
-
+app.use("/api/highscores", highscoreRoutes);
 
 // Use environment variable for port
 const PORT = process.env.PORT || 4000;

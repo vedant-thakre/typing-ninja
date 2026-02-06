@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { socket } from "../utils/socket";
 import { useSelector } from "react-redux";
 import { useTimerContext } from "../context/TimerContext";
+import { v4 as uuidv4 } from "uuid";
+import { generateUsername } from "unique-username-generator";
 
 const useMatch = (gameMode, gameStarted) => {
   const user = useSelector((state) => state.user.userData);
@@ -11,13 +13,43 @@ const useMatch = (gameMode, gameStarted) => {
   const roomIdRef = useRef(null);
   const { resetTimer } = useTimerContext();
 
+  const getUserId = () => {
+    if (user?._id) {
+      return user._id;
+    }
+
+    // Check if we already have a guest ID in localStorage
+    let guestId = localStorage.getItem("guestId");
+    if (!guestId) {
+      guestId = `guest_${uuidv4()}`;
+      localStorage.setItem("guestId", guestId);
+    }
+    return guestId;
+  };
+
+  const getUsername = () => {
+    if (user?.username) {
+      return user.username;
+    }
+
+    // Try to get guest username from localStorage, or generate one
+    const guestUsername = localStorage.getItem("nickName")
+      ? localStorage.getItem("nickName")
+      : generateUsername("-", 1, 10);
+    localStorage.setItem("guestUsername", guestUsername);
+
+    return guestUsername;
+  };
 
   const fetchNewSnippet = (roomId) => {
-    if (user?._id && roomId) {
+    const userId = getUserId();
+    const username = getUsername();
+
+    if (userId && roomId) {
       setLoading(true);
       socket.emit("requestSnippet", {
-        userId: user?._id,
-        username: user?.username,
+        userId,
+        username,
         snippetId: snippetData?._id,
         roomId,
       });
@@ -32,7 +64,7 @@ const useMatch = (gameMode, gameStarted) => {
       const uniqueUsers = [
         ...prev,
         ...users.filter(
-          (newUser) => !prev.some((u) => u.userId === newUser.userId)
+          (newUser) => !prev.some((u) => u.userId === newUser.userId),
         ),
       ];
       return uniqueUsers;
@@ -56,13 +88,13 @@ const useMatch = (gameMode, gameStarted) => {
   };
 
   useEffect(() => {
-    if (user && user?._id) {
+    const userId = getUserId();
+    const username = getUsername();
+    if (userId) {
       socket.connect();
       socket.emit("joinuser", {
-        userId: user?._id,
-        username: localStorage.getItem("username")
-          ? localStorage.getItem("username")
-          : user?.username,
+        userId,
+        username,
         mode: gameMode,
       });
 
@@ -76,12 +108,14 @@ const useMatch = (gameMode, gameStarted) => {
         console.log("socket disconnected");
         socket.emit("leaveRoom", {
           roomId: roomIdRef.current,
-          userId: user?._id,
+          userId,
         });
         // socket.off("snippet", handleSnippet);
       };
+    } else {
+      console.log("no user found");
     }
-  }, [user]);
+  }, [gameMode]);
 
   return {
     snippetData,

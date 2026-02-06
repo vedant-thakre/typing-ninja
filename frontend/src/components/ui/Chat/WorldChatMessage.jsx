@@ -20,7 +20,7 @@ const WorldChatMessage = ({ message, showMessageMenu, setShowMessageMenu }) => {
           messageId: message._id,
           id: selectedChat?.friend?._id,
           chatId: selectedChat?._id,
-        })
+        }),
       );
       if (response?.payload?.status === 200) {
         setOpen(false);
@@ -33,7 +33,7 @@ const WorldChatMessage = ({ message, showMessageMenu, setShowMessageMenu }) => {
   };
 
   const time = new Date(
-    message?.isDeleted ? message?.createdAt : message?.updatedAt
+    message?.isDeleted ? message?.createdAt : message?.updatedAt,
   ).toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -106,8 +106,8 @@ const WorldChatMessage = ({ message, showMessageMenu, setShowMessageMenu }) => {
                   !isOwnMessage
                     ? "mt-[-5px] "
                     : isLongMessage
-                    ? "mt-[9px]"
-                    : "mt-1"
+                      ? "mt-[9px]"
+                      : "mt-1"
                 } ${isOnlyOneEmoji ? "" : "gap-1"}`}
               >
                 {!isOwnMessage && (
@@ -116,7 +116,7 @@ const WorldChatMessage = ({ message, showMessageMenu, setShowMessageMenu }) => {
                       e.stopPropagation();
                       navigate(`/profile/${message?.sender?.username}`);
                     }}
-                    className="font-route mt-[3px] inline-block text-white cursor-pointer hover:underline font-bold text-[20px]"
+                    className="font-route mt-[3px] inline-block text-white cursor-pointer hover:underline font-bold text-title2"
                   >
                     {message?.sender?.username}
                   </span>
@@ -124,10 +124,10 @@ const WorldChatMessage = ({ message, showMessageMenu, setShowMessageMenu }) => {
                 <p
                   className={`font-route   ${
                     isLongMessage && !isOnlyOneEmoji && !isMultipleEmoji
-                      ? "w-full mt-[-10px]"
+                      ? "w-full text-title3 mt-[-10px]"
                       : isOwnMessage
-                      ? "mt-[-5px]"
-                      : "mb-[-4px] mt-[-6px]"
+                        ? "mt-[-5px] text-title3"
+                        : "mb-[-4px] text-title3  mt-[-6px]"
                   } ${
                     message.isDeleted
                       ? isOwnMessage
@@ -143,7 +143,7 @@ const WorldChatMessage = ({ message, showMessageMenu, setShowMessageMenu }) => {
                   } ${
                     isMultipleEmoji
                       ? "pb-2 pt-[10px] text-[26px]"
-                      : "text-[20px] "
+                      : "text-title3"
                   }`}
                 >
                   {message.content}
@@ -152,7 +152,7 @@ const WorldChatMessage = ({ message, showMessageMenu, setShowMessageMenu }) => {
             </div>
 
             <p
-              className={`font-route ml-4 tracking-wide text-white text-[15px] ${
+              className={`font-route ml-4 tracking-wide text-white text-[12px] ${
                 isLongMessage
                   ? "w-full text-end mt-[-13px] mr-3 mb-[-2px]"
                   : "mb-[-7px]"

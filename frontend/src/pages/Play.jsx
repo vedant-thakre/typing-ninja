@@ -40,12 +40,14 @@ const Play = () => {
   const mode = location.pathname?.includes("duel")
     ? "duel"
     : location.pathname?.includes("solo")
-    ? "solo"
-    : "multiplayer";
+      ? "solo"
+      : "multiplayer";
+
   const { snippetData, roomUsers, loading, fetchNewSnippet } = useMatch(
     mode,
-    gameStarted
+    gameStarted,
   );
+
   window.onkeydown = function (e) {
     return !(e.keyCode == 32 && e.target == document.body);
   };

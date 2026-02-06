@@ -32,6 +32,7 @@ export default {
         bgprimary: "var(--color-bgprimary)",
         bgsecondary: "var(--color-bgsecondary)",
         bgthird: "var(--color-bgthird)",
+        pulse: "var(--color-pulse)",
 
         // borders
         bprimary: "var(--color-border)",
@@ -40,6 +41,16 @@ export default {
         bmagenta: "#a24167",
         bgyou: "#03a791",
         bgopponent: "#ff6363",
+      },
+      fontSize: {
+        posttitle: "23px",
+        title: "20px",
+        title2: "19px",
+        title3: "18px",
+        subtitle: "16px",
+        content: "17px",
+        body1: "15px",
+        body2: "14px",
       },
     },
   },

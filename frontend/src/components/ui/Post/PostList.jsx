@@ -6,11 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { getPosts } from "../../../store/slices/postSlice";
 
-const PostList = ({ tabValue }) => {
+const PostList = ({ tabValue, page, updateParams }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = parseInt(searchParams.get("page")) || 1;
+  // const page = parseInt(searchParams.get("page")) || 1;
   const [sortOrder, setSortOrder] = useState("old");
   const user = useSelector((state) => state.user.userData);
   const posts = useSelector((state) => state.post.posts);
@@ -29,12 +29,12 @@ const PostList = ({ tabValue }) => {
   return (
     <div className="bg-bgprimary mb-[50px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
       <div className="w-full flex justify-between px-4 bg-primary py-2 rounded-t-2xl">
-        <h5 className="text-white font-route text-[24px] font-bold">
+        <h5 className="text-white font-route text-title font-bold">
           Discussion
         </h5>
         {user && (
           <NavLink to="/post" onClick={() => handleTabTitle("Post")}>
-            <h5 className="text-white underline w-max flex gap-[2px] cursor-pointer items-center font-route text-[21px] font-bold">
+            <h5 className="text-white tracking-wide underline w-max flex gap-[2px] cursor-pointer items-center font-route text-title3 font-bold">
               Create Post <FaLongArrowAltRight color={"white"} />
             </h5>
           </NavLink>
@@ -59,11 +59,11 @@ const PostList = ({ tabValue }) => {
                         handleTabTitle(item?.title);
                         navigate(`/post/${item?._id}`);
                       }}
-                      className="text-textcolor cursor-pointer font-route text-[25px] underline"
+                      className="text-textcolor cursor-pointer font-route text-title "
                     >
                       {item?.title}
                     </h5>
-                    <p className="text-textsecond font-route text-[20px]">
+                    <p className="text-textsecond font-route text-subtitle">
                       Posted {getRelativeTime(item?.createdAt)} by{" "}
                       <span className="underline cursor-pointer">
                         {item?.user?.username}
@@ -71,7 +71,7 @@ const PostList = ({ tabValue }) => {
                     </p>
                   </div>
                   {item?.commentCount > 0 && (
-                    <p className="text-textsecond font-route text-[19px]">
+                    <p className="text-textsecond font-route text-subtitle">
                       Last Comment {getRelativeTime(item?.latestCommentDate)}
                     </p>
                   )}
@@ -80,7 +80,7 @@ const PostList = ({ tabValue }) => {
                       handleTabTitle(item?.title);
                       navigate(`/post/${item?._id}`);
                     }}
-                    className="underline cursor-pointer text-textsecond font-route text-[19px]"
+                    className="underline cursor-pointer text-textsecond font-route text-subtitle"
                   >
                     {item?.commentsCount}{" "}
                     {item?.commentsCount > 1 ? "Comments" : "Comment"}
@@ -89,7 +89,11 @@ const PostList = ({ tabValue }) => {
               );
             })}
         </div>
-        <Pagination pageNo={page} setpageNo={handlePageChange} total={total} />
+        <Pagination
+          pageNo={page}
+          setpageNo={(page) => updateParams({ page })}
+          total={total}
+        />
       </div>
     </div>
   );

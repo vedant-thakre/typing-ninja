@@ -1,134 +1,136 @@
-@import url('https://fonts.googleapis.com/css2?family=Capriola&family=Lilita+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Capriola&family=Lilita+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
 /* tailwind base layer (can go in a .css or .scss file in your project) */
 @layer base {
-    :root {
-        --color-bodycolor: #ffffff;
-        --color-border: #e2e2e3;
-        --color-textcolor: #4c4c4c;
-        --color-bgprimary: #ffffff;
-        --color-bgsecondary: #eef2f6;
-        --color-bgthird: #d8e2ec;
-    }
-    
-    .dark {
-        --color-bodycolor: #2c2c2c;
-        --color-textcolor: #ffffff;
-        --color-border: #555555;
-        --color-bgprimary: #2c2c2c;
-        --color-bgsecondary: #232323;
-        --color-bgthird: #555555;
-    }
+  :root {
+    --color-bodycolor: #ffffff;
+    --color-border: #e2e2e3;
+    --color-textcolor: #4c4c4c;
+    --color-bgprimary: #ffffff;
+    --color-bgsecondary: #eef2f6;
+    --color-bgthird: #d8e2ec;
+    --color-pulse: #e3e3e3;
+  }
+
+  .dark {
+    --color-bodycolor: #2c2c2c;
+    --color-textcolor: #ffffff;
+    --color-border: #555555;
+    --color-bgprimary: #2c2c2c;
+    --color-bgsecondary: #232323;
+    --color-bgthird: #555555;
+    --color-pulse: #565555;
+  }
 }
 
 body {
-    background-color: var(--color-bodycolor);
+  background-color: var(--color-bodycolor);
 }
 
 ul {
-    list-style-position: outside;
-    /* Position the bullet outside the list item box */
-    padding-left: 1em;
-    /* Add space between the bullet and the text */
+  list-style-position: outside;
+  /* Position the bullet outside the list item box */
+  padding-left: 1em;
+  /* Add space between the bullet and the text */
 }
 
 li {
-    padding-left: 0.5em;
-    /* Indent the text to align with the first line */
+  padding-left: 0.5em;
+  /* Indent the text to align with the first line */
 }
 
 /* Custom scrollbar styles */
 .scrollbar-custom::-webkit-scrollbar {
-    width: 5px !important;
-    /* Adjust width for vertical scrollbar */
-    height: 12px;
-    /* color: #8fa6f9; */
-    /* Adjust height for horizontal scrollbar */
+  width: 5px !important;
+  /* Adjust width for vertical scrollbar */
+  height: 12px;
+  /* color: #8fa6f9; */
+  /* Adjust height for horizontal scrollbar */
 }
 .scrollbar-custom::-webkit-scrollbar:hover {
-    width: 5px !important;
-    /* Adjust width for vertical scrollbar */
-    height: 12px;
-    /* Adjust height for horizontal scrollbar */
+  width: 5px !important;
+  /* Adjust width for vertical scrollbar */
+  height: 12px;
+  /* Adjust height for horizontal scrollbar */
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-    background-color: #2c2c2c;
-    /* Scrollbar thumb color */
-    border-radius: 6px;
-    /* Roundness of the scrollbar thumb */
-    border: 3px solid transparent;
-    /* Space around thumb */
+  background-color: #2c2c2c;
+  /* Scrollbar thumb color */
+  border-radius: 6px;
+  /* Roundness of the scrollbar thumb */
+  border: 3px solid transparent;
+  /* Space around thumb */
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
-    background: #2c2c2c;
-    /* Scrollbar track color */
-    border-radius: 6px;
-    /* Roundness of the scrollbar track */
-    margin: 4px;
-    /* Margin around the scrollbar track */
+  background: #2c2c2c;
+  /* Scrollbar track color */
+  border-radius: 6px;
+  /* Roundness of the scrollbar track */
+  margin: 4px;
+  /* Margin around the scrollbar track */
 }
 
 /* Dark mode scrollbar styles */
 .dark .scrollbar-custom::-webkit-scrollbar-thumb {
-    background-color: #555;
-    /* Darker thumb color for dark mode */
+  background-color: #555;
+  /* Darker thumb color for dark mode */
 }
 
 .dark .scrollbar-custom::-webkit-scrollbar-track {
-    background: #333;
-    /* Darker track color for dark mode */
+  background: #333;
+  /* Darker track color for dark mode */
 }
 
 /* Firefox scrollbar styles */
 .scrollbar-custom {
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-border) var(--color-bgprimary);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-bgprimary);
 }
 
 .dark .scrollbar-custom {
-    scrollbar-color: #555555 #2c2c2c;
+  scrollbar-color: #555555 #2c2c2c;
 }
 
 /* HTML: <div class="loader"></div> */
 .loader {
-    width: 30px;
-    aspect-ratio: 1;
-    display: grid;
-    border: 4px solid #0000;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    border-color: #ffffff #0000;
-    animation: l16 2s infinite linear;
+  width: 30px;
+  aspect-ratio: 1;
+  display: grid;
+  border: 4px solid #0000;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border-color: #ffffff #0000;
+  animation: l16 2s infinite linear;
 }
 
 .loader::before,
 .loader::after {
-    content: "";
-    grid-area: 1/1;
-    margin: 2px;
-    border: inherit;
-    border-radius: 50%;
+  content: "";
+  grid-area: 1/1;
+  margin: 2px;
+  border: inherit;
+  border-radius: 50%;
 }
 
 .loader::before {
-    border-color: #ffffff #0000;
-    animation: inherit;
-    animation-duration: 1s;
-    animation-direction: reverse;
+  border-color: #ffffff #0000;
+  animation: inherit;
+  animation-duration: 1s;
+  animation-direction: reverse;
 }
 
 .loader::after {
-    margin: 8px;
+  margin: 8px;
 }
 
 @keyframes l16 {
-    100% {
-        transform: rotate(1turn)
-    } }
+  100% {
+    transform: rotate(1turn);
+  }
+}

@@ -30,7 +30,7 @@ const generateAccessAndRefreshToken = async (userId) => {
       process.env.ACCESS_TOKEN_JWT_SECRET,
       {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-      }
+      },
     );
 
     const refreshToken = await jwt.sign(
@@ -40,7 +40,7 @@ const generateAccessAndRefreshToken = async (userId) => {
       process.env.REFRESH_TOKEN_JWT_SECRET,
       {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-      }
+      },
     );
 
     user.refreshToken = refreshToken;
@@ -50,7 +50,7 @@ const generateAccessAndRefreshToken = async (userId) => {
   } catch (error) {
     throw new ErrorHandler(
       500,
-      "Something went wrong while generating refresh and access token."
+      "Something went wrong while generating refresh and access token.",
     );
   }
 };
@@ -80,20 +80,20 @@ export const register = asyncHandler(async (req, res, next) => {
   });
 
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken -otp"
+    "-password -refreshToken -otp",
   );
 
   if (!createdUser) {
     throw new ErrorHandler(
       500,
-      "Something went wrong while registering the user"
+      "Something went wrong while registering the user",
     );
   }
 
   return res
     .status(200)
     .json(
-      new Response(200, { user: createdUser }, "User registered Successfully")
+      new Response(200, { user: createdUser }, "User registered Successfully"),
     );
 });
 
@@ -115,11 +115,13 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
       await user.save();
     }
 
-    const createdUser = await User.findById(user._id).select("-password");
+    const createdUser = await User.findById(user._id).select(
+      "-password -refreshToken -otp -name",
+    );
 
     // Generate JWT
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      createdUser._id
+      createdUser._id,
     );
 
     return res
@@ -129,8 +131,8 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
         new Response(
           200,
           { user: createdUser, accessToken },
-          "User authenticated successfully"
-        )
+          "User authenticated successfully",
+        ),
       );
   } catch (error) {
     throw new ErrorHandler(400, "Server error");
@@ -160,18 +162,25 @@ export const login = asyncHandler(async (req, res, next) => {
     throw new ErrorHandler(404, "User does not exist.");
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!user?.password) {
+    throw new ErrorHandler(
+      400,
+      "Invalid password, please reset your password.",
+    );
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user?.password);
 
   if (!isPasswordValid) {
     throw new ErrorHandler(401, "Incorrect password");
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user._id
+    user._id,
   );
 
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken -otp"
+  const loggedInUser = await User.findById(user?._id).select(
+    "-password -refreshToken -otp",
   );
 
   return res
@@ -181,8 +190,8 @@ export const login = asyncHandler(async (req, res, next) => {
       new Response(
         200,
         { user: loggedInUser, accessToken },
-        "User logged in successfully"
-      )
+        "User logged in successfully",
+      ),
     );
 });
 
@@ -196,7 +205,7 @@ export const updateUserDetails = asyncHandler(async (req, res, next) => {
   const user = await User.findOneAndUpdate(
     { _id: req.user._id },
     { email, dailyGoal, age, bio, country, gender },
-    { new: true }
+    { new: true },
   ).select("-password -refreshToken -otp");
 
   if (!user) {
@@ -213,7 +222,7 @@ export const logout = asyncHandler(async (req, res, next) => {
   await User.findOneAndUpdate(
     { refreshToken: refreshToken },
     { $unset: { refreshToken: 1 } },
-    { new: true }
+    { new: true },
   );
 
   return res
@@ -240,7 +249,7 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user._id
+    user._id,
   );
 
   return res
@@ -271,7 +280,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     user?.email,
     "Reset Password",
     otp,
-    forgetPasswordTemplate
+    forgetPasswordTemplate,
   );
 
   if (!response) {
@@ -344,7 +353,7 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
     user?.email,
     "Verify Your Email",
     otp,
-    verifyEmailTemplate
+    verifyEmailTemplate,
   );
 
   if (!response) {
@@ -386,7 +395,7 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
     throw new ErrorHandler(400, "Username is required");
   }
   const user = await User.findOne({ username }).select(
-    "-password -refreshToken -otp -__v -requests -friends -isVerified -isAdmin"
+    "-password -refreshToken -otp -__v -requests -friends -isVerified -isAdmin",
   );
 
   if (!user) {
@@ -442,10 +451,10 @@ export const removeFriend = asyncHandler(async (req, res, next) => {
   }
 
   user.friends = user.friends.filter(
-    (friendId) => friendId.toString() !== id.toString()
+    (friendId) => friendId.toString() !== id.toString(),
   );
   friend.friends = friend.friends.filter(
-    (friendId) => friendId.toString() !== req.user._id.toString()
+    (friendId) => friendId.toString() !== req.user._id.toString(),
   );
   await user.save();
   await friend.save();
@@ -472,7 +481,7 @@ export const acceptFriendRequest = asyncHandler(async (req, res, next) => {
   user.friends.push(id);
   friend.friends.push(req.user._id);
   user.requests = user.requests.filter(
-    (requestId) => requestId.toString() !== id.toString()
+    (requestId) => requestId.toString() !== id.toString(),
   );
   await user.save();
   await friend.save();
@@ -495,7 +504,7 @@ export const rejectFriendRequest = asyncHandler(async (req, res, next) => {
     throw new ErrorHandler(404, "User not found");
   }
   user.requests = user.requests.filter(
-    (requestId) => requestId.toString() !== id.toString()
+    (requestId) => requestId.toString() !== id.toString(),
   );
   await user.save();
   return res
@@ -515,7 +524,7 @@ export const getFriendRequests = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json(
-      new Response(200, user.requests, "Friend requests fetched successfully")
+      new Response(200, user.requests, "Friend requests fetched successfully"),
     );
 });
 
@@ -597,8 +606,8 @@ export const getFriendsAndRequests = asyncHandler(async (req, res, next) => {
         total: metadata.total,
         page: parseInt(page),
         limit: parseInt(limit),
-      }
-    )
+      },
+    ),
   );
 });
 
@@ -637,8 +646,8 @@ export const checkIsFriend = asyncHandler(async (req, res, next) => {
         new Response(
           200,
           { isFriend: true, requested: requested || false },
-          "User is a friend"
-        )
+          "User is a friend",
+        ),
       );
   } else {
     return res
@@ -647,8 +656,8 @@ export const checkIsFriend = asyncHandler(async (req, res, next) => {
         new Response(
           200,
           { isFriend: false, requested: requested || false },
-          "User is not a friend"
-        )
+          "User is not a friend",
+        ),
       );
   }
 });
@@ -663,7 +672,7 @@ export const changeAvatar = asyncHandler(async (req, res, next) => {
   const user = await User.findOneAndUpdate(
     { _id: req.user._id },
     { avatar },
-    { new: true }
+    { new: true },
   ).select("-password -refreshToken -otp");
 
   if (!user) {
@@ -751,8 +760,8 @@ export const uploadAvatar = asyncHandler(async (req, res, next) => {
       new Response(
         200,
         { url: uploadResult.url },
-        "Avatar uploaded successfully"
-      )
+        "Avatar uploaded successfully",
+      ),
     );
 });
 

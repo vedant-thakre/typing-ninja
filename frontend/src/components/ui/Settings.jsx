@@ -1,10 +1,10 @@
-import React, { use, useEffect, useState } from 'react'
-import AnimatedButton from '../ui/Other/AnimatedButton';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-hot-toast';
-import SelectList from '../ui/Other/SelectList';
-import { errorToast } from '../../utils/helper';
-import { updateUserDetails } from '../../store/slices/userSlice';
+import React, { use, useEffect, useState } from "react";
+import AnimatedButton from "../ui/Other/AnimatedButton";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
+import SelectList from "../ui/Other/SelectList";
+import { errorToast } from "../../utils/helper";
+import { updateUserDetails } from "../../store/slices/userSlice";
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -14,7 +14,9 @@ const Settings = () => {
   const [dailyGoal, setDailyGoal] = useState("");
   const [bio, setBio] = useState(user?.bio ? user?.bio : "");
   const [age, setAge] = useState(user?.age ? user?.age : "");
-  const [country, setCountry] = useState(user?.country ? user?.country : "Not Set");    
+  const [country, setCountry] = useState(
+    user?.country ? user?.country : "Not Set",
+  );
   const [gender, setGender] = useState(user?.gender ? user?.gender : "Not Set");
   const [disalbeSave, setDisalbeSave] = useState(false);
 
@@ -26,7 +28,7 @@ const Settings = () => {
 
   const handleSave = async () => {
     setDisalbeSave(true);
-    if(age && age < 6 || age > 99) {
+    if ((age && age < 6) || age > 99) {
       toast("Age must be between 6 and 99", errorToast);
       return;
     }
@@ -34,22 +36,22 @@ const Settings = () => {
       toast("Bio must be less than 350 characters", errorToast);
       return;
     }
-    if (dailyGoal < 0 || dailyGoal === null || dailyGoal > 100 ) {
+    if (dailyGoal < 0 || dailyGoal === null || dailyGoal > 100) {
       toast("Daily goal must be between 1 and 100", errorToast);
       return;
     }
-    
+
     try {
-       const response = await dispatch(
-         updateUserDetails({
-           email: user.email,
-           dailyGoal,
-           age,
-           bio,
-           country,
-           gender,
-         })
-       );
+      const response = await dispatch(
+        updateUserDetails({
+          email: user.email,
+          dailyGoal,
+          age,
+          bio,
+          country,
+          gender,
+        }),
+      );
       if (response?.payload?.status === 200) {
         setDisalbeSave(false);
       }
@@ -57,15 +59,13 @@ const Settings = () => {
       setDisalbeSave(false);
       return;
     }
-    
-  }
-
+  };
 
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="bg-bgprimary mb-[50px]  mt-[120px] flex flex-col items-center gap-3 rounded-2xl shadow-hard">
         <div className="w-full">
-          <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+          <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
             Account Settings
           </h5>
         </div>
@@ -87,7 +87,7 @@ const Settings = () => {
                     <div className="flex gap-2 items-center">
                       <label
                         key={index}
-                        className="font-route text-[21px] text-textcolor font-normal flex items-center h-[42px]"
+                        className="font-route text-title3 text-textcolor font-normal flex items-center h-[42px]"
                       >
                         {label}
                       </label>
@@ -98,14 +98,14 @@ const Settings = () => {
                       ) : (
                         <AnimatedButton
                           title={"VALIDATE EMAIL"}
-                          className="bg-[#4865cd] font-bold rounded-md w-[105px] h-[26px] py-[3px] font-route text-md "
+                          className="bg-[#4865cd] font-bold text-textcolor rounded-md px-2 h-[26px] pt-[2px] font-route text-[13px] "
                         />
                       )}
                     </div>
                   ) : (
                     <label
                       key={index}
-                      className="font-route text-[21px] text-textcolor font-normal flex items-center h-[42px]"
+                      className="font-route text-title3 text-textcolor font-normal flex items-center h-[42px]"
                     >
                       {label}
                     </label>
@@ -197,13 +197,13 @@ const Settings = () => {
               title={"SAVE"}
               disabled={disalbeSave}
               onClick={handleSave}
-              className="bg-primary border-bdshadow text-white font-bold rounded-lg px-4 py-[2px] font-route text-lg border-4"
+              className="bg-primary border-bdshadow text-white font-bold rounded-lg px-4 py-[2px] font-route text-body1 border-4"
             />
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default Settings
+export default Settings;

@@ -4,6 +4,7 @@ import postSlice from "./slices/postSlice";
 import commentSlice from "./slices/commentSlice";
 import chatSlice from "./slices/chatSlice";
 import gameSlice from "./slices/gameSlice";
+import scoresSlice from "./slices/scoreSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     comment: commentSlice,
     chat: chatSlice,
     game: gameSlice,
+    scores: scoresSlice,
   },
 });

@@ -11,7 +11,7 @@ const Pagination = ({ pageNo, setpageNo, total }) => {
         onClick={() => setpageNo(1)}
         animated={false}
         className={
-          "px-3 py-[2px] border-bdshadow  text-white rounded-lg border-2"
+          "px-3 py-[1.5px] border-bdshadow  text-white rounded-lg border-2"
         }
       />
       <AnimatedButton
@@ -21,7 +21,7 @@ const Pagination = ({ pageNo, setpageNo, total }) => {
         }}
         animated={false}
         className={
-          "px-2 py-[2px] border-bdshadow  text-white rounded-lg border-2"
+          "px-2 py-[1px] border-bdshadow  text-white rounded-lg border-2"
         }
       />
 
@@ -39,7 +39,7 @@ const Pagination = ({ pageNo, setpageNo, total }) => {
         }}
         animated={false}
         className={
-          "px-2 py-[2px] border-bdshadow  text-white rounded-lg border-2"
+          "px-2 py-[1px] border-bdshadow  text-white rounded-lg border-2"
         }
       />
       {total > 10 && (

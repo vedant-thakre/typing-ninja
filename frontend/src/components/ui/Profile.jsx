@@ -1,16 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import AnimatedButton from "../ui/Other/AnimatedButton";
+import { useEffect, useState } from "react";
 import { matchHistoryList, recordList, userData } from "../../utils/data";
 import { getRelativeTime, handleTabTitle } from "../../utils/helper";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  checkFriend,
-  getSearchedUser,
-  sendRequest,
-} from "../../store/slices/userSlice";
-import { BiImageAdd } from "react-icons/bi";
-import { RotatingLines } from "react-loader-spinner";
+import { checkFriend, getSearchedUser } from "../../store/slices/userSlice";
 import ProfileModal from "./Other/ProfileModal";
 import ProfileBox from "./Profile/ProfileBox";
 import Overview from "./Profile/Overview";
@@ -25,8 +18,9 @@ const Profile = () => {
   const user = useSelector((state) => state.user.userData);
   const [searchedUser, setSearchedUser] = useState(null);
   const [openProfileModal, setOpenProfileModal] = useState(false);
-  const myUserName = localStorage.getItem("username");
+  const myUserName = user?.username || localStorage.getItem("username");
   const isMyProfile = myUserName === username;
+  console.log("isMyProfile", isMyProfile, myUserName, username);
 
   useEffect(() => {
     if (!isMyProfile) {
@@ -34,7 +28,7 @@ const Profile = () => {
         const response = await dispatch(getSearchedUser(username));
         if (response?.payload?.status === 200) {
           setSearchedUser(response?.payload?.data);
-          if(user){
+          if (user) {
             dispatch(checkFriend(response?.payload?.data?._id));
           }
           handleTabTitle(`${username}`);

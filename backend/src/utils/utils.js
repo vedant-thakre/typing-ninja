@@ -13,7 +13,6 @@ import colors from "colors";
 // try to implement duel match if possible
 // create the ui for custom matches.
 
-
 const generateUsername = () => {
   const customNumbers = () => Math.floor(Math.random() * 100);
   const baseUsername = uniqueNamesGenerator({
@@ -26,17 +25,74 @@ const generateUsername = () => {
   return shouldAddNumber ? `${baseUsername}${customNumbers()}` : baseUsername;
 };
 
+// Wherever you delete rooms, also clear the interval
+export const deleteRoom = (roomId, rooms) => {
+  const room = rooms[roomId];
+  if (room && room.intervalId) {
+    clearInterval(room.intervalId);
+    delete room.intervalId;
+  }
+  delete rooms[roomId];
+
+  if (global.gc) {
+    global.gc();
+  }
+
+  console.log(
+    colors.bgRed(`Deleting old interval and room for room ${roomId}`),
+  );
+};
+
+export const deleteRoomInterval = (roomId, rooms) => {
+  const room = rooms[roomId];
+  if (room && room.intervalId) {
+    clearInterval(room.intervalId);
+    delete room.intervalId;
+  }
+  delete room.lobbyStartTime;
+  delete room.matchStartTime;
+};
+
 export const getRandomSnippet = async (snippetId) => {
-  const matchStage = snippetId
-    ? [{ $match: { status: "approved", _id: { $ne: snippetId } } }]
-    : [{ $match: { status: "approved" } }];
+  let query = { status: "approved" };
 
-  const [randomSnippet] = await Snippet.aggregate([
-    ...matchStage,
-    { $sample: { size: 1 } },
-  ]);
+  if (snippetId) {
+    query._id = { $ne: snippetId };
+  }
 
-  return randomSnippet || null;
+  // Get count for random selection
+  const count = await Snippet.countDocuments(query);
+
+  if (count === 0) return null;
+
+  // Get random document
+  const random = Math.floor(Math.random() * count);
+  const snippet = await Snippet.findOne(query)
+    .skip(random)
+    .populate({
+      path: "highScores.user",
+      select: "username",
+    })
+    .lean();
+
+  if (!snippet) return null;
+
+  // Transform highScores to only have username (remove user ObjectId)
+  snippet.highScores = snippet.highScores.map((score) => {
+    // Create new object with only desired fields
+    const newScore = {
+      username: score.user?.username || null,
+      wpm: score.wpm,
+      createdAt: score.createdAt,
+      _id: score._id,
+    };
+
+    delete newScore.user;
+
+    return newScore;
+  });
+
+  return snippet;
 };
 
 export const findOrCreateDuelRoom = (rooms) => {
@@ -50,7 +106,7 @@ export const findOrCreateDuelRoom = (rooms) => {
     roomId = waitingRoomId;
   } else {
     // Create a new room with a unique ID
-    const id = uuidv4();
+    const id = v4();
     roomId = `duel-${id}`;
     rooms[roomId] = { users: [], mode: "duel", started: false };
   }
@@ -71,7 +127,7 @@ export const getBotUser = (socketId) => {
     errorCount: "",
     time: "",
   };
-}
+};
 
 export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
   try {
@@ -101,6 +157,8 @@ export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
 
     const snippet = await getRandomSnippet(snippetId);
 
+    // console.log(snippet);
+
     if (!snippet) {
       console.error("No snippets found.");
       return;
@@ -121,10 +179,11 @@ export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
   } catch (error) {
     console.error("Error fetching random snippet:", error);
   }
-}
+};
 
 export const startMatch = (roomId, rooms, io) => {
   const room = rooms[roomId];
+  if (!room) return;
   const now = Date.now();
 
   // If lobby hasn't started, start it
@@ -133,26 +192,47 @@ export const startMatch = (roomId, rooms, io) => {
     room.matchStartTime = now + 1500; // match begins 1.5s later
   }
 
+  if (!room || !room.matchStartTime) {
+    clearInterval(room.intervalId);
+    if (room) delete room.intervalId;
+    return;
+  }
+
   // Run emit loop every 500ms
   room.intervalId = setInterval(() => {
-    const elapsed = Date.now() - room.matchStartTime;
+    if (!rooms[roomId]) {
+      console.log(`Room ${roomId} no longer exists, clearing interval`);
+      clearInterval(room.intervalId);
+      return;
+    }
+
+    const currentRoom = rooms[roomId];
+    if (!currentRoom) {
+      console.log(`Current room ${roomId} not found, clearing interval`);
+      if (room.intervalId) clearInterval(room.intervalId);
+      return;
+    }
+
+    const elapsed = Date.now() - currentRoom.matchStartTime;
     console.log("elapsed", elapsed);
+
     io.in(roomId).emit("ROOM_TIMER", {
       elapsedTime: elapsed,
       phase:
         elapsed < 0
           ? "waiting"
           : elapsed < 10000
-          ? "lobby"
-          : elapsed < 310000
-          ? "game"
-          : "ended",
+            ? "lobby"
+            : elapsed < 310000
+              ? "game"
+              : "ended",
     });
-    
 
     if (elapsed >= 300000) {
-      clearInterval(room.intervalId);
-      delete room.intervalId;
+      console.log(`Match timeout reached for room ${roomId}`);
+      clearInterval(currentRoom.intervalId);
+      delete currentRoom.intervalId;
+      delete rooms[roomId]; // Delete room after timeout
     }
   }, 500);
 };
@@ -195,7 +275,6 @@ export const simulateBotTyping = (bot, room, io) => {
   bot.intervalId = setInterval(updateProgress, interval);
 };
 
-
 export const duelMatch = async (
   userId,
   username,
@@ -203,7 +282,7 @@ export const duelMatch = async (
   roomId,
   rooms,
   io,
-  mode
+  mode,
 ) => {
   try {
     if (!rooms[roomId]) {
@@ -215,12 +294,21 @@ export const duelMatch = async (
     if (room.started) {
       return socket.emit("error", "Match already started");
     }
-    
+
     if (!room.users.some((u) => u.userId === userId)) {
-      room.users.push({ userId, username, socketId: socket.id, progress: 0, wpm: "", accuracy: "", errorCount: "", time: "" });
+      room.users.push({
+        userId,
+        username,
+        socketId: socket.id,
+        progress: 0,
+        wpm: "",
+        accuracy: "",
+        errorCount: "",
+        time: "",
+      });
       socket.join(roomId);
     }
-      
+
     // Send room user list
     // io.in(roomId).emit("roomUpdate", {
     //   users: room.users.map((u) => u.username),
@@ -276,7 +364,15 @@ export const duelMatch = async (
   }
 };
 
-export const multiplayerMatch = async (userId, username, socket, roomId, rooms, io, mode) => {
+export const multiplayerMatch = async (
+  userId,
+  username,
+  socket,
+  roomId,
+  rooms,
+  io,
+  mode,
+) => {
   try {
     if (!rooms[roomId]) {
       rooms[roomId] = { users: [], mode, started: false };
@@ -330,4 +426,3 @@ errorCount: 17, wpm - 74.82, time - 1.08.61
 
 
 */
-

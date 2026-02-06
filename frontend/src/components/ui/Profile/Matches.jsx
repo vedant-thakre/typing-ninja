@@ -6,7 +6,7 @@ const Matches = () => {
   return (
     <div className="bg-bgprimary  flex flex-col items-center gap-3 rounded-2xl shadow-hard">
       <div className="w-full">
-        <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
+        <h5 className="text-white tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-title font-bold">
           Matches
         </h5>
       </div>
@@ -43,11 +43,11 @@ const Matches = () => {
                     : "border-b-2 border-bprimary"
                 }`}
               >
-                <p className="col-span-1 font-route text-[20px] text-textsecond">
+                <p className="col-span-1 font-route text-body1 text-textsecond">
                   {index + 1}
                 </p>
                 <div className="col-span-8 flex flex-col pr-2">
-                  <p className="col-span-8 font-route pr-2 font-bold text-[20px] text-textcolor">
+                  <p className="col-span-8 font-route pr-2 font-bold text-title3 text-textcolor">
                     {item?.snippetTitle}
                   </p>
                   <div className="flex mt-[-4px] items-center">
@@ -56,8 +56,8 @@ const Matches = () => {
                         item?.difficulty === "hard"
                           ? "text-danger"
                           : item?.difficulty === "easy"
-                          ? "text-success"
-                          : "text-orange"
+                            ? "text-success"
+                            : "text-orange"
                       }`}
                     >
                       {item?.difficulty}
@@ -67,10 +67,10 @@ const Matches = () => {
                     </p>
                   </div>
                 </div>
-                <p className="col-span-1 font-route text-[20px] text-textsecond">
+                <p className="col-span-1 font-route text-body1 font-bold text-textsecond">
                   {item?.accuracy} %
                 </p>
-                <p className="col-span-1 font-route text-[20px] pl-6 text-textsecond text-start">
+                <p className="col-span-1 font-route text-body1 font-bold pl-6 text-textsecond text-start">
                   {item?.wpm}
                 </p>
               </div>

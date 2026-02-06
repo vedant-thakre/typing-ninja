@@ -93,7 +93,7 @@ export const getChats = asyncHandler(async (req, res) => {
   const processedChats = chats.map((chat) => {
     if (!chat.isGroupChat) {
       const friend = chat.members.find(
-        (member) => member._id.toString() !== currentUserId.toString()
+        (member) => member._id.toString() !== currentUserId.toString(),
       );
       const newChat = {
         ...chat,
@@ -127,14 +127,13 @@ export const getChats = asyncHandler(async (req, res) => {
   res
     .status(200)
     .json(
-      new Response(200, { chats: processedChats, friends }, "Chats fetched")
+      new Response(200, { chats: processedChats, friends }, "Chats fetched"),
     );
 });
 
 export const getConversation = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { isWorldChat } = req.query;
-  const userId = req.user._id;
+  const { isWorldChat, id } = req.query;
+  const userId = req?.user?._id;
 
   let chat;
 
@@ -190,8 +189,8 @@ export const getConversation = asyncHandler(async (req, res) => {
           friend,
           messages: [],
         },
-        "No chat exists yet"
-      )
+        "No chat exists yet",
+      ),
     );
   }
 
@@ -208,7 +207,6 @@ export const getConversation = asyncHandler(async (req, res) => {
     };
   });
 
-
   const formattedChat = {
     ...chat.toObject(),
     messages: updatedMessages,
@@ -217,7 +215,7 @@ export const getConversation = asyncHandler(async (req, res) => {
   // If private chat, isolate 'friend' from members
   if (!formattedChat.isGroupChat) {
     const friend = formattedChat.members.find(
-      (member) => member._id.toString() !== userId.toString()
+      (member) => member._id.toString() !== userId.toString(),
     );
 
     const { members, ...rest } = formattedChat;
@@ -228,8 +226,8 @@ export const getConversation = asyncHandler(async (req, res) => {
         new Response(
           200,
           { ...rest, friend },
-          "Conversation fetched successfully"
-        )
+          "Conversation fetched successfully",
+        ),
       );
   }
 
@@ -237,10 +235,9 @@ export const getConversation = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new Response(200, formattedChat, "Conversation fetched successfully")
+      new Response(200, formattedChat, "Conversation fetched successfully"),
     );
 });
-
 
 export const deleteChat = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -330,7 +327,7 @@ export const editGroupChat = asyncHandler(async (req, res) => {
   const updatedChat = await Chat.findByIdAndUpdate(
     id,
     { chatName, members: updatedUsers },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedChat) {
@@ -365,7 +362,7 @@ export const leaveGroupChat = asyncHandler(async (req, res) => {
     const updatedChat = await Chat.findByIdAndUpdate(
       id,
       { $pull: { members: req.user._id } },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedChat) {

@@ -299,6 +299,15 @@ const userSlice = createSlice({
     builder.addCase(googleAuth.fulfilled, (state, action) => {
       state.loading = false;
       state.status = true;
+      state.userData = action.payload.data?.user;
+      const username = action.payload?.data?.user?.username;
+      const accessToken = action.payload?.data?.accessToken;
+      if (username) {
+        localStorage.setItem("username", username);
+      }
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+      }
     });
     builder.addCase(getUserProfile.pending, (state) => {
       state.loading = true;

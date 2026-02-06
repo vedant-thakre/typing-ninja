@@ -19,7 +19,7 @@ export const getChats = createAsyncThunk(
   async ({ isGroupChat, search }) => {
     try {
       const response = await axiosInstance.get(
-        `/chats/all-chats?isGroupChat=${isGroupChat}&search=${search}`
+        `/chats/all-chats?isGroupChat=${isGroupChat}&search=${search}`,
       );
       if (response?.data?.status === 200) {
         toast.success(response.data.message);
@@ -29,7 +29,7 @@ export const getChats = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const getChat = createAsyncThunk(
@@ -37,7 +37,7 @@ export const getChat = createAsyncThunk(
   async ({ id, isWorldChat }) => {
     try {
       const response = await axiosInstance.get(
-        `/chats/user-chat/${id}?isWorldChat=${isWorldChat}`
+        `/chats/user-chat?id=${id}&&isWorldChat=${isWorldChat}`,
       );
       if (response?.data?.status === 200) {
         // toast.success(response.data.message);
@@ -47,14 +47,14 @@ export const getChat = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const sendMessage = createAsyncThunk(
   "chat/send-message",
   async (
     { id, message, chatId, isFirstMessage, isWorldChat = false },
-    { dispatch, getState }
+    { dispatch, getState },
   ) => {
     try {
       const response = await axiosInstance.post(`/messages/send/${id}`, {
@@ -72,7 +72,7 @@ export const sendMessage = createAsyncThunk(
           const currentWorldChat = state.chat.worldChat || [];
           const updatedMessages = [...currentWorldChat?.messages, message];
           dispatch(
-            setWorldChat({ ...currentWorldChat, messages: updatedMessages })
+            setWorldChat({ ...currentWorldChat, messages: updatedMessages }),
           );
           // dispatch(getWorldChat());
         }
@@ -82,7 +82,7 @@ export const sendMessage = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const editMessage = createAsyncThunk(
@@ -102,7 +102,7 @@ export const editMessage = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const replyToMessage = createAsyncThunk(
@@ -114,7 +114,7 @@ export const replyToMessage = createAsyncThunk(
         {
           content: content,
           chatId: chatId,
-        }
+        },
       );
 
       if (response?.data?.status === 200) {
@@ -125,7 +125,7 @@ export const replyToMessage = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const deleteMessage = createAsyncThunk(
@@ -133,7 +133,7 @@ export const deleteMessage = createAsyncThunk(
   async ({ messageId, id }, { dispatch }) => {
     try {
       const response = await axiosInstance.delete(
-        `/messages/delete/${messageId}`
+        `/messages/delete/${messageId}`,
       );
 
       if (response?.data?.status === 200) {
@@ -144,7 +144,7 @@ export const deleteMessage = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const reactOnMessage = createAsyncThunk(
@@ -153,7 +153,7 @@ export const reactOnMessage = createAsyncThunk(
     try {
       const response = await axiosInstance.post(
         `/messages/react-to-message/${messageId}`,
-        { emoji }
+        { emoji },
       );
 
       if (response?.data?.status === 200) {
@@ -164,13 +164,13 @@ export const reactOnMessage = createAsyncThunk(
       toast.error(error.response.data.message);
       throw error;
     }
-  }
+  },
 );
 
 export const getWorldChat = createAsyncThunk("chat/world-chat", async () => {
   try {
     const response = await axiosInstance.get(
-      `/chats/user-chat/id=${null}?isWorldChat=true`
+      `/chats/world-chat?isWorldChat=true`,
     );
     if (response?.data?.status === 200) {
       // toast.success(response.data.message);

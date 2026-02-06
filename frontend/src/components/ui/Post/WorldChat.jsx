@@ -5,6 +5,7 @@ import { getWorldChat } from "../../../store/slices/chatSlice";
 import WorldChatMessage from "../Chat/WorldChatMessage";
 import ChatSkeleton from "../../skeletons/ChatSkeleton";
 import useWorldChat from "../../../hooks/useWorldChat";
+import LoginWarningBanner from "../Other/LoginWarningBanner";
 const WorldChat = () => {
   const dispatch = useDispatch();
   const chat = useSelector((state) => state.chat.worldChat);
@@ -15,6 +16,7 @@ const WorldChat = () => {
   } = useWorldChat();
   const [showMessageMenu, setShowMessageMenu] = useState(null);
   const apiLoading = useSelector((state) => state.chat.loading);
+  const user = useSelector((state) => state.user.userData);
   const chatUser = null;
   const messagesEndRef = useRef(null);
   const scrollContainerRef = useRef(null);
@@ -70,15 +72,15 @@ const WorldChat = () => {
     }
   }, [chat?.messages]);
 
-
-
   return (
     <div className="w-[800px] flex flex-col h-[38rem] gap-5 justify-center">
       <div className="bg-bgprimary w-full relative h-full pb-3 flex flex-col items-center gap-3 rounded-2xl shadow-hard">
         <div className="w-full">
           <h5 className="text-white flex items-center justify-between tracking-wider px-5 bg-primary py-2 rounded-t-2xl rounded-b-md font-route text-[24px] font-bold">
-            <span>{`Chat`}</span>
-            <span className="text-[20px] text-[#96f471]">{`${activeUserCount} Online`}</span>
+            <span className="text-title">{`Chat`}</span>
+            {user && (
+              <span className="text-title2 text-[#96f471]">{`${activeUserCount} Online`}</span>
+            )}
           </h5>
         </div>
         <div
@@ -103,7 +105,12 @@ const WorldChat = () => {
           </>
           {/* )} */}
         </div>
-        <ChatInput isWorldChat={true} />
+        {user && <ChatInput chatUser={chatUser} />}
+        {!user && (
+          <div className="w-full px-3">
+            <LoginWarningBanner warning="Log in to join the world chat." />
+          </div>
+        )}
       </div>
     </div>
   );
