@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "devw": "nodemon src/index.js",
     "dev": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && nodemon src/index.js'",
     "start": "bash -c 'source $NVM_DIR/nvm.sh && nvm use 23 && node src/index.js'"
   },

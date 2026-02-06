@@ -1,14 +1,17 @@
-import React, { use, useEffect, useState } from "react";
-import AnimatedButton from "../ui/Other/AnimatedButton";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-hot-toast";
-import SelectList from "../ui/Other/SelectList";
-import { errorToast } from "../../utils/helper";
-import { updateUserDetails } from "../../store/slices/userSlice";
+import React, { use, useEffect, useState } from 'react'
+import AnimatedButton from '../ui/Other/AnimatedButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-hot-toast';
+import SelectList from '../ui/Other/SelectList';
+import { errorToast } from '../../utils/helper';
+import { updateUserDetails, validateEmail } from '../../store/slices/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user.userData);
+  const loading = useSelector((state) => state.user.loading);
   const [showCountriesMenu, setShowCountriesMenu] = useState(false);
   const [showGendersMenu, setShowGendersMenu] = useState(false);
   const [dailyGoal, setDailyGoal] = useState("");
@@ -17,6 +20,7 @@ const Settings = () => {
   const [country, setCountry] = useState(
     user?.country ? user?.country : "Not Set",
   );
+  const [country, setCountry] = useState(user?.country ? user?.country : "Not Set");
   const [gender, setGender] = useState(user?.gender ? user?.gender : "Not Set");
   const [disalbeSave, setDisalbeSave] = useState(false);
 
@@ -29,6 +33,7 @@ const Settings = () => {
   const handleSave = async () => {
     setDisalbeSave(true);
     if ((age && age < 6) || age > 99) {
+    if (age && age < 6 || age > 99) {
       toast("Age must be between 6 and 99", errorToast);
       return;
     }
@@ -52,6 +57,16 @@ const Settings = () => {
           gender,
         }),
       );
+      const response = await dispatch(
+        updateUserDetails({
+          email: user.email,
+          dailyGoal,
+          age,
+          bio,
+          country,
+          gender,
+        })
+      );
       if (response?.payload?.status === 200) {
         setDisalbeSave(false);
       }
@@ -59,7 +74,24 @@ const Settings = () => {
       setDisalbeSave(false);
       return;
     }
-  };
+
+  }
+
+  const handleValidateEmail = async () => {
+    try {
+      const response = await dispatch(
+        validateEmail()
+      );
+      if (response?.payload?.status === 200) {
+        navigate("/verify-otp");
+      }
+    } catch (error) {
+      console.error(error)
+      return;
+    }
+
+  }
+
 
   return (
     <div className="min-h-screen flex justify-center items-center">
@@ -97,7 +129,9 @@ const Settings = () => {
                         </span>
                       ) : (
                         <AnimatedButton
+                          disabled={loading}
                           title={"VALIDATE EMAIL"}
+                          onClick={handleValidateEmail}
                           className="bg-[#4865cd] font-bold text-textcolor rounded-md px-2 h-[26px] pt-[2px] font-route text-[13px] "
                         />
                       )}
