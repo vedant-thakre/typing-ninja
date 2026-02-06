@@ -10,6 +10,7 @@ import {
   getAvatarsFromCloudinary,
   uploadOnCloudinary,
 } from "../lib/cloudinary.js";
+import { forgetPasswordTemplate } from "../utils/html/forgotPassword.js";
 
 const options = {
   httpOnly: true,
@@ -119,6 +120,23 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
       "-password -refreshToken -otp -name",
     );
 
+    if (!createdUser) {
+      throw new ErrorHandler(
+        500,
+        "Something went wrong while registering the user",
+      );
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    const lastUpdatedDate = createdUser?.dailyStats?.lastUpdated
+      ?.toISOString()
+      ?.split("T")[0];
+    if (lastUpdatedDate !== today) {
+      createdUser.dailyStats.matchesPlayed = 0;
+      createdUser.dailyStats.lastUpdated = today;
+      await createdUser.save();
+    }
+
     // Generate JWT
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
       createdUser._id,
@@ -183,6 +201,17 @@ export const login = asyncHandler(async (req, res, next) => {
     "-password -refreshToken -otp",
   );
 
+  const today = new Date().toISOString().split("T")[0];
+  const lastUpdatedDate = loggedInUser?.dailyStats?.lastUpdated
+    ?.toISOString()
+    ?.split("T")[0];
+
+  if (lastUpdatedDate !== today) {
+    loggedInUser.dailyStats.matchesPlayed = 0;
+    loggedInUser.dailyStats.lastUpdated = today;
+    await loggedInUser.save();
+  }
+
   return res
     .status(200)
     .cookie("refreshToken", refreshToken, options)
@@ -196,6 +225,20 @@ export const login = asyncHandler(async (req, res, next) => {
 });
 
 export const getUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user._id).select(
+    "-password -refreshToken -otp",
+  );
+  const today = new Date().toISOString().split("T")[0];
+  const lastUpdatedDate = user?.dailyStats?.lastUpdated
+    ?.toISOString()
+    ?.split("T")[0];
+  if (lastUpdatedDate !== today) {
+    user.dailyStats.matchesPlayed = 0;
+    user.dailyStats.lastUpdated = today;
+    req.user.dailyStats.matchesPlayed = 0;
+    req.user.dailyStats.lastUpdated = today;
+    await user.save();
+  }
   return res.status(200).json(new Response(200, req.user, "User found"));
 });
 
@@ -377,7 +420,8 @@ export const confirmEmailOtp = asyncHandler(async (req, res, next) => {
   if (!user) {
     throw new ErrorHandler(404, "User not found");
   }
-  if (user.otp !== otp) {
+  console.log(user?.otp, otp);
+  if (user.otp !== parseInt(otp)) {
     throw new ErrorHandler(400, "Invalid otp");
   }
   user.otp = null;

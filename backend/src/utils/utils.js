@@ -106,7 +106,7 @@ export const findOrCreateDuelRoom = (rooms) => {
     roomId = waitingRoomId;
   } else {
     // Create a new room with a unique ID
-    const id = v4();
+    const id = uuidv4();
     roomId = `duel-${id}`;
     rooms[roomId] = { users: [], mode: "duel", started: false };
   }

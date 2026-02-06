@@ -26,6 +26,19 @@ export const createMatch = asyncHandler(async (data) => {
   // update user
   const user = await User.findById(userId);
   user.matchCount += 1;
+
+  const today = new Date().toISOString().split("T")[0];
+  const lastUpdatedDate = user?.dailyStats?.lastUpdated
+    ?.toISOString()
+    ?.split("T")[0];
+
+  if (lastUpdatedDate !== today) {
+    user.dailyStats.matchesPlayed = 1;
+    user.dailyStats.lastUpdated = today;
+  } else {
+    user.dailyStats.matchesPlayed += 1;
+  }
+
   await user.save();
 
   // Prepare new high score

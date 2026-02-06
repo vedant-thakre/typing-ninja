@@ -39,6 +39,7 @@ export const registerUser = createAsyncThunk("user/register", async (user) => {
 export const verifyEmailOTP = createAsyncThunk(
   "user/confirm-email-otp",
   async (data) => {
+    console.log(data);
     try {
       const response = await axiosInstance.post(
         "users/confirm-email-otp",
@@ -104,6 +105,21 @@ export const updateUserDetails = createAsyncThunk(
   async (user) => {
     try {
       const response = await axiosInstance.put("users/update-user", user);
+      toast.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      throw error;
+    }
+  },
+);
+export const forgotPasswordSendOtp = createAsyncThunk(
+  "user/forgot-password-otp",
+  async (email) => {
+    try {
+      const response = await axiosInstance.post("users/forgot-password-otp", {
+        email,
+      });
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
@@ -304,6 +320,9 @@ const userSlice = createSlice({
     setShowResponsiveNav: (state, action) => {
       state.showResponsiveNav = action.payload;
     },
+    updateDailyStats: (state, action) => {
+      state.userData.dailyStats.matchesPlayed += 1;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(registerUser.pending, (state) => {
@@ -317,16 +336,29 @@ const userSlice = createSlice({
     builder.addCase(verifyEmailOTP.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(verifyEmailOTP.fulfilled, (state, action) => {
-      state.status = true;
+    builder.addCase(verifyEmailOTP.rejected, (state) => {
       state.loading = false;
-      state.otp = action.payload.data?.otp;
+    });
+    builder.addCase(verifyEmailOTP.fulfilled, (state, action) => {
+      state.loading = false;
+      state.userData.isVerified = true;
     });
     builder.addCase(validateEmail.pending, (state) => {
       state.loading = true;
     });
     builder.addCase(validateEmail.fulfilled, (state) => {
-      state.status = true;
+      state.loading = false;
+    });
+    builder.addCase(validateEmail.rejected, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(forgotPasswordSendOtp.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(forgotPasswordSendOtp.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(forgotPasswordSendOtp.rejected, (state) => {
       state.loading = false;
     });
     builder.addCase(loginUser.pending, (state) => {
@@ -424,5 +456,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setTheme, setShowResponsiveNav } = userSlice.actions;
+export const { setTheme, setShowResponsiveNav, updateDailyStats } =
+  userSlice.actions;
 export default userSlice.reducer;

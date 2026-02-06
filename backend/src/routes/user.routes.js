@@ -46,7 +46,7 @@ router.get("/search", searchUser);
 router.patch("/change-avatar", verifyJWT, changeAvatar);
 router.get("/refresh-access-token", refreshAccessToken);
 router.get("/get-user-profile", getUserProfile);
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password-otp", forgotPassword);
 router.patch("/rest-password", resetPassword);
 router.post("/confirm-otp", confirmOTP);
 

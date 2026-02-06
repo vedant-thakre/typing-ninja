@@ -14,68 +14,72 @@ const VerifyEmail = () => {
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
 
-  const userdata = useSelector((state) => state.user);
+  const userdata = useSelector((state) => state?.user?.userData);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (otp.length !== 4) {
       setError("Please enter a valid 4-digit OTP");
       return;
     }
-    
+
     setIsLoading(true);
     setError("");
-    
-    // Dispatch verification action
-    dispatch(verifyEmailOTP({ otp }))
-      .unwrap()
-      .then(() => {
-        navigate(-1);
-      })
-      .catch((err) => {
-        setError(err.message || "Invalid OTP. Please try again.");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+
+    try {
+      const response = await dispatch(verifyEmailOTP({ otp }));
+      if (response?.payload?.status === 200) {
+        navigate("/settings");
+      }
+    } catch (error) {
+      setError(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-//   const handleResendOTP = () => {
-//     if (!canResend) return;
-    
-//     setTimer(60);
-//     setCanResend(false);
-//     setOtp("");
-//     setError("");
-    
-//     // Dispatch resend OTP action (using your existing loginUser or resendOTP action)
-//     dispatch(loginUser())
-//       .unwrap()
-//       .then(() => {
-//         // Success - OTP sent
-//       })
-//       .catch((err) => {
-//         setError(err.message || "Failed to resend OTP");
-//       });
-//   };
+  useEffect(() => {
+    if (userdata?.isVerified) {
+      navigate("/");
+    }
+  }, [userdata]);
+
+  //   const handleResendOTP = () => {
+  //     if (!canResend) return;
+
+  //     setTimer(60);
+  //     setCanResend(false);
+  //     setOtp("");
+  //     setError("");
+
+  //     // Dispatch resend OTP action (using your existing loginUser or resendOTP action)
+  //     dispatch(loginUser())
+  //       .unwrap()
+  //       .then(() => {
+  //         // Success - OTP sent
+  //       })
+  //       .catch((err) => {
+  //         setError(err.message || "Failed to resend OTP");
+  //       });
+  //   };
 
   // Timer for resend OTP
-  useEffect(() => {
-    let interval;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev <= 1) {
-            setCanResend(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
+  // useEffect(() => {
+  //   let interval;
+  //   if (timer > 0) {
+  //     interval = setInterval(() => {
+  //       setTimer((prev) => {
+  //         if (prev <= 1) {
+  //           setCanResend(true);
+  //           return 0;
+  //         }
+  //         return prev - 1;
+  //       });
+  //     }, 1000);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [timer]);
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -83,12 +87,12 @@ const VerifyEmail = () => {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [otp]);
+  // useEffect(() => {
+  //   document.addEventListener("keydown", handleKeyPress);
+  //   return () => {
+  //     document.removeEventListener("keydown", handleKeyPress);
+  //   };
+  // }, [otp]);
 
   return (
     <div className="h-screen flex justify-center items-center">
@@ -96,12 +100,15 @@ const VerifyEmail = () => {
         <h5 className="text-textcolor tracking-wider font-route text-[26px] font-bold">
           Verify OTP
         </h5>
-        
-        <p className="text-textcolor text-sm mb-4 text-center">
-          Enter the 4-digit code sent to 
-          <span className="font-semibold">{" "}{userdata?.email || "your email"}</span>
+
+        <p className="text-textcolor flex flex-col font-route text-content mb-4 text-center">
+          <span>Enter the 4-digit verification code sent to email below.</span>
+          <span className="font-semibold">
+            {" "}
+            {userdata?.email || "your email"}
+          </span>
         </p>
-        
+
         <form onSubmit={handleSubmit} className="w-full">
           {/* OTP Input using react-otp-input */}
           <div className="mb-6 flex justify-center">
@@ -113,7 +120,7 @@ const VerifyEmail = () => {
               renderInput={(props) => (
                 <input
                   {...props}
-                  className="!w-12 !h-12 text-center text-xl font-bold bg-bgprimary border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="!w-12 !h-12 text-textcolor font-route text-center text-xl font-bold bg-bgprimary border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none focus:border-0 focus:ring-2 focus:ring-blue-400 transition-all appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
               )}
               inputType="number"
@@ -121,25 +128,20 @@ const VerifyEmail = () => {
             />
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-2 bg-red-50 border border-red-200 rounded">
-              <p className="text-red-600 text-xs text-center">{error}</p>
-            </div>
-          )}
-
           <AnimatedButton
             type="submit"
             disabled={isLoading || otp.length !== 4}
             title={isLoading ? "VERIFYING..." : "VERIFY"}
-            className={`font-bold border-bdshadow border-4 mt-[6px] text-white rounded-lg w-full lg:w-[320px] py-[5px] font-route text-lg ${
-              isLoading || otp.length !== 4 ? "opacity-50 cursor-not-allowed" : ""
+            className={`font-bold border-bdshadow border-4 mt-[6px] text-white rounded-lg w-full py-[5px] font-route text-body1 ${
+              isLoading || otp.length !== 4
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
           >
             {isLoading ? "Verifying..." : "Verify"}
           </AnimatedButton>
         </form>
-        
+
         {/* Resend OTP Section
         <div className="mt-4 text-center">
           <p className="text-textcolor text-sm">

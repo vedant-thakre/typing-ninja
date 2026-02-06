@@ -32,6 +32,7 @@ import Friends from "./pages/Friends.jsx";
 import Search from "./pages/Search.jsx";
 import SnippetsList from "./pages/SnippetsList.jsx";
 import VerifyEmail from "./pages/VerifyEmail.jsx";
+import ForgotPassword from "./pages/ForgetPassword.jsx";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
       { path: "/post/:id", element: <PostPage /> },
       { path: "/profile/:username", element: <Profile /> },
       { path: "/world", element: <Discuss /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
 
       {
         element: <ProtectedRoute />,
@@ -66,7 +68,7 @@ const router = createBrowserRouter([
           { path: "/friends", element: <Friends /> },
           { path: "/submit-snippets", element: <SnippetsList /> },
           { path: "/chats/:username/:id", element: <Chats /> },
-           { path: "/verify-email", element: <VerifyEmail/> },
+          { path: "/verify-email", element: <VerifyEmail /> },
         ],
       },
       {

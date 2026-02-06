@@ -28,7 +28,7 @@ const Header = () => {
   const theme = useSelector((state) => state?.user?.theme);
   const authStatus = status;
 
-  console.log(authStatus, user);
+  // console.log(authStatus, user);
 
   // Ref for the profile menu
   const menuRef = useRef(null);
@@ -179,7 +179,8 @@ const Header = () => {
                   <h5 className="text-white font-main text-[13px]">
                     Daily Goal:{" "}
                     <span className="font-route ml-1 font-bold text-[14px]">
-                      0&nbsp;/&nbsp;&nbsp;5
+                      {user?.dailyStats?.matchesPlayed}&nbsp;/&nbsp;&nbsp;
+                      {user?.dailyGoal}
                     </span>
                   </h5>
                 </div>

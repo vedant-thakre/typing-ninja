@@ -47,7 +47,7 @@ const SnippetHighscores = ({ snippetData, loading }) => {
                           </div>
                         </div>
                         <p className="col-span-3 w-[100px] font-route text-[15px] text-textsecond text-start">
-                          {item?.wpm} WPM
+                          {parseFloat(item?.wpm).toFixed(2)} WPM
                         </p>
                       </div>
                     );

@@ -6,8 +6,9 @@ import useTyping from "../../../hooks/useTyping";
 import { getRelativeTime } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../../../utils/socket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useTimerContext } from "../../../context/TimerContext";
+import { updateDailyStats } from "../../../store/slices/userSlice";
 
 const SnippetBox = ({
   snippetData,
@@ -17,6 +18,7 @@ const SnippetBox = ({
   mode,
 }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { defaultPreTimer, stopTimer, pauseTimer } = useTimerContext();
   const user = useSelector((state) => state.user.userData);
   const [matchTime, setMatchTime] = useState(0);
@@ -113,6 +115,7 @@ const SnippetBox = ({
               roomId: snippetData?.roomId,
               isGuestUser: false,
             });
+            dispatch(updateDailyStats());
           } else {
             const guestId = localStorage.getItem("guestId");
             const guestUsername = localStorage.getItem("guestUsername");

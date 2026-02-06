@@ -96,6 +96,16 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 5,
     },
+    dailyStats: {
+      matchesPlayed: {
+        type: Number,
+        default: 0,
+      },
+      lastUpdated: {
+        type: Date,
+        default: Date.now,
+      },
+    },
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,

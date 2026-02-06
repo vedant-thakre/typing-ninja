@@ -1,17 +1,18 @@
-import React, { use, useEffect, useState } from 'react'
-import AnimatedButton from '../ui/Other/AnimatedButton';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-hot-toast';
-import SelectList from '../ui/Other/SelectList';
-import { errorToast } from '../../utils/helper';
-import { updateUserDetails, validateEmail } from '../../store/slices/userSlice';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import AnimatedButton from "../ui/Other/AnimatedButton";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
+import SelectList from "../ui/Other/SelectList";
+import { errorToast } from "../../utils/helper";
+import { updateUserDetails, validateEmail } from "../../store/slices/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.userData);
+  const user = useSelector((state) => state?.user?.userData);
   const loading = useSelector((state) => state.user.loading);
+  // const loading = true;
   const [showCountriesMenu, setShowCountriesMenu] = useState(false);
   const [showGendersMenu, setShowGendersMenu] = useState(false);
   const [dailyGoal, setDailyGoal] = useState("");
@@ -20,7 +21,6 @@ const Settings = () => {
   const [country, setCountry] = useState(
     user?.country ? user?.country : "Not Set",
   );
-  const [country, setCountry] = useState(user?.country ? user?.country : "Not Set");
   const [gender, setGender] = useState(user?.gender ? user?.gender : "Not Set");
   const [disalbeSave, setDisalbeSave] = useState(false);
 
@@ -33,17 +33,18 @@ const Settings = () => {
   const handleSave = async () => {
     setDisalbeSave(true);
     if ((age && age < 6) || age > 99) {
-    if (age && age < 6 || age > 99) {
-      toast("Age must be between 6 and 99", errorToast);
-      return;
-    }
-    if (bio.length > 350) {
-      toast("Bio must be less than 350 characters", errorToast);
-      return;
-    }
-    if (dailyGoal < 0 || dailyGoal === null || dailyGoal > 100) {
-      toast("Daily goal must be between 1 and 100", errorToast);
-      return;
+      if ((age && age < 6) || age > 99) {
+        toast("Age must be between 6 and 99", errorToast);
+        return;
+      }
+      if (bio.length > 350) {
+        toast("Bio must be less than 350 characters", errorToast);
+        return;
+      }
+      if (dailyGoal < 0 || dailyGoal === null || dailyGoal > 100) {
+        toast("Daily goal must be between 1 and 100", errorToast);
+        return;
+      }
     }
 
     try {
@@ -57,16 +58,6 @@ const Settings = () => {
           gender,
         }),
       );
-      const response = await dispatch(
-        updateUserDetails({
-          email: user.email,
-          dailyGoal,
-          age,
-          bio,
-          country,
-          gender,
-        })
-      );
       if (response?.payload?.status === 200) {
         setDisalbeSave(false);
       }
@@ -74,24 +65,19 @@ const Settings = () => {
       setDisalbeSave(false);
       return;
     }
-
-  }
+  };
 
   const handleValidateEmail = async () => {
     try {
-      const response = await dispatch(
-        validateEmail()
-      );
+      const response = await dispatch(validateEmail());
       if (response?.payload?.status === 200) {
-        navigate("/verify-otp");
+        navigate("/verify-email");
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
       return;
     }
-
-  }
-
+  };
 
   return (
     <div className="min-h-screen flex justify-center items-center">
@@ -130,9 +116,9 @@ const Settings = () => {
                       ) : (
                         <AnimatedButton
                           disabled={loading}
-                          title={"VALIDATE EMAIL"}
+                          title={loading ? "VALIDATING..." : "VALIDATE EMAIL"}
                           onClick={handleValidateEmail}
-                          className="bg-[#4865cd] font-bold text-textcolor rounded-md px-2 h-[26px] pt-[2px] font-route text-[13px] "
+                          className={`${loading ? "opacity-50" : ""} font-bold text-white rounded-md px-2 h-[26px] pt-[2px] font-route text-[13px] `}
                         />
                       )}
                     </div>
@@ -231,7 +217,7 @@ const Settings = () => {
               title={"SAVE"}
               disabled={disalbeSave}
               onClick={handleSave}
-              className="bg-primary border-bdshadow text-white font-bold rounded-lg px-4 py-[2px] font-route text-body1 border-4"
+              className="bg-primary border-bdshadow cursor-pointer text-white font-bold rounded-lg px-4 py-[2px] font-route text-body1 border-4"
             />
           </div>
         </div>
