@@ -6,11 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { getPosts } from "../../../store/slices/postSlice";
 
-const PostList = ({ tabValue }) => {
+const PostList = ({ tabValue, page, updateParams }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = parseInt(searchParams.get("page")) || 1;
+  // const page = parseInt(searchParams.get("page")) || 1;
   const [sortOrder, setSortOrder] = useState("old");
   const user = useSelector((state) => state.user.userData);
   const posts = useSelector((state) => state.post.posts);
@@ -89,7 +89,11 @@ const PostList = ({ tabValue }) => {
               );
             })}
         </div>
-        <Pagination pageNo={page} setpageNo={handlePageChange} total={total} />
+        <Pagination
+          pageNo={page}
+          setpageNo={(page) => updateParams({ page })}
+          total={total}
+        />
       </div>
     </div>
   );

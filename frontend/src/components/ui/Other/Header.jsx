@@ -22,11 +22,13 @@ const Header = () => {
     (state) => state?.user?.showResponsiveNav,
   );
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const loading = useSelector((state) => state.user.loading);
-  const status = useSelector((state) => state.user.status);
-  const user = useSelector((state) => state.user.userData);
-  const theme = useSelector((state) => state.user.theme);
+  const loading = useSelector((state) => state?.user?.loading);
+  const status = useSelector((state) => state?.user?.status);
+  const user = useSelector((state) => state?.user?.userData);
+  const theme = useSelector((state) => state?.user?.theme);
   const authStatus = status;
+
+  console.log(authStatus, user);
 
   // Ref for the profile menu
   const menuRef = useRef(null);
@@ -84,7 +86,10 @@ const Header = () => {
                 </h5>
               </div>
             </NavLink>
-            <NavLink to="/discuss" onClick={() => handleTabTitle("Discuss")}>
+            <NavLink
+              to="/discuss?page=1"
+              onClick={() => handleTabTitle("Discuss")}
+            >
               <div className="flex items-center justify-center gap-1.5 xl:gap-2">
                 <RxChatBubble
                   size={22}

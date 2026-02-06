@@ -84,10 +84,10 @@ const Highscores = () => {
               {tabValue + ` - ${difficultyValue.toLowerCase()} quotes`}
             </h5>
 
-            <Pagination
+            {/* <Pagination
               pageNo={pageNo}
               setpageNo={(newPage) => updateParams({ page: newPage })}
-            />
+            /> */}
             <div className="grid grid-cols-4 pt-4 w-full">
               {difficulties.map((item, index) => {
                 return (
@@ -143,16 +143,21 @@ const Highscores = () => {
             )}
           </div>
           <div className="px-6 pb-5 w-full">
-            <div className="flex w-full flex-col gap-2 pt-2 pb-3 px-3 border-2  border-bprimary rounded-2xl">
-              {loading && (
-                <p className="text-center text-textsecond py-4">
-                  Loading leaderboard…
-                </p>
-              )}
-              {!loading &&
-                rows?.length > 0 &&
-                rows.map((item, index) => {
-                  return (
+            <div className="flex w-full flex-col gap-2 pt-2 pb-3 px-3 border-2 border-bprimary rounded-2xl">
+              {loading ? (
+                [...Array(10)].map((_, index) => (
+                  <div
+                    key={`skeleton-${index}`}
+                    className={`grid grid-cols-12 gap-2  rounded-lg  w-full animate-pulse ${
+                      index === 9 ? "" : "border-b-2 border-bprimary"
+                    }`}
+                  >
+                    <div className="col-span-12 h-10 bg-pulse rounded"></div>
+                  </div>
+                ))
+              ) : rows?.length > 0 ? (
+                <>
+                  {rows.map((item, index) => (
                     <div
                       key={item?.userId || index}
                       className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary ${
@@ -164,31 +169,40 @@ const Highscores = () => {
                       <p className="col-span-1 font-route text-title3 text-textcolor">
                         {index + 1}
                       </p>
-                      <p className="col-span-7 font-route text-title3 text-textcolor">
+                      <p
+                        className={`${tabValue === "Top Speed" ? "col-span-7" : "col-span-9"} font-route text-title3 text-textcolor`}
+                      >
                         {item?.username}
                       </p>
-
                       {tabValue === "Top Speed" ? (
                         <>
                           <p className="col-span-2 font-route text-body1 text-textcolor">
                             {getRelativeTime(item?.date)}
                           </p>
-                          <p className="col-span-2 font-route text-content  pl-6 text-textcolor text-center">
-                            {item?.wpm}
+                          <p className="col-span-2 font-route text-content pl-6 text-textcolor text-center">
+                            {parseFloat(item?.wpm).toFixed(2)}
                           </p>
                         </>
                       ) : (
-                        <p className="col-span-2 font-route text-title3 text-textcolor">
+                        <p className="col-span-2 text-center font-route text-title3 text-textcolor">
                           {item?.matchCount}
                         </p>
                       )}
                     </div>
-                  );
-                })}
-              <Pagination
-                pageNo={pageNo}
-                setpageNo={(page) => updateParams({ page })}
-              />
+                  ))}
+                  <Pagination
+                    pageNo={pageNo}
+                    setpageNo={(page) => updateParams({ page })}
+                  />
+                </>
+              ) : (
+                // Empty state
+                <div className="flex items-center justify-center py-10">
+                  <p className="text-center text-textsecond">
+                    No leaderboard data available
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

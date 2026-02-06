@@ -32,6 +32,7 @@ export default {
         bgprimary: "var(--color-bgprimary)",
         bgsecondary: "var(--color-bgsecondary)",
         bgthird: "var(--color-bgthird)",
+        pulse: "var(--color-pulse)",
 
         // borders
         bprimary: "var(--color-border)",

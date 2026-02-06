@@ -3,7 +3,11 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./store/store.js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import DefaultLayout from "./components/layout/DefaultLayout.jsx";
 import { Toaster } from "react-hot-toast";
@@ -30,19 +34,15 @@ import SnippetsList from "./pages/SnippetsList.jsx";
 
 const queryClient = new QueryClient();
 
+const NotFoundRedirect = () => {
+  return <Navigate to="/" replace />;
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <DefaultLayout />,
     children: [
-      // {
-      //   path: "/",
-      //   element: (
-      //     <AuthLayout>
-      //       <Home />
-      //     </AuthLayout>
-      //   ),
-      // },
       { path: "/", element: <Home /> },
       { path: "/discuss", element: <Discuss /> },
       { path: "/highscores", element: <Highscores /> },
@@ -74,6 +74,7 @@ const router = createBrowserRouter([
           { path: "/signup", element: <SignUp /> },
         ],
       },
+      { path: "*", element: <NotFoundRedirect /> },
     ],
   },
 ]);
@@ -98,3 +99,5 @@ createRoot(document.getElementById("root")).render(
     </GoogleOAuthProvider>
   </>,
 );
+
+// hikaru - 3, zoro - 1, marin -2, takina - 6, natsu - 1,

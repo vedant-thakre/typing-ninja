@@ -21,7 +21,27 @@ import LoginWarningBanner from "../components/ui/Other/LoginWarningBanner";
 const Discuss = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const tabValue = location.pathname === "/world" ? "World Chat" : "Discussion";
+  const page = parseInt(searchParams.get("page")) || 1;
+
+  const updateParams = (updates) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    Object.entries(updates).forEach(([key, value]) => {
+      newParams.set(key, value);
+    });
+
+    setSearchParams(newParams);
+  };
+
+  useEffect(() => {
+    if (!searchParams.toString()) {
+      setSearchParams({
+        page: 1,
+      });
+    }
+  }, []);
 
   return (
     <div className="min-h-screen mx-3 md:mx-0 flex justify-center">
@@ -32,7 +52,7 @@ const Discuss = () => {
             icon={<RiChat3Line className="font-bold" size={25} />}
             both
             onClick={() => {
-              navigate("/discuss");
+              navigate("/discuss?page=1");
             }}
             className="font-route shadow-hard text-white hover:underline tracking-wide font-medium text-xl rounded-xl py-2 px-24"
           />
@@ -41,15 +61,17 @@ const Discuss = () => {
             icon={<TbWorld size={23} />}
             both
             onClick={() => {
-              console.log("hello");
               navigate("/world");
-              console.log("world");
             }}
             className="font-route shadow-hard text-white hover:underline font-normal tracking-normal text-xl rounded-xl py-2 px-24"
           />
         </div>
         {tabValue === "Discussion" ? (
-          <PostList tabValue={tabValue} />
+          <PostList
+            tabValue={tabValue}
+            page={page}
+            updateParams={updateParams}
+          />
         ) : (
           <>
             <WorldChat tabValue={tabValue} />

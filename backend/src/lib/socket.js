@@ -47,18 +47,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  console.log("rooms", rooms);
+  // console.log("rooms", rooms);
 
   socket.on("matchComplete", async ({ matchData, roomId, isGuestUser }) => {
-    console.log("matchComplete", matchData);
-    const room = rooms[roomId];
     io.in(roomId).emit("MATCH_COMPLETE");
-    if (room.intervalId) {
-      clearInterval(room.intervalId);
-      delete room.intervalId;
-    }
-    delete room.lobbyStartTime;
-    delete room.matchStartTime;
+    // deleteRoomInterval(roomId, rooms);
+    deleteRoom(roomId, rooms);
+    console.log("matchComplete", matchData);
     if (!isGuestUser) {
       await createMatch(matchData);
     }

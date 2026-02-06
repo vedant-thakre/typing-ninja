@@ -33,7 +33,14 @@ export const deleteRoom = (roomId, rooms) => {
     delete room.intervalId;
   }
   delete rooms[roomId];
-  console.log(colors.bgRed(`Deleting old interval for room ${roomId}`));
+
+  if (global.gc) {
+    global.gc();
+  }
+
+  console.log(
+    colors.bgRed(`Deleting old interval and room for room ${roomId}`),
+  );
 };
 
 export const deleteRoomInterval = (roomId, rooms) => {
@@ -42,6 +49,8 @@ export const deleteRoomInterval = (roomId, rooms) => {
     clearInterval(room.intervalId);
     delete room.intervalId;
   }
+  delete room.lobbyStartTime;
+  delete room.matchStartTime;
 };
 
 export const getRandomSnippet = async (snippetId) => {
@@ -78,7 +87,6 @@ export const getRandomSnippet = async (snippetId) => {
       _id: score._id,
     };
 
-    // Remove user field completely
     delete newScore.user;
 
     return newScore;
@@ -149,7 +157,7 @@ export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
 
     const snippet = await getRandomSnippet(snippetId);
 
-    console.log(snippet);
+    // console.log(snippet);
 
     if (!snippet) {
       console.error("No snippets found.");
@@ -175,6 +183,7 @@ export const soloMatch = async (userId, username, socket, rooms, snippetId) => {
 
 export const startMatch = (roomId, rooms, io) => {
   const room = rooms[roomId];
+  if (!room) return;
   const now = Date.now();
 
   // If lobby hasn't started, start it
@@ -183,18 +192,30 @@ export const startMatch = (roomId, rooms, io) => {
     room.matchStartTime = now + 1500; // match begins 1.5s later
   }
 
-  // Check if room object is valid
-  const currentRoom = rooms[roomId];
-  if (!currentRoom || !currentRoom.matchStartTime) {
+  if (!room || !room.matchStartTime) {
     clearInterval(room.intervalId);
-    if (currentRoom) delete currentRoom.intervalId;
+    if (room) delete room.intervalId;
     return;
   }
 
   // Run emit loop every 500ms
   room.intervalId = setInterval(() => {
-    const elapsed = Date.now() - room.matchStartTime;
+    if (!rooms[roomId]) {
+      console.log(`Room ${roomId} no longer exists, clearing interval`);
+      clearInterval(room.intervalId);
+      return;
+    }
+
+    const currentRoom = rooms[roomId];
+    if (!currentRoom) {
+      console.log(`Current room ${roomId} not found, clearing interval`);
+      if (room.intervalId) clearInterval(room.intervalId);
+      return;
+    }
+
+    const elapsed = Date.now() - currentRoom.matchStartTime;
     console.log("elapsed", elapsed);
+
     io.in(roomId).emit("ROOM_TIMER", {
       elapsedTime: elapsed,
       phase:
@@ -208,8 +229,10 @@ export const startMatch = (roomId, rooms, io) => {
     });
 
     if (elapsed >= 300000) {
-      clearInterval(room.intervalId);
-      delete room.intervalId;
+      console.log(`Match timeout reached for room ${roomId}`);
+      clearInterval(currentRoom.intervalId);
+      delete currentRoom.intervalId;
+      delete rooms[roomId]; // Delete room after timeout
     }
   }, 500);
 };
