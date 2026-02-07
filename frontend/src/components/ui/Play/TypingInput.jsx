@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import Cursor from "./Cursor";
 
 const TypingInput = ({
@@ -10,6 +10,8 @@ const TypingInput = ({
 }) => {
   const [typedText, setTypedText] = useState("");
   const [isStarted, setIsStarted] = useState(false); // Track whether typing has started
+
+  // console.log("😂 Typing rendred");
 
   useEffect(() => {
     if (!dummy) {
@@ -69,4 +71,5 @@ const TypingInput = ({
   );
 };
 
-export default TypingInput;
+// export default TypingInput;
+export default memo(TypingInput);

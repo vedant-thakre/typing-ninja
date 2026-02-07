@@ -122,6 +122,7 @@ const useMatch = (gameMode, gameStarted) => {
     roomUsers,
     loading,
     fetchNewSnippet,
+    setSnippetData,
   };
 };
 

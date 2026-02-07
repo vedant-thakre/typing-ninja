@@ -1,8 +1,9 @@
-import React from "react";
+import React, { memo } from "react";
 import { getRelativeTime } from "../../../utils/helper";
 import ListSkeletton from "../../skeletons/ListSkeletton";
 
-const SnippetHighscores = ({ snippetData, loading }) => {
+const SnippetHighscores = ({ highScores, loading }) => {
+  console.log("✅ Highscore rendered");
   return (
     <div className="flex flex-col flex-[3] gap-5">
       <div className="bg-bgsecondary flex flex-col items-center gap-3 rounded-2xl shadow-hard">
@@ -22,13 +23,13 @@ const SnippetHighscores = ({ snippetData, loading }) => {
               </>
             ) : (
               <>
-                {snippetData?.highScores?.length > 0 &&
-                  snippetData?.highScores?.map((item, index) => {
+                {highScores?.length > 0 &&
+                  highScores?.map((item, index) => {
                     return (
                       <div
                         key={index}
                         className={`grid grid-cols-12 items-center px-3 py-1 w-full hover:bg-bprimary ${
-                          index === snippetData?.highScores?.length - 1
+                          index === highScores?.length - 1
                             ? ""
                             : "border-b-2 border-bprimary"
                         }`}
@@ -61,4 +62,4 @@ const SnippetHighscores = ({ snippetData, loading }) => {
   );
 };
 
-export default SnippetHighscores;
+export default memo(SnippetHighscores);

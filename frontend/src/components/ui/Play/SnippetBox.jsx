@@ -12,6 +12,7 @@ import { updateDailyStats } from "../../../store/slices/userSlice";
 
 const SnippetBox = ({
   snippetData,
+  setSnippetData,
   gameStarted,
   setHasGameEnded,
   setMyMatchStats,
@@ -115,6 +116,17 @@ const SnippetBox = ({
               roomId: snippetData?.roomId,
               isGuestUser: false,
             });
+            const date = new Date();
+            const updatedHighscores = [
+              ...snippetData?.highScores,
+              {
+                username: user?.username,
+                wpm,
+                createdAt: date.toISOString(),
+              },
+            ];
+            updatedHighscores.sort((a, b) => b.wpm - a.wpm);
+            setSnippetData({ ...snippetData, highScores: updatedHighscores });
             dispatch(updateDailyStats());
           } else {
             const guestId = localStorage.getItem("guestId");

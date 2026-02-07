@@ -9,7 +9,7 @@ const DualPlayerCardBox = ({ participants, loading, stats }) => {
   const myInfo = participants.find((p) => p.userId === user?._id);
   const opponent = participants.find((p) => p.userId !== user?._id);
 
-  console.log("opponent", opponent);
+  // console.log("opponent", opponent);
 
   return (
     <div className="flex items-center justify-between w-[680px]">

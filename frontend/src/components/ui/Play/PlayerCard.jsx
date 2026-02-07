@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 const PlayerCard = ({ user, mode, stats }) => {
   const userData = useSelector((state) => state.user.userData);
   const myInfo = stats?.userId === userData?._id;
+
   const formatTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");

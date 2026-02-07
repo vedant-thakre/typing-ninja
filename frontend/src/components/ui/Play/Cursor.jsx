@@ -1,7 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import { motion } from "framer-motion";
 
 const Cursor = ({ classNames = "", blinking }) => {
+  // console.log("cursor rendered");
   return (
     <motion.div
       initial={{ opacity: 1 }}
@@ -13,4 +14,5 @@ const Cursor = ({ classNames = "", blinking }) => {
   );
 };
 
-export default Cursor;
+export default memo(Cursor);
+// export default Cursor;

@@ -37,16 +37,17 @@ const Play = () => {
     errorCount: "",
     progress: 0,
   });
+
   const mode = location.pathname?.includes("duel")
     ? "duel"
     : location.pathname?.includes("solo")
       ? "solo"
       : "multiplayer";
 
-  const { snippetData, roomUsers, loading, fetchNewSnippet } = useMatch(
-    mode,
-    gameStarted,
-  );
+  const { snippetData, roomUsers, loading, fetchNewSnippet, setSnippetData } =
+    useMatch(mode, gameStarted);
+
+  // console.log("snippetData", snippetData);
 
   window.onkeydown = function (e) {
     return !(e.keyCode == 32 && e.target == document.body);
@@ -163,6 +164,7 @@ const Play = () => {
                 gameStarted={gameStarted}
                 hasGameReset={hasGameReset}
                 setHasGameEnded={setHasGameEnded}
+                setSnippetData={setSnippetData}
                 setMyMatchStats={setMyMatchStats}
               />
             ) : (
@@ -170,7 +172,10 @@ const Play = () => {
             )}
           </div>
           {/* Snippet Highscore */}
-          <SnippetHighscores snippetData={snippetData} loading={loading} />
+          <SnippetHighscores
+            highScores={snippetData?.highScores || []}
+            loading={loading}
+          />
         </div>
       </div>
     </div>
