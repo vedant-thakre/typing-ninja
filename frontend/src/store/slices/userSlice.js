@@ -14,6 +14,7 @@ const initialState = {
   loading: false,
   apiLoading: false,
   status: false,
+  authLoading: false,
   userData: null,
   avatars: [],
   isFriend: false,
@@ -371,9 +372,15 @@ const userSlice = createSlice({
     });
     builder.addCase(googleAuth.pending, (state) => {
       state.loading = true;
+      state.authLoading = true;
+    });
+    builder.addCase(googleAuth.rejected, (state) => {
+      state.loading = false;
+      state.authLoading = false;
     });
     builder.addCase(googleAuth.fulfilled, (state, action) => {
       state.loading = false;
+      state.authLoading = false;
       state.status = true;
       state.userData = action.payload.data?.user;
       const username = action.payload?.data?.user?.username;

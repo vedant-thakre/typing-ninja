@@ -79,7 +79,7 @@ const SnippetBox = ({
           totalCharacters /
           5 /
           (Math.floor(matchTime / 1000) / 60)
-        ).toFixed(2);
+        ).toFixed(4);
 
         // Calculate Accuracy: (correct / (correct + errors)) * 100
         const correctKeystrokes = totalCharacters - errorCount;
@@ -90,7 +90,7 @@ const SnippetBox = ({
         setMyMatchStats({
           userId: user?._id,
           time: matchTime,
-          wpm,
+          wpm: parseFloat(wpm).toFixed(2),
           accuracy,
           errorCount,
           progress: 100,
@@ -117,16 +117,45 @@ const SnippetBox = ({
               isGuestUser: false,
             });
             const date = new Date();
-            const updatedHighscores = [
-              ...snippetData?.highScores,
-              {
-                username: user?.username,
-                wpm,
-                createdAt: date.toISOString(),
-              },
-            ];
-            updatedHighscores.sort((a, b) => b.wpm - a.wpm);
-            setSnippetData({ ...snippetData, highScores: updatedHighscores });
+            const newScore = {
+              _id: `score_${Date.now()}`,
+              username: user?.username || "Guest",
+              wpm: Number(wpm).toFixed(4),
+              createdAt: date.toISOString(),
+            };
+
+            setSnippetData((prev) => {
+              const currentScores = prev?.highScores || [];
+              const hasSpace = currentScores.length < 10;
+
+              if (hasSpace) {
+                const updatedHighscores = [...currentScores, newScore]
+                  .sort((a, b) => b.wpm - a.wpm)
+                  .slice(0, 10);
+
+                return {
+                  ...prev,
+                  highScores: updatedHighscores,
+                };
+              } else {
+                const lowestScore = currentScores[currentScores.length - 1];
+
+                if (newScore.wpm > lowestScore.wpm) {
+                  const scoresWithoutLowest = currentScores.slice(0, -1);
+                  const updatedHighscores = [
+                    ...scoresWithoutLowest,
+                    newScore,
+                  ].sort((a, b) => b.wpm - a.wpm);
+
+                  return {
+                    ...prev,
+                    highScores: updatedHighscores,
+                  };
+                }
+
+                return prev;
+              }
+            });
             dispatch(updateDailyStats());
           } else {
             const guestId = localStorage.getItem("guestId");

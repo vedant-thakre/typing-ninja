@@ -12,7 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAvatars, updateAvatar } from "../../../store/slices/userSlice";
 import { useEffect } from "react";
 import { IoMdClose } from "react-icons/io";
-import { RotatingTriangles } from "react-loader-spinner";
+import Spinner from "../../custom/Spinner";
+import blade from "../../../assets/icons/ninja-blade-4.png";
 
 export default function ProfileModal({ open, setOpen }) {
   const dispatch = useDispatch();
@@ -52,25 +53,20 @@ export default function ProfileModal({ open, setOpen }) {
                   </DialogTitle>
                   {apiLoading ? (
                     <div className="w-full h-[290px] items-center flex justify-center">
-                      <RotatingTriangles
-                        visible={true}
-                        height="70"
-                        width="70"
-                        strokeColor="white"
-                        color={["#ffffff", "#ffffff", "#d3d3d3"]}
-                        ariaLabel="rotating-triangles-loading"
-                        wrapperStyle={{}}
-                        wrapperClass=""
-                      />
+                      <Spinner src={blade} size={60} speed={1.5} />
                     </div>
                   ) : (
                     <div className="py-4 h-[290px] flex flex-wrap gap-4 justify-center">
                       {avatars?.length > 0 &&
                         avatars.map((avatar, index) => {
                           return (
-                            <div key={index} onClick={() => {
-                              dispatch(updateAvatar(avatar?.url));
-                            }}  className="w-[70px] h-[70px]">
+                            <div
+                              key={index}
+                              onClick={() => {
+                                dispatch(updateAvatar(avatar?.url));
+                              }}
+                              className="w-[70px] h-[70px]"
+                            >
                               <img
                                 src={avatar?.url}
                                 alt="avatar"

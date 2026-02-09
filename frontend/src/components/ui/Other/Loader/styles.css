@@ -1,0 +1,166 @@
+/* ShurikenLoader.css */
+.shuriken-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: fixed; /* Changed from absolute to fixed */
+  top: 0;
+  left: 0; /* Changed from right: 0 to left: 0 */
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* Optional: add backdrop */
+  backdrop-filter: blur(4px); /* Optional: add blur effect */
+  z-index: 9999;
+}
+
+.shuriken-wrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.shuriken-img {
+  animation: spin linear infinite;
+  filter: drop-shadow(0 0 8px rgb(90, 90, 90));
+  transition: transform 0.3s ease;
+}
+
+.shuriken-img:hover {
+  transform: scale(1.1);
+}
+
+.spinning-trail {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  pointer-events: none;
+}
+
+.trail-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: linear-gradient(135deg, #4299e1, #ed8936);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  opacity: 0;
+  animation: trailPulse 1.5s infinite;
+}
+
+.trail-dot:nth-child(1) {
+  transform: rotate(0deg) translateY(-50px);
+}
+.trail-dot:nth-child(2) {
+  transform: rotate(45deg) translateY(-50px);
+}
+.trail-dot:nth-child(3) {
+  transform: rotate(90deg) translateY(-50px);
+}
+.trail-dot:nth-child(4) {
+  transform: rotate(135deg) translateY(-50px);
+}
+.trail-dot:nth-child(5) {
+  transform: rotate(180deg) translateY(-50px);
+}
+.trail-dot:nth-child(6) {
+  transform: rotate(225deg) translateY(-50px);
+}
+.trail-dot:nth-child(7) {
+  transform: rotate(270deg) translateY(-50px);
+}
+.trail-dot:nth-child(8) {
+  transform: rotate(315deg) translateY(-50px);
+}
+
+.shuriken-loader-text {
+  margin-top: 1rem;
+  font-family: "Segoe UI", sans-serif;
+  color: #4a5568;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  animation: textGlow 2s infinite alternate;
+}
+
+.shuriken-progress {
+  width: 200px;
+  height: 4px;
+  background: rgba(66, 153, 225, 0.1);
+  border-radius: 2px;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  /* background: linear-gradient(90deg, #4299e1, #ed8936); */
+  border-radius: 2px;
+  animation: loadingProgress 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes trailPulse {
+  0%,
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--dot-index) * 45deg)) translateY(-50px)
+      scale(0.5);
+  }
+  50% {
+    opacity: 0.8;
+    transform: rotate(calc(var(--dot-index) * 45deg)) translateY(-60px) scale(1);
+  }
+}
+
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(66, 153, 225, 0.3);
+    transform: translateY(0);
+  }
+  100% {
+    text-shadow:
+      0 0 10px rgba(66, 153, 225, 0.6),
+      0 0 15px rgba(237, 137, 54, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+    transform: translateX(-100%);
+  }
+  50% {
+    width: 100%;
+    transform: translateX(0%);
+  }
+  100% {
+    width: 0%;
+    transform: translateX(100%);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .shuriken-img {
+    /* filter: drop-shadow(0 0 12px rgba(237, 137, 54, 0.7)); */
+  }
+
+  .shuriken-loader-text {
+    color: #cbd5e0;
+  }
+}

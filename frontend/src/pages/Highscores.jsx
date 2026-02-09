@@ -28,7 +28,8 @@ const Highscores = () => {
 
   const cacheKey = `${difficultyParam}-${query}-${pageNo}-${limit}`;
   const leaderboardData = cache[cacheKey] || {};
-  const rows = leaderboardData.data || [];
+  // const rows = [];
+  const rows = leaderboardData?.data || [];
   console.log(rows);
 
   const updateParams = (updates) => {
@@ -143,14 +144,12 @@ const Highscores = () => {
             )}
           </div>
           <div className="px-6 pb-5 w-full">
-            <div className="flex w-full flex-col gap-2 pt-2 pb-3 px-3 border-2 border-bprimary rounded-2xl">
+            <div className="flex w-full flex-col gap-2 pt-2 pb-3 px-3 border-2 border-bprimary rounded-2xl min-h-[550px]">
               {loading ? (
                 [...Array(10)].map((_, index) => (
                   <div
                     key={`skeleton-${index}`}
-                    className={`grid grid-cols-12 gap-2  rounded-lg  w-full animate-pulse ${
-                      index === 9 ? "" : "border-b-2 border-bprimary"
-                    }`}
+                    className={`grid grid-cols-12 gap-2  rounded-lg  w-full animate-pulse border-b-2 border-bprimary `}
                   >
                     <div className="col-span-12 h-10 bg-pulse rounded"></div>
                   </div>
@@ -160,7 +159,7 @@ const Highscores = () => {
                   {rows.map((item, index) => (
                     <div
                       key={item?.userId || index}
-                      className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary ${
+                      className={`grid grid-cols-12 px-3 cursor-pointer rounded-lg py-2 w-full hover:bg-bprimary  ${
                         index === rows?.length - 1
                           ? ""
                           : "border-b-2 border-bprimary"
@@ -190,10 +189,6 @@ const Highscores = () => {
                       )}
                     </div>
                   ))}
-                  <Pagination
-                    pageNo={pageNo}
-                    setpageNo={(page) => updateParams({ page })}
-                  />
                 </>
               ) : (
                 // Empty state
@@ -203,6 +198,12 @@ const Highscores = () => {
                   </p>
                 </div>
               )}
+            </div>
+            <div className="mt-2">
+              <Pagination
+                pageNo={pageNo}
+                setpageNo={(page) => updateParams({ page })}
+              />
             </div>
           </div>
         </div>

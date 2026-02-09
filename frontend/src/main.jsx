@@ -33,6 +33,7 @@ import Search from "./pages/Search.jsx";
 import SnippetsList from "./pages/SnippetsList.jsx";
 import VerifyEmail from "./pages/VerifyEmail.jsx";
 import ForgotPassword from "./pages/ForgetPassword.jsx";
+import NinjaStar from "./components/ui/Other/Loader/NinjaStar.jsx";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,7 @@ createRoot(document.getElementById("root")).render(
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
+          <NinjaStar />
           <Toaster
             toastOptions={{
               className:

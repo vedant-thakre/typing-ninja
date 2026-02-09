@@ -226,7 +226,7 @@ export const login = asyncHandler(async (req, res, next) => {
 
 export const getUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id).select(
-    "-password -refreshToken -otp",
+    "_id username email country age isAdmin bio dailyStats avatar gender isVerified dailyGoal isBanned createdAt",
   );
   const today = new Date().toISOString().split("T")[0];
   const lastUpdatedDate = user?.dailyStats?.lastUpdated
@@ -239,7 +239,10 @@ export const getUser = asyncHandler(async (req, res, next) => {
     req.user.dailyStats.lastUpdated = today;
     await user.save();
   }
-  return res.status(200).json(new Response(200, req.user, "User found"));
+
+  setTimeout(() => {
+    return res.status(200).json(new Response(200, user, "User found"));
+  }, 4000);
 });
 
 export const updateUserDetails = asyncHandler(async (req, res, next) => {
